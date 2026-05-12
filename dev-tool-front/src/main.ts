@@ -4,6 +4,7 @@ import naive from 'naive-ui'
 import router, { registerToolRoutes } from './router'
 import { registerAllTools } from './utils/registry'
 import { initServices } from './services'
+import { isTauri } from '@tauri-apps/api/core'
 
 import '@/assets/styles/variables.css'
 import '@/assets/styles/common.css'
@@ -19,7 +20,7 @@ app.use(pinia)
 // Initialize services:
 // - Tauri mode: running inside Tauri desktop app (Windows exe)
 // - HTTP mode: Rust backend running at http://127.0.0.1:3030
-if (window.__TAURI__) {
+if (isTauri()) {
   initServices('tauri')
 } else {
   initServices('http')
