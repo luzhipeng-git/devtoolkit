@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "DevToolkit - Developer Tools Desktop App"
 authors = ["DevToolkit"]
 edition = "2021"
+default-run = "devtoolkit"
 
 [lib]
 name = "devtoolkit_lib"
