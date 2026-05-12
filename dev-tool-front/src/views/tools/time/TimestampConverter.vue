@@ -167,7 +167,7 @@ function fillCalcNow() {
 function doCalc() {
   calcError.value = ''
   let baseTs = Number(calcBase.value.trim())
-  if (isNaN(calcBase.value.trim()) || !calcBase.value.trim()) {
+  if (Number.isNaN(baseTs) || !calcBase.value.trim()) {
     calcBase.value = String(Date.now())
     baseTs = Date.now()
   }

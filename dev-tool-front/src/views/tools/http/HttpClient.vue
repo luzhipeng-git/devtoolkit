@@ -226,7 +226,7 @@ async function sendRequest() {
       url: requestUrl,
       headers: headerObj,
       body: reqBody,
-      bodyType: bodyType.value === 'form' ? 'urlencoded' : bodyType.value === 'none' ? undefined : bodyType.value,
+      bodyType: bodyType.value === 'form' ? 'urlencoded' : bodyType.value === 'none' ? undefined : bodyType.value === 'text' || bodyType.value === 'xml' ? 'raw' : bodyType.value,
       timeout: 30000,
     })
 

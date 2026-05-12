@@ -1,0 +1,73 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'windows-latest'
+            args: ''
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './dev-tool-front/src-tauri -> target'
+
+      - name: Install frontend dependencies
+        working-directory: ./dev-tool-front
+        run: pnpm install
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        with:
+          projectPath: ./dev-tool-front
+          tauriScript: pnpm tauri
+          tagName: ${{ github.ref_name }}
+          releaseName: 'DevToolkit ${{ github.ref_name }}'
+          releaseBody: |
+            ## DevToolkit ${{ github.ref_name }}
+
+            ### Downloads
+            - **Windows**: `DevToolkit_x64-setup.exe` (NSIS installer)
+            - **macOS (Apple Silicon)**: `DevToolkit_aarch64.dmg`
+            - **macOS (Intel)**: `DevToolkit_x64.dmg`
+
+            > First time on Windows? If WebView2 is not installed, the installer will prompt you to download it automatically.
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }} --features tauri-mode
