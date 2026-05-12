@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grok 调试 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .grok-section {
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      border-radius: 10px; padding: 20px; margin-bottom: 16px;
+    }
+    .grok-section:last-child { margin-bottom: 0; }
+    .grok-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .grok-label { font-size: 13px; color: var(--text-secondary); white-space: nowrap; min-width: 60px; }
+    .grok-input-wrapper { flex: 1; position: relative; }
+    .grok-input {
+      width: 100%; height: 38px; border-radius: 6px;
+      border: 1px solid var(--border-input); padding: 0 14px;
+      font-size: 14px; color: var(--text-primary); background: var(--bg-white);
+      outline: none; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    .grok-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+    .grok-input.error { border-color: #dc2626; box-shadow: 0 0 0 2px rgba(220,38,38,0.1); }
+    /* Syntax highlight overlay for pattern input */
+    .grok-highlight-layer {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      padding: 0 14px; height: 38px; line-height: 38px;
+      font-size: 14px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      white-space: pre; overflow: hidden; pointer-events: none;
+      color: transparent;
+    }
+    .hl-pattern { color: #2563eb; background: #eff6ff; border-radius: 2px; }
+    .hl-name { color: #16a34a; background: #f0fdf4; border-radius: 2px; }
+    .hl-unclosed { color: #dc2626; background: #fef2f2; border-radius: 2px; text-decoration: underline wavy #dc2626; }
+    .grok-input-error {
+      font-size: 12px; color: #dc2626; margin-top: 4px; display: none;
+    }
+    .grok-input-error.show { display: block; }
+    .btn-parse {
+      padding: 8px 22px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white; font-size: 13px; font-weight: 500;
+      border: none; cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+    }
+    .btn-parse:hover { opacity: 0.9; }
+    .btn-parse:disabled { opacity: 0.5; cursor: not-allowed; }
+    .grok-textarea-label { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
+    .grok-textarea {
+      width: 100%; min-height: 80px; border-radius: 8px;
+      border: 1px solid var(--border-card); padding: 12px 14px;
+      font-size: 13px; color: var(--text-primary); background: var(--bg-code);
+      outline: none; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      line-height: 1.7; resize: vertical;
+    }
+    .grok-textarea:focus { border-color: var(--primary); }
+    .grok-textarea .match-green { background: #dcfce7; border-radius: 2px; }
+    .grok-textarea .match-gray { background: #f1f5f9; border-radius: 2px; color: var(--text-placeholder); }
+    .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .results-header-text { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .results-summary { font-size: 12px; color: var(--accent-green); font-weight: 500; }
+    .results-summary.partial { color: #d97706; }
+    .results-summary.none { color: var(--text-placeholder); }
+    .results-table { width: 100%; border-collapse: collapse; }
+    .results-table th {
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border-card);
+      background: var(--bg-code);
+    }
+    .results-table td { font-size: 13px; padding: 10px 12px; border-bottom: 1px solid var(--border-light); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .td-line { color: var(--text-placeholder); font-size: 11px; width: 40px; font-family: 'Consolas', monospace; }
+    .td-key {
+      color: var(--text-primary); font-weight: 500;
+      font-family: 'Consolas', 'Monaco', monospace; width: 140px;
+    }
+    .td-value { color: var(--accent-blue); font-family: 'Consolas', 'Monaco', monospace; word-break: break-all; }
+    .td-actions { width: 60px; text-align: right; }
+    .btn-copy-small {
+      padding: 3px 10px; border-radius: 4px; background: var(--bg-white);
+      color: var(--text-muted); font-size: 10px; border: 1px solid var(--border-input);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-copy-small:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .btn-copy-small.copied { color: #16a34a; border-color: #16a34a; }
+    .partial-warning {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px;
+      padding: 8px 12px; font-size: 12px; color: #92400e; margin-top: 8px;
+    }
+    .no-match-msg {
+      color: var(--text-placeholder); font-size: 13px; padding: 16px; text-align: center;
+    }
+    .error-msg {
+      padding: 8px 12px; background: #fef2f2; color: #dc2626; border-radius: 6px;
+      font-size: 12px; margin-bottom: 8px; display: none;
+    }
+    .error-msg.show { display: block; }
+    /* Pattern library */
+    .pattern-toggle {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 12px; user-select: none;
+    }
+    .pattern-toggle-arrow { transition: transform 0.15s; font-size: 10px; }
+    .pattern-toggle-arrow.open { transform: rotate(90deg); }
+    .pattern-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+    }
+    .pattern-grid.open { max-height: 800px; }
+    .pattern-card {
+      padding: 10px 12px; background: var(--bg-white);
+      border: 1px solid var(--border-card); border-radius: 6px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .pattern-card:hover { border-color: var(--primary); background: var(--primary-light); }
+    .pattern-card-name {
+      font-size: 12px; font-weight: 600; color: var(--text-primary);
+      margin-bottom: 2px; font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .pattern-card-regex {
+      font-size: 10px; color: var(--text-muted);
+      font-family: 'Consolas', 'Monaco', monospace; word-break: break-all;
+    }
+    /* Custom pattern */
+    .custom-section {
+      border: 1px dashed var(--border-input); border-radius: 8px;
+      padding: 12px; margin-top: 14px;
+    }
+    .custom-section-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+    .custom-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .custom-input {
+      height: 30px; border-radius: 4px; border: 1px solid var(--border-input);
+      padding: 0 10px; font-size: 12px; color: var(--text-primary);
+      background: var(--bg-white); outline: none;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .custom-input:focus { border-color: var(--primary); }
+    .custom-input.name { width: 120px; }
+    .custom-input.regex { flex: 1; }
+    .custom-input.error { border-color: #dc2626; }
+    .btn-save-pattern {
+      padding: 6px 14px; border-radius: 4px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white; font-size: 11px; font-weight: 500;
+      border: none; cursor: pointer; transition: opacity 0.15s;
+    }
+    .btn-save-pattern:hover { opacity: 0.9; }
+    .saved-patterns { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .saved-pattern-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; background: var(--bg-code);
+      border: 1px solid var(--border-card); border-radius: 4px;
+      font-size: 11px; color: var(--text-secondary);
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .tag-delete { color: var(--text-disabled); cursor: pointer; font-size: 10px; }
+    .tag-delete:hover { color: #dc2626; }
+    .custom-error { font-size: 11px; color: #dc2626; margin-bottom: 6px; display: none; }
+    .custom-error.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div><div class="dot dot-minimize"></div><div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">D</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+    <div class="main-layout">
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item active" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+      <div class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">Grok</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Grok 调试</span>
+        </div>
+
+        <!-- Error message -->
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- Grok Input Section -->
+        <div class="grok-section">
+          <div class="grok-input-row">
+            <span class="grok-label">表达式</span>
+            <div class="grok-input-wrapper">
+              <input type="text" class="grok-input" id="patternInput" placeholder="%{PATTERN:name}" spellcheck="false">
+            </div>
+            <button class="btn-parse" id="btnParse" disabled>解析</button>
+          </div>
+          <div class="grok-input-error" id="patternError"></div>
+
+          <div class="grok-textarea-label">日志文本</div>
+          <textarea class="grok-textarea" id="sampleData" spellcheck="false" placeholder="请输入日志数据..."></textarea>
+        </div>
+
+        <!-- Results Section -->
+        <div class="grok-section" id="resultsSection">
+          <div class="results-header">
+            <span class="results-header-text">解析结果</span>
+            <span class="results-summary" id="resultsSummary"></span>
+          </div>
+          <div id="resultsBody">
+            <div class="no-match-msg" id="noMatchMsg">输入 Grok 模式和日志数据后点击解析</div>
+          </div>
+        </div>
+
+        <!-- Pattern Library -->
+        <div class="grok-section">
+          <div class="pattern-toggle" id="patternToggle">
+            <span class="pattern-toggle-arrow" id="toggleArrow">&#9654;</span>
+            <span>常用模式库</span>
+          </div>
+          <div class="pattern-grid" id="patternGrid"></div>
+
+          <!-- Custom Patterns -->
+          <div class="custom-section">
+            <div class="custom-section-title">自定义模式</div>
+            <div class="custom-error" id="customError"></div>
+            <div class="custom-row">
+              <input type="text" class="custom-input name" id="customName" placeholder="模式名称">
+              <input type="text" class="custom-input regex" id="customRegex" placeholder="正则表达式">
+              <button class="btn-save-pattern" id="btnSavePattern">保存</button>
+            </div>
+            <div class="saved-patterns" id="savedPatterns"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+  (function() {
+    // --- Built-in Grok patterns ---
+    var BUILTIN_PATTERNS = {
+      // Network
+      'IP': { regex: '(?:\\d{1,3}\\.){3}\\d{1,3}', desc: 'IPv4 地址' },
+      'IPV6': { regex: '(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}', desc: 'IPv6 地址' },
+      'HOSTNAME': { regex: '\\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)*[a-zA-Z]{2,}\\b', desc: '主机名' },
+      'MAC': { regex: '(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}', desc: 'MAC 地址' },
+      'CIDR': { regex: '(?:\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}', desc: 'CIDR 网段' },
+      // Time
+      'TIMESTAMP_ISO8601': { regex: '\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})?', desc: 'ISO8601 时间戳' },
+      'DATE': { regex: '\\d{4}-\\d{2}-\\d{2}', desc: '日期 YYYY-MM-DD' },
+      'TIME': { regex: '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?', desc: '时间 HH:MM:SS' },
+      // Path
+      'URIPATH': { regex: '/[\\w/.-]*', desc: 'URI 路径' },
+      'URI': { regex: '[a-zA-Z][a-zA-Z0-9+.-]*://[^\\s]+', desc: '完整 URI' },
+      'UNIXPATH': { regex: '(?:/[^/\\s]+)+', desc: 'Unix 路径' },
+      'WINPATH': { regex: '(?:[A-Za-z]:\\\\|\\\\\\\\)[^\\s]+', desc: 'Windows 路径' },
+      // Log
+      'SYSLOGBASE': { regex: '%{TIMESTAMP_ISO8601:timestamp} %{HOSTNAME:host}', desc: 'Syslog 基础格式' },
+      'LOGLEVEL': { regex: '(?:DEBUG|INFO|WARN(?:ING)?|ERROR|FATAL|CRITICAL|TRACE)', desc: '日志级别' },
+      // General
+      'WORD': { regex: '\\b\\w+\\b', desc: '单词' },
+      'NUMBER': { regex: '-?\\d+(?:\\.\\d+)?', desc: '数字' },
+      'INT': { regex: '-?\\d+', desc: '整数' },
+      'QUOTEDSTRING': { regex: '"(?:[^"\\\\]|\\\\.)*"', desc: '引号字符串' },
+      'DATA': { regex: '.*?', desc: '任意数据 (非贪婪)' },
+      'GREEDYDATA': { regex: '.*', desc: '任意数据 (贪婪)' },
+      'NOTSPACE': { regex: '\\S+', desc: '非空格字符串' },
+      'SPACE': { regex: '\\s*', desc: '空格' },
+      'UUID': { regex: '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', desc: 'UUID' },
+      'EMAILADDRESS': { regex: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}', desc: '邮箱地址' },
+      'HTTPDATE': { regex: '\\d{2}/[a-zA-Z]{3}/\\d{4}:\\d{2}:\\d{2}:\\d{2} [+-]\\d{4}', desc: 'HTTP 日期' },
+      'STATUSCODE': { regex: '\\d{3}', desc: 'HTTP 状态码' },
+      'BASE10NUM': { regex: '(?:[+-]?(?:?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)', desc: '十进制数' },
+      'BASE16NUM': { regex: '(?:0[xX])?[0-9A-Fa-f]+', desc: '十六进制数' }
+    };
+
+    // Category grouping for display
+    var PATTERN_CATEGORIES = [
+      { title: '网络', patterns: ['IP', 'IPV6', 'HOSTNAME', 'MAC', 'CIDR'] },
+      { title: '时间', patterns: ['TIMESTAMP_ISO8601', 'DATE', 'TIME', 'HTTPDATE'] },
+      { title: '路径', patterns: ['URIPATH', 'URI', 'UNIXPATH', 'WINPATH'] },
+      { title: '日志', patterns: ['SYSLOGBASE', 'LOGLEVEL', 'STATUSCODE'] },
+      { title: '通用', patterns: ['WORD', 'NUMBER', 'INT', 'QUOTEDSTRING', 'DATA', 'GREEDYDATA', 'NOTSPACE', 'SPACE', 'UUID', 'EMAILADDRESS', 'BASE10NUM', 'BASE16NUM'] }
+    ];
+
+    // --- State ---
+    var customPatterns = {};
+    var $patternInput = document.getElementById('patternInput');
+    var $sampleData = document.getElementById('sampleData');
+    var $btnParse = document.getElementById('btnParse');
+    var $patternError = document.getElementById('patternError');
+    var $errorMsg = document.getElementById('errorMsg');
+    var $resultsBody = document.getElementById('resultsBody');
+    var $resultsSummary = document.getElementById('resultsSummary');
+    var $noMatchMsg = document.getElementById('noMatchMsg');
+    var $patternGrid = document.getElementById('patternGrid');
+    var $patternToggle = document.getElementById('patternToggle');
+    var $toggleArrow = document.getElementById('toggleArrow');
+    var $customName = document.getElementById('customName');
+    var $customRegex = document.getElementById('customRegex');
+    var $btnSavePattern = document.getElementById('btnSavePattern');
+    var $savedPatterns = document.getElementById('savedPatterns');
+    var $customError = document.getElementById('customError');
+
+    // --- Enable/disable parse button ---
+    function updateParseButton() {
+      var hasPattern = $patternInput.value.trim().length > 0;
+      var hasData = $sampleData.value.trim().length > 0;
+      $btnParse.disabled = !(hasPattern && hasData);
+    }
+    $patternInput.addEventListener('input', function() {
+      updateParseButton();
+      $patternInput.classList.remove('error');
+      $patternError.classList.remove('show');
+      $patternError.textContent = '';
+    });
+    $sampleData.addEventListener('input', function() {
+      updateParseButton();
+    });
+
+    // --- Build pattern library grid ---
+    function buildPatternGrid() {
+      var html = '';
+      PATTERN_CATEGORIES.forEach(function(cat) {
+        html += '<div style="grid-column:1/-1;font-size:11px;color:var(--text-placeholder);font-weight:600;padding:4px 0 2px;letter-spacing:0.5px;">' + cat.title + '</div>';
+        cat.patterns.forEach(function(name) {
+          var p = BUILTIN_PATTERNS[name];
+          if (!p) return;
+          html += '<div class="pattern-card" data-pattern="' + name + '">' +
+            '<div class="pattern-card-name">' + escapeHtml(name) + '</div>' +
+            '<div class="pattern-card-regex">' + escapeHtml(p.desc || p.regex) + '</div>' +
+            '</div>';
+        });
+      });
+      $patternGrid.innerHTML = html;
+
+      // Click to insert pattern
+      $patternGrid.querySelectorAll('.pattern-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var name = card.getAttribute('data-pattern');
+          var insertText = '%{' + name + '}';
+          insertAtCursor($patternInput, insertText);
+          $patternInput.focus();
+          updateParseButton();
+        });
+      });
+    }
+
+    function insertAtCursor(input, text) {
+      var start = input.selectionStart;
+      var end = input.selectionEnd;
+      var val = input.value;
+      input.value = val.substring(0, start) + text + val.substring(end);
+      var newPos = start + text.length;
+      input.setSelectionRange(newPos, newPos);
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // --- Toggle pattern library ---
+    var patternLibOpen = false;
+    $patternToggle.addEventListener('click', function() {
+      patternLibOpen = !patternLibOpen;
+      $patternGrid.classList.toggle('open', patternLibOpen);
+      $toggleArrow.classList.toggle('open', patternLibOpen);
+    });
+
+    // --- Custom patterns ---
+    $btnSavePattern.addEventListener('click', function() {
+      var name = $customName.value.trim();
+      var regex = $customRegex.value.trim();
+      $customError.classList.remove('show');
+      $customName.classList.remove('error');
+
+      if (!name || !regex) {
+        $customError.textContent = '请输入模式名称和正则表达式';
+        $customError.classList.add('show');
+        return;
+      }
+      if (!/^[A-Za-z][A-Za-z0-9_]{0,49}$/.test(name)) {
+        $customError.textContent = '模式名称必须以字母开头，仅包含字母、数字和下划线，长度不超过50';
+        $customError.classList.add('show');
+        $customName.classList.add('error');
+        return;
+      }
+      if (BUILTIN_PATTERNS[name]) {
+        $customError.textContent = '不能覆盖内置模式 "' + name + '"';
+        $customError.classList.add('show');
+        $customName.classList.add('error');
+        return;
+      }
+      // Validate regex
+      try {
+        new RegExp(regex);
+      } catch (e) {
+        $customError.textContent = '正则表达式语法错误: ' + e.message;
+        $customError.classList.add('show');
+        $customRegex.classList.add('error');
+        return;
+      }
+
+      customPatterns[name] = regex;
+      $customName.value = '';
+      $customRegex.value = '';
+      $customName.classList.remove('error');
+      $customRegex.classList.remove('error');
+      renderCustomPatterns();
+    });
+
+    function renderCustomPatterns() {
+      var keys = Object.keys(customPatterns);
+      if (keys.length === 0) {
+        $savedPatterns.innerHTML = '<span style="font-size:11px;color:var(--text-placeholder);">暂无自定义模式</span>';
+        return;
+      }
+      $savedPatterns.innerHTML = keys.map(function(name) {
+        return '<span class="saved-pattern-tag">' +
+          escapeHtml(name) + ' <span style="color:var(--text-muted);">=</span> ' + escapeHtml(customPatterns[name]) +
+          ' <span class="tag-delete" data-name="' + escapeHtml(name) + '">&times;</span></span>';
+      }).join('');
+      $savedPatterns.querySelectorAll('.tag-delete').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          delete customPatterns[btn.getAttribute('data-name')];
+          renderCustomPatterns();
+        });
+      });
+    }
+
+    // --- Grok parsing ---
+    function resolvePatternName(name) {
+      if (BUILTIN_PATTERNS[name]) return BUILTIN_PATTERNS[name].regex;
+      if (customPatterns[name]) return customPatterns[name];
+      return null;
+    }
+
+    function compileGrokPattern(pattern) {
+      // Parse %{PATTERN_NAME:capture_name} or %{PATTERN_NAME}
+      var regexStr = '';
+      var lastIdx = 0;
+      var i = 0;
+      var errors = [];
+
+      while (i < pattern.length) {
+        if (pattern[i] === '%' && i + 1 < pattern.length && pattern[i + 1] === '{') {
+          // Find closing }
+          var closeIdx = pattern.indexOf('}', i + 2);
+          if (closeIdx === -1) {
+            errors.push('未闭合的 %{');
+            // Append rest as literal
+            regexStr += escapeRegex(pattern.substring(i));
+            break;
+          }
+          var inner = pattern.substring(i + 2, closeIdx);
+          var parts = inner.split(':');
+          var patternName = parts[0];
+          var captureName = parts.length > 1 ? parts[1] : null;
+          var resolved = resolvePatternName(patternName);
+
+          if (!resolved) {
+            errors.push('未知的 pattern: ' + patternName);
+            regexStr += escapeRegex(pattern.substring(i, closeIdx + 1));
+          } else {
+            // Resolve nested grok patterns recursively
+            resolved = resolveNestedGrok(resolved);
+            if (captureName) {
+              regexStr += '(?<' + captureName + '>' + resolved + ')';
+            } else {
+              regexStr += '(?:' + resolved + ')';
+            }
+          }
+          i = closeIdx + 1;
+        } else {
+          regexStr += escapeRegex(pattern[i]);
+          i++;
+        }
+      }
+
+      return { regex: regexStr, errors: errors };
+    }
+
+    function resolveNestedGrok(regexStr) {
+      // Resolve any nested %{PATTERN} references inside a resolved pattern
+      var result = '';
+      var i = 0;
+      while (i < regexStr.length) {
+        if (regexStr[i] === '%' && i + 1 < regexStr.length && regexStr[i + 1] === '{') {
+          var closeIdx = regexStr.indexOf('}', i + 2);
+          if (closeIdx === -1) {
+            result += regexStr.substring(i);
+            break;
+          }
+          var inner = regexStr.substring(i + 2, closeIdx);
+          var parts = inner.split(':');
+          var patternName = parts[0];
+          var resolved = resolvePatternName(patternName);
+          if (resolved) {
+            result += '(?:' + resolveNestedGrok(resolved) + ')';
+          } else {
+            result += regexStr.substring(i, closeIdx + 1);
+          }
+          i = closeIdx + 1;
+        } else {
+          result += regexStr[i];
+          i++;
+        }
+      }
+      return result;
+    }
+
+    function escapeRegex(ch) {
+      if ('\\^$.*+?()[]{}|'.indexOf(ch) !== -1) return '\\' + ch;
+      return ch;
+    }
+
+    // --- Parse button ---
+    $btnParse.addEventListener('click', doParse);
+
+    function doParse() {
+      var pattern = $patternInput.value.trim();
+      var sampleText = $sampleData.value.trim();
+
+      $errorMsg.classList.remove('show');
+      $errorMsg.textContent = '';
+      $patternInput.classList.remove('error');
+      $patternError.classList.remove('show');
+      $patternError.textContent = '';
+
+      if (!pattern || !sampleText) return;
+
+      // Compile grok pattern
+      var compiled = compileGrokPattern(pattern);
+
+      if (compiled.errors.length > 0) {
+        $patternInput.classList.add('error');
+        $patternError.textContent = compiled.errors.join('; ');
+        $patternError.classList.add('show');
+        $resultsBody.innerHTML = '<div class="no-match-msg">解析失败，请修正表达式错误</div>';
+        $resultsSummary.textContent = '';
+        return;
+      }
+
+      // Build regex
+      var fullRegex;
+      try {
+        fullRegex = new RegExp(compiled.regex);
+      } catch (e) {
+        $errorMsg.textContent = '正则编译错误: ' + e.message;
+        $errorMsg.classList.add('show');
+        $resultsBody.innerHTML = '<div class="no-match-msg">正则表达式编译失败</div>';
+        $resultsSummary.textContent = '';
+        return;
+      }
+
+      // Parse each line
+      var lines = sampleText.split('\n');
+      var allResults = [];
+      var html = '';
+
+      lines.forEach(function(line, lineIdx) {
+        if (!line.trim()) return;
+
+        var match = fullRegex.exec(line);
+        if (match) {
+          var groups = [];
+          // Get named groups
+          if (match.groups) {
+            Object.keys(match.groups).forEach(function(key) {
+              if (match.groups[key] !== undefined) {
+                groups.push({ key: key, value: match.groups[key] });
+              }
+            });
+          }
+
+          var matchedLength = match[0].length;
+          var isFullMatch = matchedLength === line.length;
+
+          allResults.push({
+            line: lineIdx + 1,
+            groups: groups,
+            matchedLength: matchedLength,
+            isFullMatch: isFullMatch,
+            original: line
+          });
+        } else {
+          allResults.push({
+            line: lineIdx + 1,
+            groups: [],
+            matchedLength: 0,
+            isFullMatch: false,
+            original: line,
+            noMatch: true
+          });
+        }
+      });
+
+      // Render results
+      if (allResults.length === 0) {
+        $resultsBody.innerHTML = '<div class="no-match-msg">未找到匹配</div>';
+        $resultsSummary.textContent = '无匹配';
+        $resultsSummary.className = 'results-summary none';
+        return;
+      }
+
+      var totalFields = 0;
+      var partialLines = [];
+      var html = '';
+
+      allResults.forEach(function(result) {
+        if (result.noMatch) {
+          html += '<div style="padding:8px 12px;margin-bottom:8px;background:#fef2f2;border-radius:6px;font-size:12px;">';
+          html += '<span style="color:#dc2626;">第 ' + result.line + ' 行：</span>';
+          html += '<span style="color:var(--text-secondary);font-family:Consolas,monospace;">' + escapeHtml(result.original.substring(0, 100)) + '</span>';
+          html += ' <span style="color:#dc2626;">未匹配</span>';
+          html += '</div>';
+          return;
+        }
+
+        if (result.groups.length > 0) {
+          html += '<div style="margin-bottom:4px;font-size:11px;color:var(--text-placeholder);padding:2px 0;">第 ' + result.line + ' 行</div>';
+          html += '<table class="results-table" style="margin-bottom:8px;">';
+          html += '<thead><tr><th>字段名</th><th>匹配值</th><th></th></tr></thead>';
+          html += '<tbody>';
+          result.groups.forEach(function(g) {
+            totalFields++;
+            html += '<tr>';
+            html += '<td class="td-key">' + escapeHtml(g.key) + '</td>';
+            html += '<td class="td-value">' + escapeHtml(g.value) + '</td>';
+            html += '<td class="td-actions"><button class="btn-copy-small" data-value="' + escapeHtml(g.value) + '">复制</button></td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+
+          if (!result.isFullMatch) {
+            partialLines.push(result.line);
+            var matchedPart = result.original.substring(0, result.matchedLength);
+            var unmatchedPart = result.original.substring(result.matchedLength);
+            html += '<div class="partial-warning">部分匹配：已匹配至第 ' + result.matchedLength + ' 个字符，剩余内容未匹配</div>';
+            html += '<div style="margin:4px 0 12px;padding:8px 12px;background:var(--bg-code);border-radius:6px;font-family:Consolas,monospace;font-size:12px;line-height:1.6;word-break:break-all;">';
+            html += '<span class="match-green">' + escapeHtml(matchedPart) + '</span>';
+            html += '<span class="match-gray">' + escapeHtml(unmatchedPart) + '</span>';
+            html += '</div>';
+          }
+        }
+      });
+
+      if (totalFields === 0) {
+        $resultsBody.innerHTML = '<div class="no-match-msg">未找到匹配，请检查模式与数据格式是否一致</div>';
+        $resultsSummary.textContent = '未找到匹配';
+        $resultsSummary.className = 'results-summary none';
+        return;
+      }
+
+      if (partialLines.length > 0) {
+        $resultsSummary.textContent = '部分匹配：成功提取 ' + totalFields + ' 个字段（第 ' + partialLines.join(', ') + ' 行部分匹配）';
+        $resultsSummary.className = 'results-summary partial';
+      } else {
+        $resultsSummary.textContent = '成功提取 ' + totalFields + ' 个字段';
+        $resultsSummary.className = 'results-summary';
+      }
+
+      $resultsBody.innerHTML = html;
+
+      // Bind copy buttons
+      $resultsBody.querySelectorAll('.btn-copy-small').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var val = btn.getAttribute('data-value');
+          dtCopy(val).then(function() {
+            btn.textContent = '已复制';
+            btn.classList.add('copied');
+            setTimeout(function() { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1200);
+          });
+        });
+      });
+    }
+
+    // --- Sidebar search ---
+    document.querySelector('.sidebar-search input').addEventListener('input', function() {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('.sidebar-item').forEach(function(item) {
+        var text = item.textContent.toLowerCase();
+        item.style.display = !q || text.indexOf(q) !== -1 ? '' : 'none';
+      });
+    });
+
+    // --- Keyboard shortcut ---
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!$btnParse.disabled) doParse();
+      }
+    });
+
+    // --- Init ---
+    buildPatternGrid();
+    renderCustomPatterns();
+    updateParseButton();
+  })();
+  </script>
+</body>
+</html>

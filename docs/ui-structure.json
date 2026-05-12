@@ -1,0 +1,103 @@
+{
+  "source": "docs/ui-html/01-main-framework.html",
+  "categories": [
+    {
+      "name": "字符编码",
+      "items": [
+        "Hex 转换",
+        "Base64 编解码",
+        "ASCII 转换",
+        "URL 编解码",
+        "Unicode 编解码"
+      ]
+    },
+    {
+      "name": "JSON 工具",
+      "items": [
+        "格式化 & 压缩",
+        "反序列化",
+        "JSONPath 查询",
+        "JSON Diff"
+      ]
+    },
+    {
+      "name": "加密解密",
+      "items": [
+        "AES 加密/解密",
+        "DES/3DES",
+        "RSA 工具",
+        "哈希摘要",
+        "密钥工具",
+        "OpenSSL 工具"
+      ]
+    },
+    {
+      "name": "数字计算",
+      "items": [
+        "进制转换"
+      ]
+    },
+    {
+      "name": "二维码",
+      "items": [
+        "二维码生成",
+        "二维码解析"
+      ]
+    },
+    {
+      "name": "HTTP Client",
+      "items": [
+        "HTTP 请求"
+      ]
+    },
+    {
+      "name": "时间计算",
+      "items": [
+        "时间戳转换"
+      ]
+    },
+    {
+      "name": "Cron",
+      "items": [
+        "Cron 表达式"
+      ]
+    },
+    {
+      "name": "正则调试",
+      "items": [
+        "正则调试"
+      ]
+    },
+    {
+      "name": "Grok",
+      "items": [
+        "Grok 调试"
+      ]
+    },
+    {
+      "name": "Nginx",
+      "items": [
+        "Nginx 工具"
+      ]
+    },
+    {
+      "name": "配置转换",
+      "items": [
+        "配置文件转换"
+      ]
+    },
+    {
+      "name": "编码解码",
+      "items": [
+        "JWT 编解码"
+      ]
+    }
+  ],
+  "total_items": 26,
+  "total_categories": 13,
+  "rules": {
+    "submenu_icons": false,
+    "category_icons": false,
+    "notes": "Prototype has NO icons on submenu items or category titles"
+  }
+}

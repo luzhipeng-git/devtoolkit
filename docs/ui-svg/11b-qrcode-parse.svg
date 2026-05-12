@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 外框 -->
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 40px -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <!-- macOS 三色按钮 -->
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <!-- 蓝色DT图标 -->
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <!-- 窗口操作按钮 -->
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏背景 240px -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 分类 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON 工具 分类 -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+
+  <!-- 加密解密 分类 -->
+  <text x="16" y="478" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="486" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="506" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="522" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="542" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="556" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="576" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="590" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="610" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="624" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="644" font-size="12" fill="#475569">密钥工具</text>
+
+  <!-- 其他工具 分类 -->
+  <text x="16" y="680" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">其他工具</text>
+  <!-- 二维码 选中态 蓝色高亮 -->
+  <rect x="8" y="688" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="688" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="708" font-size="12" fill="#2563eb" font-weight="500">二维码</text>
+  <rect x="8" y="722" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="742" font-size="12" fill="#475569">HTTP Client</text>
+  <rect x="8" y="756" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="776" font-size="12" fill="#475569">Nginx</text>
+
+  <!-- 内容区背景 -->
+  <rect x="240" y="40" width="960" height="760" fill="#ffffff"/>
+
+  <!-- 面包屑导航 -->
+  <text x="268" y="70" font-size="12" fill="#94a3b8">二维码工具</text>
+  <text x="344" y="70" font-size="12" fill="#cbd5e1">/</text>
+  <text x="356" y="70" font-size="12" fill="#1e293b" font-weight="500">解析</text>
+
+  <!-- 主面板卡片 -->
+  <rect x="256" y="88" width="928" height="692" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Tab 切换: 生成 | 解析(选中) -->
+  <rect x="276" y="104" width="80" height="32" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="302" y="124" font-size="13" fill="#64748b">生成</text>
+  <rect x="364" y="104" width="80" height="32" rx="6" fill="url(#primaryBtn)"/>
+  <text x="390" y="124" font-size="13" fill="#ffffff" font-weight="500">解析</text>
+
+  <!-- 拖拽/粘贴上传区域 (约40%内容区高度 = ~280px) -->
+  <rect x="280" y="152" width="896" height="260" rx="10" fill="#fafbff" stroke="#3b82f6" stroke-width="2" stroke-dasharray="8,4"/>
+
+  <!-- 右上角支持格式标签 -->
+  <rect x="1048" y="164" width="112" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="1062" y="180" font-size="10" fill="#3b82f6" font-weight="500">支持 PNG / JPG / BMP</text>
+
+  <!-- 大号图标占位: 蓝色矩形模拟二维码图标 -->
+  <rect x="660" y="200" width="56" height="56" rx="8" fill="url(#primaryBtn)" opacity="0.85"/>
+  <text x="674" y="236" font-size="20" fill="#ffffff" font-weight="bold">QR</text>
+
+  <!-- 中部文字 -->
+  <text x="720" y="230" font-size="14" fill="#475569">拖拽二维码图片到这里</text>
+  <!-- 下部文字 -->
+  <text x="720" y="250" font-size="12" fill="#94a3b8">或 Ctrl+V 粘贴截图</text>
+
+  <!-- 选择文件按钮 -->
+  <rect x="668" y="368" width="120" height="32" rx="6" fill="url(#primaryBtn)"/>
+  <text x="698" y="389" font-size="13" fill="#ffffff" font-weight="500">选择文件</text>
+
+  <!-- 截图提示(可选输入方式说明) -->
+  <text x="280" y="434" font-size="11" fill="#94a3b8">提示：使用截图工具截图后，直接 Ctrl+V 即可粘贴解析</text>
+
+  <!-- 解析结果区域标题 -->
+  <text x="280" y="468" font-size="14" fill="#1e293b" font-weight="600">解析结果</text>
+
+  <!-- 结果卡片 -->
+  <rect x="280" y="480" width="896" height="280" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 类型标签: URL 蓝色小标签 -->
+  <rect x="300" y="500" width="48" height="22" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="316" y="515" font-size="11" fill="#2563eb" font-weight="600">URL</text>
+
+  <!-- 内容标签 -->
+  <text x="360" y="515" font-size="12" fill="#64748b">内容</text>
+
+  <!-- 内容文本框 -->
+  <rect x="300" y="530" width="856" height="44" rx="6" fill="#f8faff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="316" y="558" font-size="14" fill="#1e293b" font-family="Consolas, monospace">https://example.com/invite?code=ABC123</text>
+
+  <!-- 详细信息区域 -->
+  <rect x="300" y="590" width="856" height="80" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 详细信息标题 -->
+  <text x="316" y="614" font-size="12" fill="#64748b" font-weight="500">详细信息</text>
+
+  <!-- 详细信息内容行 -->
+  <text x="316" y="636" font-size="11" fill="#64748b">类型:</text>
+  <text x="354" y="636" font-size="11" fill="#1e293b">URL 链接</text>
+  <text x="440" y="636" font-size="11" fill="#64748b">编码:</text>
+  <text x="478" y="636" font-size="11" fill="#1e293b">UTF-8</text>
+  <text x="536" y="636" font-size="11" fill="#64748b">版本:</text>
+  <text x="574" y="636" font-size="11" fill="#1e293b">QR Code Version 5</text>
+  <text x="316" y="658" font-size="11" fill="#64748b">尺寸:</text>
+  <text x="354" y="658" font-size="11" fill="#1e293b">370 x 370 px</text>
+
+  <!-- 操作按钮行 -->
+  <!-- 复制按钮(蓝色) -->
+  <rect x="988" y="530" width="80" height="36" rx="6" fill="url(#primaryBtn)"/>
+  <text x="1010" y="553" font-size="13" fill="#ffffff" font-weight="500">复制</text>
+
+  <!-- 打开链接按钮(白色) -->
+  <rect x="1076" y="530" width="80" height="36" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1090" y="553" font-size="13" fill="#475569">打开链接</text>
+
+  <!-- 底部操作栏 -->
+  <rect x="300" y="690" width="856" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 清除按钮 -->
+  <rect x="316" y="700" width="80" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="340" y="720" font-size="12" fill="#475569">清除</text>
+
+  <!-- 历史记录提示 -->
+  <text x="420" y="720" font-size="11" fill="#94a3b8">最近解析的二维码将保存在本地历史记录中</text>
+
+  <!-- 重新解析按钮 -->
+  <rect x="1008" y="700" width="132" height="30" rx="6" fill="url(#primaryBtn)"/>
+  <text x="1030" y="720" font-size="12" fill="#ffffff" font-weight="500">重新解析</text>
+</svg>

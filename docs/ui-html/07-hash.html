@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>哈希摘要 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .hash-options {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .btn-action {
+      padding: 7px 20px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-action:hover { opacity: 0.9; }
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 16px;
+    }
+    .result-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .result-algo-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result-value {
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--accent-blue);
+      word-break: break-all;
+      line-height: 1.6;
+      padding: 8px 12px;
+      background: var(--bg-code);
+      border-radius: 6px;
+    }
+    .expand-link {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-link);
+      cursor: pointer;
+      user-select: none;
+    }
+    .expand-link:hover {
+      text-decoration: underline;
+    }
+    .expand-arrow {
+      font-size: 10px;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .expand-arrow.open {
+      transform: rotate(180deg);
+    }
+    .other-results {
+      display: none;
+      margin-top: 12px;
+    }
+    .other-results.visible {
+      display: block;
+    }
+    .other-results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .other-result-item {
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .other-result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .other-result-algo {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .other-result-value {
+      font-size: 11px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--accent-blue);
+      word-break: break-all;
+      line-height: 1.5;
+    }
+    .hmac-section {
+      display: none;
+      margin-top: 10px;
+    }
+    .hmac-section.visible {
+      display: flex;
+    }
+    .hmac-section .option-group {
+      flex: 1;
+    }
+    .hmac-key-input {
+      flex: 1;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+    }
+    .hmac-key-input:focus {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <span class="dot dot-close"></span>
+        <span class="dot dot-minimize"></span>
+        <span class="dot dot-maximize"></span>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <span class="titlebar-title">DevToolkit</span>
+      <span class="titlebar-version">v1.0.0</span>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item active" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">加密解密</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">哈希摘要</span>
+        </div>
+
+        <!-- Tool Card -->
+        <div class="tool-card">
+          <!-- Algorithm Selector -->
+          <div class="hash-options">
+            <div class="option-group">
+              <span class="option-label">算法</span>
+              <select class="option-select" id="algo-select">
+                <option value="MD5">MD5</option>
+                <option value="SHA-1">SHA-1</option>
+                <option value="SHA-256" selected>SHA-256</option>
+                <option value="SHA-384">SHA-384</option>
+                <option value="SHA-512">SHA-512</option>
+                <option value="HMAC-SHA256">HMAC-SHA256</option>
+                <option value="HMAC-SHA384">HMAC-SHA384</option>
+                <option value="HMAC-SHA512">HMAC-SHA512</option>
+                <option value="CRC32">CRC32</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- HMAC Secret Key (conditional) -->
+          <div class="hmac-section" id="hmac-section">
+            <div class="option-group" style="flex: 1;">
+              <span class="option-label">Secret Key</span>
+              <input class="hmac-key-input" type="text" id="hmac-key" placeholder="输入 HMAC 密钥" value="my-secret-key">
+            </div>
+          </div>
+
+          <!-- Input Editor -->
+          <div class="editor-header">
+            <span class="editor-title">输入（文本）</span>
+            <div class="editor-actions">
+              <button class="btn-outline" id="btn-clear-input">清空</button>
+            </div>
+          </div>
+          <div class="editor-body">
+            <div class="line-numbers">1</div>
+            <div class="editor-textarea" contenteditable="true" id="hash-input">Hello World 你好世界</div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="action-row">
+            <button class="btn-action" id="btn-compute">计算</button>
+          </div>
+
+          <!-- Result Card for selected algorithm -->
+          <div class="result-card">
+            <div class="result-card-header">
+              <div class="result-algo-label" id="result-algo-name">
+                SHA-256
+                <span class="tag tag-blue" id="result-char-count">64 字符</span>
+              </div>
+              <button class="btn-outline" id="btn-copy-main">复制</button>
+            </div>
+            <div class="result-value" id="result-main-value">点击「计算」按钮查看结果...</div>
+          </div>
+
+          <!-- Expand Link -->
+          <div class="expand-link" id="expand-toggle">
+            <span>查看其他算法结果 ▾</span>
+            <span class="expand-arrow" id="expand-arrow">&#9662;</span>
+          </div>
+
+          <!-- Other Algorithm Results (expanded) -->
+          <div class="other-results" id="other-results">
+            <div class="other-results-grid" id="other-results-grid">
+              <!-- dynamically populated -->
+            </div>
+          </div>
+
+          <!-- History Section -->
+          <div class="history-section" id="history-section">
+            <div class="history-header">
+              <span class="history-title">历史记录（最近 5 条）</span>
+              <span class="history-clear" id="btn-clear-history">清空</span>
+            </div>
+            <div class="history-items" id="history-items">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+  (function() {
+    'use strict';
+
+    // ============ State ============
+
+    var hashHistory = [];
+    var MAX_HISTORY = 5;
+
+    // All algorithms we want to compute for the "other results" panel
+    var ALL_ALGOS = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512', 'HMAC-SHA256', 'HMAC-SHA384', 'HMAC-SHA512', 'CRC32'];
+
+    // ============ DOM Elements ============
+
+    var algoSelect = document.getElementById('algo-select');
+    var hmacSection = document.getElementById('hmac-section');
+    var hashInput = document.getElementById('hash-input');
+    var btnCompute = document.getElementById('btn-compute');
+    var btnClearInput = document.getElementById('btn-clear-input');
+    var resultAlgoName = document.getElementById('result-algo-name');
+    var resultCharCount = document.getElementById('result-char-count');
+    var resultMainValue = document.getElementById('result-main-value');
+    var btnCopyMain = document.getElementById('btn-copy-main');
+    var expandToggle = document.getElementById('expand-toggle');
+    var expandArrow = document.getElementById('expand-arrow');
+    var otherResults = document.getElementById('other-results');
+    var otherResultsGrid = document.getElementById('other-results-grid');
+    var btnClearHistory = document.getElementById('btn-clear-history');
+    var historyItems = document.getElementById('history-items');
+
+    // ============ Utility ============
+
+    function bufToHex(buf) {
+      return Array.from(new Uint8Array(buf)).map(function(b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+    }
+
+    function str2ab(str) {
+      return new TextEncoder().encode(str);
+    }
+
+    function copyToClipboard(text, btnEl) {
+      dtCopy(text).then(function() {
+        var original = btnEl.textContent;
+        btnEl.textContent = '已复制';
+        btnEl.style.color = '#16a34a';
+        btnEl.style.borderColor = '#16a34a';
+        setTimeout(function() {
+          btnEl.textContent = original;
+          btnEl.style.color = '';
+          btnEl.style.borderColor = '';
+        }, 1200);
+      });
+    }
+
+    function isHmacAlgo(algo) {
+      return algo.indexOf('HMAC-') === 0;
+    }
+
+    function isWebCryptoAlgo(algo) {
+      return ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'].indexOf(algo) !== -1;
+    }
+
+    function getHmacAlgoBase(algo) {
+      return algo.replace('HMAC-', '');
+    }
+
+    // ============ Algorithm dropdown change (with dedup) ============
+
+    var lastAlgo = algoSelect.value;
+    algoSelect.addEventListener('change', function() {
+      var algo = algoSelect.value;
+      if (algo === lastAlgo) return; // dedup: ignore re-selecting same algorithm
+      lastAlgo = algo;
+      var algo = algoSelect.value;
+      if (isHmacAlgo(algo)) {
+        hmacSection.classList.add('visible');
+      } else {
+        hmacSection.classList.remove('visible');
+      }
+      // Update result card header
+      resultAlgoName.innerHTML = algo + ' <span class="tag tag-blue" id="result-char-count">0 字符</span>';
+      resultCharCount = document.getElementById('result-char-count');
+      resultMainValue.textContent = '点击「计算」按钮查看结果...';
+    });
+
+    // ============ Clear input ============
+
+    btnClearInput.addEventListener('click', function() {
+      hashInput.textContent = '';
+    });
+
+    // ============ Compute hash ============
+
+    function computeDigest(algo, data) {
+      return window.crypto.subtle.digest(algo, str2ab(data));
+    }
+
+    function computeHmac(algo, data, key) {
+      var baseAlgo = getHmacAlgoBase(algo);
+      return window.crypto.subtle.importKey(
+        'raw',
+        str2ab(key),
+        { name: 'HMAC', hash: baseAlgo },
+        false,
+        ['sign']
+      ).then(function(cryptoKey) {
+        return window.crypto.subtle.sign('HMAC', cryptoKey, str2ab(data));
+      });
+    }
+
+    function computePlaceholder(algo, data) {
+      // MD5 and CRC32 are not supported by Web Crypto API
+      // Return a deterministic placeholder based on input
+      var simple = 0;
+      for (var i = 0; i < data.length; i++) {
+        simple = ((simple << 5) - simple + data.charCodeAt(i)) | 0;
+      }
+      if (algo === 'MD5') {
+        var hex = Math.abs(simple).toString(16).padStart(8, '0');
+        return hex + hex + hex + hex;
+      }
+      if (algo === 'CRC32') {
+        return (Math.abs(simple) >>> 0).toString(16).padStart(8, '0');
+      }
+      return '不支持';
+    }
+
+    btnCompute.addEventListener('click', function() {
+      var inputText = hashInput.textContent || '';
+      var selectedAlgo = algoSelect.value;
+
+      if (!inputText.trim()) {
+        resultMainValue.textContent = '请输入需要计算哈希的文本';
+        return;
+      }
+
+      // Compute main algorithm
+      var mainPromise;
+      if (isWebCryptoAlgo(selectedAlgo)) {
+        mainPromise = computeDigest(selectedAlgo, inputText);
+      } else if (isHmacAlgo(selectedAlgo)) {
+        var hmacKey = document.getElementById('hmac-key').value;
+        mainPromise = computeHmac(selectedAlgo, inputText, hmacKey);
+      } else {
+        // MD5 / CRC32 placeholder
+        var ph = computePlaceholder(selectedAlgo, inputText);
+        resultMainValue.textContent = ph;
+        resultCharCount.textContent = ph.length + ' 字符';
+        addHistory(selectedAlgo, inputText, ph);
+        computeOtherResults(inputText, selectedAlgo, hmacKey);
+        return;
+      }
+
+      mainPromise.then(function(hashBuf) {
+        var hex = bufToHex(hashBuf);
+        resultMainValue.textContent = hex;
+        resultCharCount.textContent = hex.length + ' 字符';
+        addHistory(selectedAlgo, inputText, hex);
+        var hmacKey = document.getElementById('hmac-key').value;
+        computeOtherResults(inputText, selectedAlgo, hmacKey);
+      }).catch(function(err) {
+        resultMainValue.textContent = '计算失败: ' + err.message;
+      });
+    });
+
+    // ============ Other results grid ============
+
+    function computeOtherResults(inputText, excludeAlgo, hmacKey) {
+      otherResultsGrid.innerHTML = '';
+
+      var otherAlgos = ALL_ALGOS.filter(function(a) { return a !== excludeAlgo; });
+
+      otherAlgos.forEach(function(algo) {
+        var itemEl = document.createElement('div');
+        itemEl.className = 'other-result-item';
+        itemEl.innerHTML =
+          '<div class="other-result-header">' +
+            '<span class="other-result-algo">' + algo + '</span>' +
+            '<button class="btn-outline" style="padding: 2px 8px; font-size: 10px;" data-copy-algo="' + algo + '">复制</button>' +
+          '</div>' +
+          '<div class="other-result-value" data-algo-value="' + algo + '">计算中...</div>';
+        otherResultsGrid.appendChild(itemEl);
+
+        // Compute hash for this algo
+        var promise;
+        if (isWebCryptoAlgo(algo)) {
+          promise = computeDigest(algo, inputText);
+        } else if (isHmacAlgo(algo)) {
+          promise = computeHmac(algo, inputText, hmacKey || 'my-secret-key');
+        } else {
+          var ph = computePlaceholder(algo, inputText);
+          var valEl = itemEl.querySelector('[data-algo-value="' + algo + '"]');
+          valEl.textContent = ph;
+          return;
+        }
+
+        promise.then(function(hashBuf) {
+          var hex = bufToHex(hashBuf);
+          var valEl = itemEl.querySelector('[data-algo-value="' + algo + '"]');
+          if (valEl) valEl.textContent = hex;
+        }).catch(function(err) {
+          var valEl = itemEl.querySelector('[data-algo-value="' + algo + '"]');
+          if (valEl) valEl.textContent = '计算失败';
+        });
+      });
+
+      // Attach copy handlers via event delegation
+    }
+
+    // Event delegation for copy buttons in the other-results grid
+    otherResultsGrid.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-copy-algo]');
+      if (!btn) return;
+      var algo = btn.getAttribute('data-copy-algo');
+      var valEl = otherResultsGrid.querySelector('[data-algo-value="' + algo + '"]');
+      if (valEl && valEl.textContent) {
+        copyToClipboard(valEl.textContent, btn);
+      }
+    });
+
+    // ============ Main result copy ============
+
+    btnCopyMain.addEventListener('click', function() {
+      var val = resultMainValue.textContent;
+      if (val && val.indexOf('点击') !== 0 && val.indexOf('请输入') !== 0 && val.indexOf('计算失败') !== 0) {
+        copyToClipboard(val, this);
+      }
+    });
+
+    // ============ Expand / Collapse ============
+
+    expandToggle.addEventListener('click', function() {
+      var isVisible = otherResults.classList.contains('visible');
+      if (isVisible) {
+        otherResults.classList.remove('visible');
+        expandArrow.classList.remove('open');
+        expandToggle.querySelector('span').textContent = '查看其他算法结果 ▾';
+      } else {
+        otherResults.classList.add('visible');
+        expandArrow.classList.add('open');
+        expandToggle.querySelector('span').textContent = '收起其他算法结果 ▴';
+      }
+    });
+
+    // ============ History ============
+
+    function addHistory(algo, input, hashHex) {
+      var preview = input.length > 12 ? input.substring(0, 12) + '...' : input;
+      var hashPreview = hashHex.length > 8 ? hashHex.substring(0, 8) + '...' : hashHex;
+      var entry = algo + ' • "' + preview + '" → ' + hashPreview;
+
+      hashHistory.unshift(entry);
+      if (hashHistory.length > MAX_HISTORY) {
+        hashHistory.pop();
+      }
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyItems.innerHTML = '';
+      hashHistory.forEach(function(item) {
+        var el = document.createElement('div');
+        el.className = 'history-item';
+        el.textContent = item;
+        historyItems.appendChild(el);
+      });
+    }
+
+    btnClearHistory.addEventListener('click', function() {
+      hashHistory = [];
+      renderHistory();
+    });
+
+  })();
+  </script>
+</body>
+</html>

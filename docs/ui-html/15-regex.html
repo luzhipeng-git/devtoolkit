@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正则调试 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .regex-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .regex-section:last-child {
+      margin-bottom: 0;
+    }
+    .regex-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .regex-delimiter {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-family: 'Consolas', 'Monaco', monospace;
+      user-select: none;
+    }
+    .regex-input {
+      flex: 1;
+      height: 38px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 12px;
+      font-size: 15px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    .regex-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .regex-flags {
+      width: 60px;
+      height: 38px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 15px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      font-family: 'Consolas', 'Monaco', monospace;
+      text-align: center;
+    }
+    .regex-flags:focus {
+      border-color: var(--primary);
+    }
+    .btn-match {
+      padding: 8px 22px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+    .btn-match:hover {
+      opacity: 0.9;
+    }
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 14px;
+      border-radius: 14px;
+      background: #f0fdf4;
+      color: #16a34a;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .match-badge.no-match {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    .match-badge.error {
+      background: #fffbeb;
+      color: #d97706;
+    }
+    .test-text-container {
+      margin-top: 16px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      min-height: 80px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .match-highlight {
+      background: #fef08a;
+      padding: 1px 3px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+    .groups-header {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .groups-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .groups-table th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-card);
+      background: var(--bg-code);
+    }
+    .groups-table td {
+      font-size: 13px;
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-light);
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .groups-table tr:last-child td {
+      border-bottom: none;
+    }
+    .td-group {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .td-match {
+      color: var(--accent-blue);
+    }
+    .td-pos {
+      color: var(--text-secondary);
+    }
+    .pattern-section {
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pattern-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--bg-code);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .pattern-header:hover {
+      background: var(--bg-hover);
+    }
+    .pattern-toggle {
+      font-size: 10px;
+      color: var(--text-disabled);
+      transition: transform 0.2s;
+    }
+    .pattern-toggle.collapsed {
+      transform: rotate(-90deg);
+    }
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 16px;
+    }
+    .pattern-grid.collapsed {
+      display: none;
+    }
+    .pattern-chip {
+      padding: 10px 12px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-card);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .pattern-chip:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .pattern-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .pattern-expr {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Consolas', 'Monaco', monospace;
+      word-break: break-all;
+    }
+    .btn-copy-regex {
+      padding: 5px 14px;
+      border-radius: 4px;
+      background: var(--bg-white);
+      color: var(--text-muted);
+      font-size: 11px;
+      border: 1px solid var(--border-input);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-copy-regex:hover {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+    .test-text-input {
+      width: 100%;
+      min-height: 80px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 14px 16px;
+      font-size: 14px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      resize: vertical;
+      line-height: 1.8;
+    }
+    .test-text-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .no-groups-msg {
+      font-size: 12px;
+      color: var(--text-placeholder);
+      padding: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item active" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">正则调试</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">正则调试</span>
+        </div>
+
+        <!-- Regex Input Section -->
+        <div class="regex-section">
+          <div class="regex-input-row">
+            <span class="regex-delimiter">/</span>
+            <input type="text" class="regex-input" id="regex-pattern" value="\d+" placeholder="输入正则表达式">
+            <span class="regex-delimiter">/</span>
+            <input type="text" class="regex-flags" id="regex-flags-input" value="g" placeholder="gi">
+            <button class="btn-match" id="btn-match">匹配</button>
+            <span class="match-badge" id="match-badge" style="display:none;">&#10003; 找到 0 个匹配</span>
+          </div>
+
+          <!-- Test Text Input -->
+          <div style="margin-top: 16px;">
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">测试文本</div>
+            <textarea class="test-text-input" id="test-text" placeholder="输入测试文本...">Hello 123 World 456 Test 789 End</textarea>
+          </div>
+
+          <!-- Highlighted Result -->
+          <div class="test-text-container" id="test-text-highlight" style="display:none;"></div>
+        </div>
+
+        <!-- Capture Groups Section -->
+        <div class="regex-section">
+          <div class="groups-header">匹配详情</div>
+          <div id="groups-content">
+            <div class="no-groups-msg">点击 "匹配" 按钮查看匹配详情</div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <button class="btn-copy-regex" id="btn-copy-regex">复制正则</button>
+          </div>
+        </div>
+
+        <!-- Common Patterns Library -->
+        <div class="regex-section">
+          <div class="pattern-section">
+            <div class="pattern-header" id="pattern-header">
+              <span>常用正则模式</span>
+              <span class="pattern-toggle" id="pattern-toggle">&#9660;</span>
+            </div>
+            <div class="pattern-grid" id="pattern-grid">
+              <div class="pattern-chip" data-pattern="^1[3-9]\\d{9}$">
+                <div class="pattern-name">手机号</div>
+                <div class="pattern-expr">^1[3-9]\d{9}$</div>
+              </div>
+              <div class="pattern-chip" data-pattern="^[\\w.-]+@[\\w.-]+\\.\\w+$">
+                <div class="pattern-name">邮箱</div>
+                <div class="pattern-expr">^[\w.-]+@[\w.-]+\.\w+$</div>
+              </div>
+              <div class="pattern-chip" data-pattern="^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$">
+                <div class="pattern-name">IPv4</div>
+                <div class="pattern-expr">^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$</div>
+              </div>
+              <div class="pattern-chip" data-pattern="^https?://.*$">
+                <div class="pattern-name">URL</div>
+                <div class="pattern-expr">^https?://.*$</div>
+              </div>
+              <div class="pattern-chip" data-pattern="^\\d{17}[\\dXx]$">
+                <div class="pattern-name">身份证</div>
+                <div class="pattern-expr">^\d{17}[\dXx]$</div>
+              </div>
+              <div class="pattern-chip" data-pattern="[一-龥]+">
+                <div class="pattern-name">中文字符</div>
+                <div class="pattern-expr">[一-龥]+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      var regexPattern = document.getElementById('regex-pattern');
+      var regexFlags = document.getElementById('regex-flags-input');
+      var btnMatch = document.getElementById('btn-match');
+      var matchBadge = document.getElementById('match-badge');
+      var testText = document.getElementById('test-text');
+      var testHighlight = document.getElementById('test-text-highlight');
+      var groupsContent = document.getElementById('groups-content');
+      var btnCopyRegex = document.getElementById('btn-copy-regex');
+      var patternHeader = document.getElementById('pattern-header');
+      var patternToggle = document.getElementById('pattern-toggle');
+      var patternGrid = document.getElementById('pattern-grid');
+
+      // Debounce timer
+      var debounceTimer = null;
+
+      function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function doMatch() {
+        var pattern = regexPattern.value;
+        var flags = regexFlags.value;
+        var text = testText.value;
+
+        // Reset display
+        matchBadge.style.display = 'none';
+        testHighlight.style.display = 'none';
+        groupsContent.innerHTML = '<div class="no-groups-msg">点击 "匹配" 按钮查看匹配详情</div>';
+
+        if (!pattern) {
+          matchBadge.className = 'match-badge error';
+          matchBadge.innerHTML = '&#9888; 请输入正则表达式';
+          matchBadge.style.display = 'inline-flex';
+          testText.style.display = 'block';
+          return;
+        }
+
+        var regex;
+        try {
+          regex = new RegExp(pattern, flags);
+        } catch (e) {
+          matchBadge.className = 'match-badge error';
+          matchBadge.innerHTML = '&#9888; 正则语法错误: ' + escapeHtml(e.message);
+          matchBadge.style.display = 'inline-flex';
+          testText.style.display = 'block';
+          return;
+        }
+
+        // Find all matches
+        var matches = [];
+        if (flags.indexOf('g') !== -1) {
+          var m;
+          // Prevent infinite loops with zero-length matches
+          var lastIndex = -1;
+          while ((m = regex.exec(text)) !== null) {
+            if (m.index === lastIndex) {
+              regex.lastIndex++;
+              continue;
+            }
+            lastIndex = m.index;
+            matches.push({ match: m[0], index: m.index, groups: Array.prototype.slice.call(m) });
+            if (m[0].length === 0) regex.lastIndex++;
+          }
+        } else {
+          var m = regex.exec(text);
+          if (m) {
+            matches.push({ match: m[0], index: m.index, groups: Array.prototype.slice.call(m) });
+          }
+        }
+
+        // Update badge
+        if (matches.length > 0) {
+          matchBadge.className = 'match-badge';
+          matchBadge.innerHTML = '&#10003; 找到 ' + matches.length + ' 个匹配';
+        } else {
+          matchBadge.className = 'match-badge no-match';
+          matchBadge.innerHTML = '&#10007; 未找到匹配';
+        }
+        matchBadge.style.display = 'inline-flex';
+
+        // Highlight matches in text
+        if (matches.length > 0) {
+          var html = '';
+          var lastIdx = 0;
+          for (var i = 0; i < matches.length; i++) {
+            var idx = matches[i].index;
+            var matchStr = matches[i].match;
+            html += escapeHtml(text.substring(lastIdx, idx));
+            html += '<span class="match-highlight">' + escapeHtml(matchStr) + '</span>';
+            lastIdx = idx + matchStr.length;
+          }
+          html += escapeHtml(text.substring(lastIdx));
+          testHighlight.innerHTML = html;
+          testHighlight.style.display = 'block';
+        } else {
+          testHighlight.style.display = 'none';
+          testText.style.display = 'block';
+        }
+
+        // Build groups table
+        if (matches.length > 0) {
+          var tableHtml = '<table class="groups-table"><thead><tr>' +
+            '<th style="width: 80px;">Group</th>' +
+            '<th>匹配内容</th>' +
+            '<th style="width: 80px;">位置</th>' +
+            '</tr></thead><tbody>';
+
+          for (var i = 0; i < matches.length; i++) {
+            var m = matches[i];
+            var groupLabel = i === 0 ? 'Group 0 (Full)' : 'Match ' + (i + 1);
+            // Full match row
+            tableHtml += '<tr>' +
+              '<td class="td-group">' + groupLabel + '</td>' +
+              '<td class="td-match">' + escapeHtml(m.match) + '</td>' +
+              '<td class="td-pos">Position ' + m.index + '</td>' +
+              '</tr>';
+            // Capture group rows
+            if (m.groups.length > 1) {
+              for (var g = 1; g < m.groups.length; g++) {
+                tableHtml += '<tr>' +
+                  '<td class="td-group">&nbsp;&nbsp;Group ' + g + '</td>' +
+                  '<td class="td-match">' + (m.groups[g] !== undefined ? escapeHtml(m.groups[g]) : '<em style="color:var(--text-placeholder)">undefined</em>') + '</td>' +
+                  '<td class="td-pos"></td>' +
+                  '</tr>';
+              }
+            }
+          }
+          tableHtml += '</tbody></table>';
+          groupsContent.innerHTML = tableHtml;
+        } else {
+          groupsContent.innerHTML = '<div class="no-groups-msg">无匹配结果</div>';
+        }
+      }
+
+      // Debounced match for real-time input (300ms)
+      function debouncedMatch() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(doMatch, 300);
+      }
+
+      // Clicking match button bypasses debounce
+      btnMatch.addEventListener('click', function () {
+        clearTimeout(debounceTimer);
+        doMatch();
+      });
+
+      // Real-time matching with debounce on input changes
+      regexPattern.addEventListener('input', debouncedMatch);
+      regexFlags.addEventListener('input', debouncedMatch);
+      testText.addEventListener('input', debouncedMatch);
+
+      // Keyboard shortcut: Ctrl+Enter to match (bypass debounce)
+      testText.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+          clearTimeout(debounceTimer);
+          doMatch();
+        }
+      });
+
+      regexPattern.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          clearTimeout(debounceTimer);
+          doMatch();
+        }
+      });
+
+      // Click highlighted text to go back to editing
+      testHighlight.addEventListener('click', function () {
+        testHighlight.style.display = 'none';
+        testText.style.display = 'block';
+        testText.focus();
+      });
+
+      // Copy regex with 1.2s "已复制" feedback
+      btnCopyRegex.addEventListener('click', function () {
+        var text = '/' + regexPattern.value + '/' + regexFlags.value;
+        dtCopy(text).then(function () {
+          var orig = btnCopyRegex.textContent;
+          btnCopyRegex.textContent = '已复制';
+          btnCopyRegex.style.color = '#16a34a';
+          btnCopyRegex.style.borderColor = '#16a34a';
+          setTimeout(function () {
+            btnCopyRegex.textContent = orig;
+            btnCopyRegex.style.color = '';
+            btnCopyRegex.style.borderColor = '';
+          }, 1200);
+        });
+      });
+
+      // Pattern library toggle (collapsible)
+      patternHeader.addEventListener('click', function () {
+        var isCollapsed = patternGrid.classList.toggle('collapsed');
+        patternToggle.classList.toggle('collapsed', isCollapsed);
+      });
+
+      // Pattern chip click: fill regex input and auto-match
+      document.querySelectorAll('.pattern-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var pat = chip.getAttribute('data-pattern');
+          regexPattern.value = pat;
+          clearTimeout(debounceTimer);
+          doMatch();
+        });
+      });
+
+      // Sidebar navigation dedup: clicking active sidebar item = no-op
+      document.querySelectorAll('.sidebar-item').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          if (item.classList.contains('active')) {
+            e.preventDefault();
+          }
+        });
+      });
+
+      // Run initial match
+      doMatch();
+    })();
+  </script>
+</body>
+</html>

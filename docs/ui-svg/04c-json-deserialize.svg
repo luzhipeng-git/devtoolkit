@@ -1,0 +1,261 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON工具 (反序列化 选中) -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <!-- 选中项: 反序列化 -->
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="388" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="408" font-size="12" fill="#2563eb" font-weight="500">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+  <rect x="8" y="456" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="476" font-size="12" fill="#475569">JSON 校验</text>
+  <rect x="8" y="490" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="510" font-size="12" fill="#475569">JSON Diff</text>
+
+  <!-- 加密解密 -->
+  <text x="16" y="546" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="554" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="574" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="588" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="608" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="622" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="642" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="656" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="676" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="690" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="710" font-size="12" fill="#475569">密钥工具</text>
+
+  <text x="16" y="746" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="754" width="224" height="26" rx="6" fill="transparent"/>
+  <text x="24" y="772" font-size="12" fill="#475569">进制转换</text>
+
+  <!-- ========== 内容区 ========== -->
+  <rect x="240" y="40" width="960" height="760" fill="#ffffff"/>
+
+  <!-- 面包屑 -->
+  <text x="268" y="70" font-size="12" fill="#94a3b8">JSON 工具</text>
+  <text x="340" y="70" font-size="12" fill="#cbd5e1">/</text>
+  <text x="352" y="70" font-size="12" fill="#1e293b" font-weight="500">JSON 反序列化</text>
+
+  <!-- 左右分栏容器 -->
+  <!-- 左侧：输入JSON -->
+  <rect x="260" y="84" width="440" height="696" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="114" font-size="14" fill="#1e293b" font-weight="600">输入 JSON</text>
+  <text x="380" y="114" font-size="11" fill="#94a3b8">输入 JSON 字符串进行解析</text>
+
+  <!-- 左侧输入框 -->
+  <rect x="280" y="124" width="400" height="636" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 行号 -->
+  <rect x="280" y="124" width="32" height="636" rx="6" fill="#f8fafc"/>
+  <line x1="312" y1="124" x2="312" y2="760" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="290" y="148" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">1</text>
+  <text x="290" y="168" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">2</text>
+  <text x="290" y="188" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">3</text>
+  <text x="290" y="208" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">4</text>
+  <text x="290" y="228" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">5</text>
+  <text x="290" y="248" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">6</text>
+  <text x="290" y="268" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">7</text>
+  <text x="290" y="288" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">8</text>
+  <text x="290" y="308" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">9</text>
+  <text x="286" y="328" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">10</text>
+  <text x="286" y="348" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">11</text>
+  <text x="286" y="368" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">12</text>
+
+  <!-- JSON示例内容 -->
+  <text x="324" y="148" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">{</text>
+  <text x="336" y="168" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"name"</text>
+  <text x="386" y="168" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="394" y="168" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"张三"</text>
+  <text x="442" y="168" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="336" y="188" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"age"</text>
+  <text x="376" y="188" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="384" y="188" font-size="12" fill="#f59e0b" font-family="'Consolas',monospace">25</text>
+  <text x="400" y="188" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="336" y="208" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"isDev"</text>
+  <text x="392" y="208" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="400" y="208" font-size="12" fill="#8b5cf6" font-family="'Consolas',monospace">true</text>
+  <text x="432" y="208" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="336" y="228" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"note"</text>
+  <text x="380" y="228" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="388" y="228" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">null</text>
+  <text x="416" y="228" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="336" y="248" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"address"</text>
+  <text x="412" y="248" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">: {</text>
+  <text x="352" y="268" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"city"</text>
+  <text x="396" y="268" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="404" y="268" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"北京"</text>
+  <text x="444" y="268" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="352" y="288" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"zip"</text>
+  <text x="388" y="288" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="396" y="288" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"100000"</text>
+  <text x="336" y="308" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">},</text>
+  <text x="336" y="328" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"tags"</text>
+  <text x="380" y="328" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="388" y="328" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">[</text>
+  <text x="352" y="348" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"dev"</text>
+  <text x="388" y="348" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="352" y="368" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"test"</text>
+  <text x="336" y="388" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">]</text>
+  <text x="324" y="408" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">}</text>
+
+  <!-- 右侧：树形结构 -->
+  <rect x="720" y="84" width="460" height="696" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="740" y="114" font-size="14" fill="#1e293b" font-weight="600">反序列化结构</text>
+  <text x="860" y="114" font-size="11" fill="#94a3b8">展开/折叠查看层级</text>
+
+  <!-- 树形结构面板 -->
+  <rect x="740" y="124" width="420" height="636" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 根节点 (展开) -->
+  <text x="760" y="152" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9660;</text>
+  <text x="778" y="152" font-size="12" fill="#1e293b" font-family="'Consolas',monospace" font-weight="600">root</text>
+  <text x="812" y="152" font-size="11" fill="#1e293b" font-family="'Consolas',monospace">: object</text>
+  <text x="868" y="152" font-size="11" fill="#94a3b8" font-family="'Consolas',monospace">{6 items}</text>
+
+  <!-- name节点 -->
+  <line x1="778" y1="162" x2="778" y2="720" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="792" y="178" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="810" y="178" font-size="12" fill="#64748b" font-family="'Consolas',monospace">name</text>
+  <text x="844" y="178" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">: string</text>
+  <text x="900" y="178" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="916" y="178" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"张三"</text>
+
+  <!-- age节点 -->
+  <text x="792" y="204" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="810" y="204" font-size="12" fill="#64748b" font-family="'Consolas',monospace">age</text>
+  <text x="838" y="204" font-size="11" fill="#f59e0b" font-family="'Consolas',monospace">: number</text>
+  <text x="900" y="204" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="916" y="204" font-size="12" fill="#f59e0b" font-family="'Consolas',monospace">25</text>
+
+  <!-- isDev节点 -->
+  <text x="792" y="230" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="810" y="230" font-size="12" fill="#64748b" font-family="'Consolas',monospace">isDev</text>
+  <text x="850" y="230" font-size="11" fill="#8b5cf6" font-family="'Consolas',monospace">: boolean</text>
+  <text x="916" y="230" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="932" y="230" font-size="12" fill="#8b5cf6" font-family="'Consolas',monospace">true</text>
+
+  <!-- note节点 -->
+  <text x="792" y="256" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="810" y="256" font-size="12" fill="#64748b" font-family="'Consolas',monospace">note</text>
+  <text x="844" y="256" font-size="11" fill="#94a3b8" font-family="'Consolas',monospace">: null</text>
+
+  <!-- address节点 (展开) -->
+  <line x1="810" y1="266" x2="810" y2="340" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="792" y="282" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9660;</text>
+  <text x="810" y="282" font-size="12" fill="#64748b" font-family="'Consolas',monospace">address</text>
+  <text x="862" y="282" font-size="11" fill="#1e293b" font-family="'Consolas',monospace">: object</text>
+  <text x="918" y="282" font-size="11" fill="#94a3b8" font-family="'Consolas',monospace">{2 items}</text>
+
+  <!-- address.city -->
+  <line x1="826" y1="292" x2="826" y2="336" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="840" y="308" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="858" y="308" font-size="12" fill="#64748b" font-family="'Consolas',monospace">city</text>
+  <text x="886" y="308" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">: string</text>
+  <text x="942" y="308" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="958" y="308" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"北京"</text>
+
+  <!-- address.zip -->
+  <text x="840" y="334" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="858" y="334" font-size="12" fill="#64748b" font-family="'Consolas',monospace">zip</text>
+  <text x="884" y="334" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">: string</text>
+  <text x="940" y="334" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="956" y="334" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"100000"</text>
+
+  <!-- tags节点 (展开) -->
+  <line x1="810" y1="344" x2="810" y2="406" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="792" y="360" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9660;</text>
+  <text x="810" y="360" font-size="12" fill="#64748b" font-family="'Consolas',monospace">tags</text>
+  <text x="840" y="360" font-size="11" fill="#1e4b8a" font-family="'Consolas',monospace">: array</text>
+  <text x="894" y="360" font-size="11" fill="#94a3b8" font-family="'Consolas',monospace">[2 items]</text>
+
+  <!-- tags[0] -->
+  <line x1="826" y1="370" x2="826" y2="400" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="840" y="386" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="858" y="386" font-size="12" fill="#64748b" font-family="'Consolas',monospace">[0]</text>
+  <text x="878" y="386" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">: string</text>
+  <text x="934" y="386" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="950" y="386" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"dev"</text>
+
+  <!-- tags[1] -->
+  <text x="840" y="410" font-size="12" fill="#94a3b8" font-family="'Consolas',monospace">&#9654;</text>
+  <text x="858" y="410" font-size="12" fill="#64748b" font-family="'Consolas',monospace">[1]</text>
+  <text x="878" y="410" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">: string</text>
+  <text x="934" y="410" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">=</text>
+  <text x="950" y="410" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"test"</text>
+
+  <!-- 左侧输入区滚动条 -->
+  <rect x="674" y="124" width="6" height="636" rx="3" fill="#f1f5f9"/>
+  <rect x="674" y="200" width="6" height="254" rx="3" fill="#cbd5e1"/>
+
+  <!-- 右侧树形面板滚动条 -->
+  <rect x="1154" y="124" width="6" height="636" rx="3" fill="#f1f5f9"/>
+  <rect x="1154" y="140" width="6" height="254" rx="3" fill="#cbd5e1"/>
+
+  <!-- 图例 - moved to bottom of tree panel -->
+  <rect x="740" y="720" width="420" height="32" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="750" y="732" width="8" height="8" rx="2" fill="#3b82f6"/>
+  <text x="762" y="740" font-size="10" fill="#64748b">string</text>
+  <rect x="808" y="732" width="8" height="8" rx="2" fill="#f59e0b"/>
+  <text x="820" y="740" font-size="10" fill="#64748b">number</text>
+  <rect x="874" y="732" width="8" height="8" rx="2" fill="#8b5cf6"/>
+  <text x="886" y="740" font-size="10" fill="#64748b">boolean</text>
+  <rect x="944" y="732" width="8" height="8" rx="2" fill="#94a3b8"/>
+  <text x="956" y="740" font-size="10" fill="#64748b">null</text>
+  <rect x="990" y="732" width="8" height="8" rx="2" fill="#1e293b"/>
+  <text x="1002" y="740" font-size="10" fill="#64748b">object</text>
+  <rect x="1048" y="732" width="8" height="8" rx="2" fill="#1e4b8a"/>
+  <text x="1060" y="740" font-size="10" fill="#64748b">array</text>
+</svg>

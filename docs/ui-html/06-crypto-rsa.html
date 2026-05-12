@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSA 工具 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .rsa-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border-card);
+      margin-bottom: 20px;
+    }
+    .rsa-tab {
+      padding: 8px 20px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      position: relative;
+      transition: color 0.15s;
+    }
+    .rsa-tab:hover {
+      color: var(--text-primary);
+    }
+    .rsa-tab.active {
+      color: var(--primary);
+    }
+    .rsa-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 1px;
+    }
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .key-output-section {
+      margin-bottom: 16px;
+    }
+    .key-output-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .key-output-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .key-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px 12px;
+      font-size: 11px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      resize: vertical;
+      outline: none;
+    }
+    .key-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .key-textarea.masked {
+      -webkit-text-security: disc;
+      color: var(--text-primary);
+    }
+    .warning-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #92400e;
+    }
+    .warning-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .sub-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .sub-tab {
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .sub-tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-weight: 500;
+    }
+    .sub-tab:not(.active) {
+      background: var(--bg-hover);
+      color: var(--text-muted);
+      border: 1px solid var(--border-card);
+    }
+    .sub-tab:not(.active):hover {
+      color: var(--text-primary);
+      border-color: var(--border-input);
+    }
+    .sub-panel {
+      display: none;
+    }
+    .sub-panel.active {
+      display: block;
+    }
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      margin: 12px 0;
+    }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .radio-item input[type="radio"] {
+      accent-color: var(--primary);
+    }
+    .eye-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-muted);
+      padding: 2px;
+      line-height: 1;
+    }
+    .eye-toggle:hover {
+      color: var(--text-primary);
+    }
+    .sign-result-box {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .sign-result-box.success {
+      display: flex;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+    }
+    .sign-result-box.fail {
+      display: flex;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-upload {
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 4px;
+      background: var(--bg-white);
+      color: var(--text-muted);
+      font-size: 11px;
+      border: 1px solid var(--border-input);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-upload:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-from-page {
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 4px;
+      background: var(--bg-white);
+      color: var(--text-muted);
+      font-size: 11px;
+      border: 1px solid var(--border-input);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-from-page:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .key-input-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <span class="dot dot-close"></span>
+        <span class="dot dot-minimize"></span>
+        <span class="dot dot-maximize"></span>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <span class="titlebar-title">DevToolkit</span>
+      <span class="titlebar-version">v1.0.0</span>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item active" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">加密解密</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">RSA 工具</span>
+        </div>
+
+        <!-- Tool Card -->
+        <div class="tool-card">
+          <!-- RSA Main Tabs -->
+          <div class="rsa-tabs" id="rsa-main-tabs">
+            <button class="rsa-tab active" data-tab="keygen">密钥生成</button>
+            <button class="rsa-tab" data-tab="encdec">加密/解密</button>
+            <button class="rsa-tab" data-tab="signverify">签名/验签</button>
+          </div>
+
+          <!-- ==================== Tab 1: 密钥生成 ==================== -->
+          <div class="tab-panel active" id="panel-keygen">
+            <!-- Options Panel -->
+            <div class="options-panel">
+              <div class="option-group">
+                <span class="option-label">密钥长度</span>
+                <select class="option-select" id="key-size">
+                  <option value="2048" selected>2048</option>
+                  <option value="4096">4096</option>
+                </select>
+              </div>
+              <div class="option-group">
+                <span class="option-label">公钥指数</span>
+                <select class="option-select" id="public-exponent">
+                  <option value="65537" selected>65537</option>
+                  <option value="3">3</option>
+                  <option value="17">17</option>
+                </select>
+              </div>
+              <div class="option-group">
+                <span class="option-label">密钥格式</span>
+                <select class="option-select" id="key-format">
+                  <option value="pkcs1" selected>PKCS#1</option>
+                  <option value="pkcs8">PKCS#8</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Generate Button -->
+            <div style="margin-bottom: 16px;">
+              <button class="btn-primary" id="btn-generate" style="padding: 8px 24px; font-size: 13px;">生成密钥对</button>
+            </div>
+
+            <!-- Public Key Output -->
+            <div class="key-output-section">
+              <div class="key-output-label">
+                <span class="key-output-title">Public Key (公钥)</span>
+                <button class="btn-outline" id="btn-copy-pub">复制</button>
+              </div>
+              <textarea class="key-textarea" id="pub-key-output" readonly spellcheck="false" placeholder="点击「生成密钥对」按钮生成密钥..."></textarea>
+            </div>
+
+            <!-- Private Key Output -->
+            <div class="key-output-section">
+              <div class="key-output-label">
+                <span class="key-output-title">
+                  Private Key (私钥)
+                  <button class="eye-toggle" id="btn-toggle-priv-visibility" title="显示/隐藏私钥">&#128065;</button>
+                </span>
+                <button class="btn-outline" id="btn-copy-priv">复制</button>
+              </div>
+              <textarea class="key-textarea masked" id="priv-key-output" readonly spellcheck="false" placeholder="点击「生成密钥对」按钮生成密钥..."></textarea>
+            </div>
+
+            <!-- Warning Info -->
+            <div class="warning-box">
+              <span class="warning-icon">&#9888;</span>
+              <span>请妥善保管私钥，公钥可公开分享</span>
+            </div>
+          </div>
+
+          <!-- ==================== Tab 2: 加密/解密 ==================== -->
+          <div class="tab-panel" id="panel-encdec">
+            <!-- Sub Tabs -->
+            <div class="sub-tabs" id="encdec-sub-tabs">
+              <button class="sub-tab active" data-subtab="encrypt">加密</button>
+              <button class="sub-tab" data-subtab="decrypt">解密</button>
+            </div>
+
+            <!-- Encrypt Sub-panel -->
+            <div class="sub-panel active" id="subpanel-encrypt">
+              <div class="editor-header">
+                <span class="editor-title">明文</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" onclick="document.getElementById('enc-input').textContent=''">清空</button>
+                </div>
+              </div>
+              <div class="editor-body" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-textarea" contenteditable="true" id="enc-input" style="min-height: 60px;" data-placeholder="输入需要加密的文本..."></div>
+              </div>
+
+              <!-- Key input -->
+              <div style="margin: 12px 0;">
+                <div class="editor-header">
+                  <span class="editor-title">公钥 (PEM 格式)</span>
+                  <div class="editor-actions">
+                    <div class="key-input-actions">
+                      <button class="btn-upload" id="btn-upload-enc-pub">上传文件</button>
+                      <button class="btn-from-page" id="btn-fill-enc-pub">从本页复制</button>
+                      <button class="btn-outline" onclick="document.getElementById('enc-key-input').textContent=''">清空</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="editor-body" style="min-height: 60px;">
+                  <div class="line-numbers">1</div>
+                  <div class="editor-textarea" contenteditable="true" id="enc-key-input" style="min-height: 40px; font-size: 11px;" data-placeholder="粘贴公钥..."></div>
+                </div>
+              </div>
+
+              <div style="margin: 12px 0;">
+                <button class="btn-primary" id="btn-encrypt" style="padding: 8px 24px; font-size: 13px;">加密</button>
+              </div>
+
+              <div class="editor-header">
+                <span class="editor-title">加密结果</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" id="btn-copy-enc">复制</button>
+                </div>
+              </div>
+              <div class="editor-body output" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-output" id="enc-output" style="font-size: 11px; min-height: 60px; color: var(--text-placeholder);">加密结果将显示在这里...</div>
+              </div>
+            </div>
+
+            <!-- Decrypt Sub-panel -->
+            <div class="sub-panel" id="subpanel-decrypt">
+              <div class="editor-header">
+                <span class="editor-title">密文 (Base64)</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" onclick="document.getElementById('dec-input').textContent=''">清空</button>
+                </div>
+              </div>
+              <div class="editor-body" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-textarea" contenteditable="true" id="dec-input" style="min-height: 60px;" data-placeholder="输入需要解密的 Base64 密文..."></div>
+              </div>
+
+              <!-- Key input -->
+              <div style="margin: 12px 0;">
+                <div class="editor-header">
+                  <span class="editor-title">私钥 (PEM 格式)</span>
+                  <div class="editor-actions">
+                    <div class="key-input-actions">
+                      <button class="btn-upload" id="btn-upload-dec-priv">上传文件</button>
+                      <button class="btn-from-page" id="btn-fill-dec-priv">从本页复制</button>
+                      <button class="btn-outline" onclick="document.getElementById('dec-key-input').textContent=''">清空</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="editor-body" style="min-height: 60px;">
+                  <div class="line-numbers">1</div>
+                  <div class="editor-textarea" contenteditable="true" id="dec-key-input" style="min-height: 40px; font-size: 11px;" data-placeholder="粘贴私钥..."></div>
+                </div>
+              </div>
+
+              <div style="margin: 12px 0;">
+                <button class="btn-primary" id="btn-decrypt" style="padding: 8px 24px; font-size: 13px;">解密</button>
+              </div>
+
+              <div class="editor-header">
+                <span class="editor-title">解密结果</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" id="btn-copy-dec">复制</button>
+                </div>
+              </div>
+              <div class="editor-body output" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-output" id="dec-output" style="font-size: 11px; min-height: 60px; color: var(--text-placeholder);">解密结果将显示在这里...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== Tab 3: 签名/验签 ==================== -->
+          <div class="tab-panel" id="panel-signverify">
+            <!-- Sub Tabs -->
+            <div class="sub-tabs" id="signverify-sub-tabs">
+              <button class="sub-tab active" data-subtab="sign">签名</button>
+              <button class="sub-tab" data-subtab="verify">验签</button>
+            </div>
+
+            <!-- Sign Sub-panel -->
+            <div class="sub-panel active" id="subpanel-sign">
+              <div class="editor-header">
+                <span class="editor-title">待签名数据</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" onclick="document.getElementById('sign-input').textContent=''">清空</button>
+                </div>
+              </div>
+              <div class="editor-body" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-textarea" contenteditable="true" id="sign-input" style="min-height: 60px;" data-placeholder="输入需要签名的文本..."></div>
+              </div>
+
+              <!-- Private Key input -->
+              <div style="margin: 12px 0;">
+                <div class="editor-header">
+                  <span class="editor-title">私钥 (PEM 格式)</span>
+                  <div class="editor-actions">
+                    <div class="key-input-actions">
+                      <button class="btn-upload" id="btn-upload-sign-priv">上传文件</button>
+                      <button class="btn-from-page" id="btn-fill-sign-priv">从本页复制</button>
+                      <button class="btn-outline" onclick="document.getElementById('sign-privkey').textContent=''">清空</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="editor-body" style="min-height: 60px;">
+                  <div class="line-numbers">1</div>
+                  <div class="editor-textarea" contenteditable="true" id="sign-privkey" style="min-height: 40px; font-size: 11px;" data-placeholder="粘贴私钥..."></div>
+                </div>
+              </div>
+
+              <!-- Algorithm selector -->
+              <div class="options-panel">
+                <div class="option-group">
+                  <span class="option-label">签名算法</span>
+                  <select class="option-select" id="sign-algo">
+                    <option value="SHA-256" selected>SHA-256</option>
+                    <option value="SHA-384">SHA-384</option>
+                    <option value="SHA-512">SHA-512</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="margin: 12px 0;">
+                <button class="btn-primary" id="btn-sign" style="padding: 8px 24px; font-size: 13px;">签名</button>
+              </div>
+
+              <div class="editor-header">
+                <span class="editor-title">签名结果 (Base64)</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" id="btn-copy-sign">复制</button>
+                </div>
+              </div>
+              <div class="editor-body output" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-output" id="sign-output" style="font-size: 11px; min-height: 60px; color: var(--text-placeholder);">签名结果将显示在这里...</div>
+              </div>
+            </div>
+
+            <!-- Verify Sub-panel -->
+            <div class="sub-panel" id="subpanel-verify">
+              <div class="editor-header">
+                <span class="editor-title">原始数据</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" onclick="document.getElementById('verify-input').textContent=''">清空</button>
+                </div>
+              </div>
+              <div class="editor-body" style="min-height: 80px;">
+                <div class="line-numbers">1</div>
+                <div class="editor-textarea" contenteditable="true" id="verify-input" style="min-height: 60px;" data-placeholder="输入原始文本..."></div>
+              </div>
+
+              <!-- Signature input -->
+              <div style="margin: 12px 0;">
+                <div class="editor-header">
+                  <span class="editor-title">签名 (Base64)</span>
+                  <div class="editor-actions">
+                    <button class="btn-outline" onclick="document.getElementById('verify-signature').textContent=''">清空</button>
+                  </div>
+                </div>
+                <div class="editor-body" style="min-height: 60px;">
+                  <div class="line-numbers">1</div>
+                  <div class="editor-textarea" contenteditable="true" id="verify-signature" style="min-height: 40px; font-size: 11px;" data-placeholder="粘贴签名 (Base64)..."></div>
+                </div>
+              </div>
+
+              <!-- Public Key input -->
+              <div style="margin: 12px 0;">
+                <div class="editor-header">
+                  <span class="editor-title">公钥 (PEM 格式)</span>
+                  <div class="editor-actions">
+                    <div class="key-input-actions">
+                      <button class="btn-upload" id="btn-upload-verify-pub">上传文件</button>
+                      <button class="btn-from-page" id="btn-fill-verify-pub">从本页复制</button>
+                      <button class="btn-outline" onclick="document.getElementById('verify-pubkey').textContent=''">清空</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="editor-body" style="min-height: 60px;">
+                  <div class="line-numbers">1</div>
+                  <div class="editor-textarea" contenteditable="true" id="verify-pubkey" style="min-height: 40px; font-size: 11px;" data-placeholder="粘贴公钥..."></div>
+                </div>
+              </div>
+
+              <!-- Algorithm selector -->
+              <div class="options-panel">
+                <div class="option-group">
+                  <span class="option-label">签名算法</span>
+                  <select class="option-select" id="verify-algo">
+                    <option value="SHA-256" selected>SHA-256</option>
+                    <option value="SHA-384">SHA-384</option>
+                    <option value="SHA-512">SHA-512</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="margin: 12px 0;">
+                <button class="btn-primary" id="btn-verify" style="padding: 8px 24px; font-size: 13px;">验签</button>
+              </div>
+
+              <div class="sign-result-box" id="verify-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+  (function() {
+    'use strict';
+
+    // ============ Utility ============
+
+    function copyToClipboard(text, btnEl) {
+      dtCopy(text).then(function() {
+        var original = btnEl.textContent;
+        btnEl.textContent = '已复制';
+        btnEl.style.color = '#16a34a';
+        btnEl.style.borderColor = '#16a34a';
+        setTimeout(function() {
+          btnEl.textContent = original;
+          btnEl.style.color = '';
+          btnEl.style.borderColor = '';
+        }, 1200);
+      });
+    }
+
+    function arrayBufferToBase64(buf) {
+      var binary = '';
+      var bytes = new Uint8Array(buf);
+      for (var i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
+    function base64ToArrayBuffer(b64) {
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    function ab2str(buf) {
+      return new TextDecoder().decode(buf);
+    }
+
+    function str2ab(str) {
+      return new TextEncoder().encode(str);
+    }
+
+    function getEditorText(id) {
+      var el = document.getElementById(id);
+      return el ? (el.textContent || '') : '';
+    }
+
+    function setEditorText(id, text, isPlaceholder) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (isPlaceholder) {
+        el.style.color = 'var(--text-placeholder)';
+      } else {
+        el.style.color = '';
+      }
+      el.textContent = text;
+    }
+
+    // ============ Main Tabs (with dedup) ============
+
+    var mainTabs = document.querySelectorAll('#rsa-main-tabs .rsa-tab');
+    var mainPanels = document.querySelectorAll('.tab-panel');
+    var currentMainTab = 'keygen';
+
+    mainTabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var targetTab = tab.getAttribute('data-tab');
+        if (currentMainTab === targetTab) return; // dedup
+        currentMainTab = targetTab;
+        mainTabs.forEach(function(t) { t.classList.remove('active'); });
+        mainPanels.forEach(function(p) { p.classList.remove('active'); });
+        tab.classList.add('active');
+        var target = document.getElementById('panel-' + targetTab);
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // ============ Sub Tabs ============
+
+    function setupSubTabs(containerId, panelPrefix) {
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      var tabs = container.querySelectorAll('.sub-tab');
+      var panels = container.parentElement.querySelectorAll('.sub-panel');
+      var currentSubTab = tabs[0] ? tabs[0].getAttribute('data-subtab') : '';
+
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var targetSub = tab.getAttribute('data-subtab');
+          if (currentSubTab === targetSub) return; // dedup
+          currentSubTab = targetSub;
+          tabs.forEach(function(t) { t.classList.remove('active'); });
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          tab.classList.add('active');
+          var target = document.getElementById(panelPrefix + targetSub);
+          if (target) target.classList.add('active');
+        });
+      });
+    }
+
+    setupSubTabs('encdec-sub-tabs', 'subpanel-');
+    setupSubTabs('signverify-sub-tabs', 'subpanel-');
+
+    // ============ Select dedup for keygen options ============
+
+    var keySizeSelect = document.getElementById('key-size');
+    var publicExpSelect = document.getElementById('public-exponent');
+    var keyFormatSelect = document.getElementById('key-format');
+
+    var lastKeySize = keySizeSelect.value;
+    var lastPublicExp = publicExpSelect.value;
+    var lastKeyFormat = keyFormatSelect.value;
+
+    keySizeSelect.addEventListener('change', function() {
+      if (keySizeSelect.value === lastKeySize) return;
+      lastKeySize = keySizeSelect.value;
+    });
+    publicExpSelect.addEventListener('change', function() {
+      if (publicExpSelect.value === lastPublicExp) return;
+      lastPublicExp = publicExpSelect.value;
+    });
+    keyFormatSelect.addEventListener('change', function() {
+      if (keyFormatSelect.value === lastKeyFormat) return;
+      lastKeyFormat = keyFormatSelect.value;
+    });
+
+    // ============ File Upload Utility ============
+
+    var generatedPubKey = '';
+    var generatedPrivKey = '';
+
+    function setupFileUpload(btnId, editorId, acceptExts) {
+      var btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.addEventListener('click', function() {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = acceptExts.map(function(e) { return '.' + e; }).join(',');
+        input.addEventListener('change', function() {
+          if (!input.files || !input.files[0]) return;
+          var file = input.files[0];
+          if (file.size > 1024 * 1024) {
+            alert('文件过大，最大支持 1MB');
+            return;
+          }
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var text = e.target.result;
+            var el = document.getElementById(editorId);
+            if (el) {
+              el.textContent = text;
+              el.style.color = '';
+            }
+          };
+          reader.readAsText(file);
+        });
+        input.click();
+      });
+    }
+
+    function setupCopyFromPage(btnId, editorId, isPrivate) {
+      var btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.addEventListener('click', function() {
+        var keyText = isPrivate ? generatedPrivKey : generatedPubKey;
+        if (!keyText) {
+          alert('请先生成密钥对');
+          return;
+        }
+        var el = document.getElementById(editorId);
+        if (el) {
+          el.textContent = keyText;
+          el.style.color = '';
+        }
+      });
+    }
+
+    setupFileUpload('btn-upload-enc-pub', 'enc-key-input', ['pem', 'cer', 'crt', 'pub']);
+    setupFileUpload('btn-upload-dec-priv', 'dec-key-input', ['pem', 'key']);
+    setupFileUpload('btn-upload-sign-priv', 'sign-privkey', ['pem', 'key']);
+    setupFileUpload('btn-upload-verify-pub', 'verify-pubkey', ['pem', 'cer', 'crt', 'pub']);
+
+    setupCopyFromPage('btn-fill-enc-pub', 'enc-key-input', false);
+    setupCopyFromPage('btn-fill-dec-priv', 'dec-key-input', true);
+    setupCopyFromPage('btn-fill-sign-priv', 'sign-privkey', true);
+    setupCopyFromPage('btn-fill-verify-pub', 'verify-pubkey', false);
+
+    // ============ Tab 1: Key Generation ============
+
+    var privateKeyVisible = false;
+
+    document.getElementById('btn-toggle-priv-visibility').addEventListener('click', function() {
+      var privTextarea = document.getElementById('priv-key-output');
+      privateKeyVisible = !privateKeyVisible;
+      if (privateKeyVisible) {
+        privTextarea.classList.remove('masked');
+        this.innerHTML = '&#128064;'; // eye with line
+      } else {
+        privTextarea.classList.add('masked');
+        this.innerHTML = '&#128065;'; // eye
+      }
+    });
+
+    document.getElementById('btn-generate').addEventListener('click', function() {
+      var btn = this;
+      var origText = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span> 生成中...';
+
+      var keySize = parseInt(document.getElementById('key-size').value);
+      var expVal = parseInt(document.getElementById('public-exponent').value);
+      var format = document.getElementById('key-format').value;
+
+      var algorithm = {
+        name: 'RSA-OAEP',
+        modulusLength: keySize,
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+        hash: 'SHA-256'
+      };
+
+      if (expVal === 3) {
+        algorithm.publicExponent = new Uint8Array([0x03]);
+      } else if (expVal === 17) {
+        algorithm.publicExponent = new Uint8Array([0x11]);
+      }
+
+      var spkiFormat = format === 'pkcs8' ? 'spki' : 'spki';
+      var pkcs8Format = format === 'pkcs8' ? 'pkcs8' : 'pkcs8';
+
+      window.crypto.subtle.generateKey(
+        algorithm,
+        true,
+        ['encrypt', 'decrypt', 'sign', 'verify']
+      ).then(function(keyPair) {
+        var pubExport = window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+        var privExport = window.crypto.subtle.exportKey(pkcs8Format, keyPair.privateKey);
+        return Promise.all([pubExport, privExport]);
+      }).then(function(results) {
+        var pubB64 = arrayBufferToBase64(results[0]);
+        var privB64 = arrayBufferToBase64(results[1]);
+
+        var pubPem = '-----BEGIN PUBLIC KEY-----\n' +
+          pubB64.match(/.{1,64}/g).join('\n') + '\n-----END PUBLIC KEY-----';
+
+        var privHeader = format === 'pkcs8' ? 'PRIVATE KEY' : 'RSA PRIVATE KEY';
+        var privPem = '-----BEGIN ' + privHeader + '-----\n' +
+          privB64.match(/.{1,64}/g).join('\n') + '\n-----END ' + privHeader + '-----';
+
+        document.getElementById('pub-key-output').value = pubPem;
+        document.getElementById('priv-key-output').value = privPem;
+        generatedPubKey = pubPem;
+        generatedPrivKey = privPem;
+
+        btn.disabled = false;
+        btn.textContent = origText;
+      }).catch(function(err) {
+        document.getElementById('pub-key-output').value = '密钥生成失败: ' + err.message;
+        document.getElementById('priv-key-output').value = '';
+        btn.disabled = false;
+        btn.textContent = origText;
+      });
+    });
+
+    document.getElementById('btn-copy-pub').addEventListener('click', function() {
+      var val = document.getElementById('pub-key-output').value;
+      if (val) copyToClipboard(val, this);
+    });
+
+    document.getElementById('btn-copy-priv').addEventListener('click', function() {
+      var val = document.getElementById('priv-key-output').value;
+      if (val) copyToClipboard(val, this);
+    });
+
+    // ============ Tab 2: Encrypt / Decrypt ============
+
+    function pemToPublicKey(pem) {
+      var b64 = pem.replace(/-----BEGIN PUBLIC KEY-----/, '')
+                    .replace(/-----END PUBLIC KEY-----/, '')
+                    .replace(/\s/g, '');
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return window.crypto.subtle.importKey('spki', bytes.buffer, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+    }
+
+    function pemToPrivateKey(pem) {
+      var b64 = pem.replace(/-----BEGIN RSA PRIVATE KEY-----/, '')
+                    .replace(/-----END RSA PRIVATE KEY-----/, '')
+                    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+                    .replace(/-----END PRIVATE KEY-----/, '')
+                    .replace(/\s/g, '');
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return window.crypto.subtle.importKey('pkcs8', bytes.buffer, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']);
+    }
+
+    document.getElementById('btn-encrypt').addEventListener('click', function() {
+      var plaintext = getEditorText('enc-input').trim();
+      var pemKey = getEditorText('enc-key-input').trim();
+
+      if (!plaintext) {
+        setEditorText('enc-output', '请输入需要加密的文本', true);
+        return;
+      }
+      if (!pemKey) {
+        setEditorText('enc-output', '请输入公钥', true);
+        return;
+      }
+
+      var btn = this;
+      var origText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '加密中...';
+
+      pemToPublicKey(pemKey).then(function(pubKey) {
+        return window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pubKey, str2ab(plaintext));
+      }).then(function(encrypted) {
+        var b64 = arrayBufferToBase64(encrypted);
+        setEditorText('enc-output', b64);
+        btn.disabled = false;
+        btn.textContent = origText;
+      }).catch(function(err) {
+        setEditorText('enc-output', '加密失败: ' + err.message, true);
+        btn.disabled = false;
+        btn.textContent = origText;
+      });
+    });
+
+    document.getElementById('btn-decrypt').addEventListener('click', function() {
+      var ciphertext = getEditorText('dec-input').trim();
+      var pemKey = getEditorText('dec-key-input').trim();
+
+      if (!ciphertext) {
+        setEditorText('dec-output', '请输入密文 (Base64)', true);
+        return;
+      }
+      if (!pemKey) {
+        setEditorText('dec-output', '请输入私钥', true);
+        return;
+      }
+
+      var btn = this;
+      var origText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '解密中...';
+
+      pemToPrivateKey(pemKey).then(function(privKey) {
+        return window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, privKey, base64ToArrayBuffer(ciphertext));
+      }).then(function(decrypted) {
+        setEditorText('dec-output', ab2str(decrypted));
+        btn.disabled = false;
+        btn.textContent = origText;
+      }).catch(function(err) {
+        setEditorText('dec-output', '解密失败: ' + err.message, true);
+        btn.disabled = false;
+        btn.textContent = origText;
+      });
+    });
+
+    document.getElementById('btn-copy-enc').addEventListener('click', function() {
+      var val = getEditorText('enc-output');
+      if (val) copyToClipboard(val, this);
+    });
+
+    document.getElementById('btn-copy-dec').addEventListener('click', function() {
+      var val = getEditorText('dec-output');
+      if (val) copyToClipboard(val, this);
+    });
+
+    // ============ Tab 3: Sign / Verify ============
+
+    function pemToPrivateKeyForSign(pem) {
+      var b64 = pem.replace(/-----BEGIN RSA PRIVATE KEY-----/, '')
+                    .replace(/-----END RSA PRIVATE KEY-----/, '')
+                    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+                    .replace(/-----END PRIVATE KEY-----/, '')
+                    .replace(/\s/g, '');
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return window.crypto.subtle.importKey('pkcs8', bytes.buffer, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
+    }
+
+    function pemToPublicKeyForVerify(pem) {
+      var b64 = pem.replace(/-----BEGIN PUBLIC KEY-----/, '')
+                    .replace(/-----END PUBLIC KEY-----/, '')
+                    .replace(/\s/g, '');
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return window.crypto.subtle.importKey('spki', bytes.buffer, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+    }
+
+    function getSignAlgo() {
+      var val = document.getElementById('sign-algo').value;
+      return { name: 'RSASSA-PKCS1-v1_5', hash: val };
+    }
+
+    function getVerifyAlgo() {
+      var val = document.getElementById('verify-algo').value;
+      return { name: 'RSASSA-PKCS1-v1_5', hash: val };
+    }
+
+    document.getElementById('btn-sign').addEventListener('click', function() {
+      var data = getEditorText('sign-input').trim();
+      var pemKey = getEditorText('sign-privkey').trim();
+
+      if (!data) {
+        setEditorText('sign-output', '请输入需要签名的数据', true);
+        return;
+      }
+      if (!pemKey) {
+        setEditorText('sign-output', '请输入私钥', true);
+        return;
+      }
+
+      var btn = this;
+      var origText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '签名中...';
+
+      var algo = getSignAlgo();
+      var b64 = pemKey.replace(/-----BEGIN RSA PRIVATE KEY-----/, '')
+                       .replace(/-----END RSA PRIVATE KEY-----/, '')
+                       .replace(/-----BEGIN PRIVATE KEY-----/, '')
+                       .replace(/-----END PRIVATE KEY-----/, '')
+                       .replace(/\s/g, '');
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
+      window.crypto.subtle.importKey('pkcs8', bytes.buffer, algo, false, ['sign']).then(function(privKey) {
+        return window.crypto.subtle.sign(algo, privKey, str2ab(data));
+      }).then(function(signature) {
+        setEditorText('sign-output', arrayBufferToBase64(signature));
+        btn.disabled = false;
+        btn.textContent = origText;
+      }).catch(function(err) {
+        setEditorText('sign-output', '签名失败: ' + err.message, true);
+        btn.disabled = false;
+        btn.textContent = origText;
+      });
+    });
+
+    document.getElementById('btn-verify').addEventListener('click', function() {
+      var data = getEditorText('verify-input').trim();
+      var signatureB64 = getEditorText('verify-signature').trim();
+      var pemKey = getEditorText('verify-pubkey').trim();
+      var resultBox = document.getElementById('verify-result');
+
+      resultBox.className = 'sign-result-box';
+      resultBox.style.display = 'none';
+
+      if (!data || !signatureB64 || !pemKey) {
+        resultBox.className = 'sign-result-box fail';
+        resultBox.style.display = 'flex';
+        resultBox.textContent = '请填写所有字段';
+        return;
+      }
+
+      var btn = this;
+      var origText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '验签中...';
+
+      var algo = getVerifyAlgo();
+      var b64 = pemKey.replace(/-----BEGIN PUBLIC KEY-----/, '')
+                       .replace(/-----END PUBLIC KEY-----/, '')
+                       .replace(/\s/g, '');
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
+      window.crypto.subtle.importKey('spki', bytes.buffer, algo, false, ['verify']).then(function(pubKey) {
+        return window.crypto.subtle.verify(algo, pubKey, base64ToArrayBuffer(signatureB64), str2ab(data));
+      }).then(function(isValid) {
+        if (isValid) {
+          resultBox.className = 'sign-result-box success';
+          resultBox.innerHTML = '&#10004; 验证通过';
+        } else {
+          resultBox.className = 'sign-result-box fail';
+          resultBox.innerHTML = '&#10008; 验证失败';
+        }
+        resultBox.style.display = 'flex';
+        btn.disabled = false;
+        btn.textContent = origText;
+      }).catch(function(err) {
+        resultBox.className = 'sign-result-box fail';
+        resultBox.innerHTML = '&#10008; 验证失败: ' + err.message;
+        resultBox.style.display = 'flex';
+        btn.disabled = false;
+        btn.textContent = origText;
+      });
+    });
+
+    document.getElementById('btn-copy-sign').addEventListener('click', function() {
+      var val = getEditorText('sign-output');
+      if (val) copyToClipboard(val, this);
+    });
+
+  })();
+  </script>
+</body>
+</html>

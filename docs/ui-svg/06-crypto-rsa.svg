@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON 工具 -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+
+  <!-- 加密解密 (RSA 工具 选中) -->
+  <text x="16" y="478" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="486" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="506" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="522" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="542" font-size="12" fill="#475569">DES / 3DES</text>
+  <!-- RSA 工具 选中 -->
+  <rect x="8" y="556" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="556" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="576" font-size="12" fill="#2563eb" font-weight="500">RSA 工具</text>
+  <rect x="8" y="590" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="610" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="624" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="644" font-size="12" fill="#475569">密钥工具</text>
+
+  <!-- 数字计算 -->
+  <text x="16" y="680" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="688" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="708" font-size="12" fill="#475569">进制转换</text>
+  <rect x="8" y="722" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="742" font-size="12" fill="#475569">计算器</text>
+
+  <!-- 主内容区 -->
+  <!-- 面包屑 -->
+  <text x="264" y="66" font-size="12" fill="#94a3b8">加密解密</text>
+  <text x="328" y="66" font-size="12" fill="#94a3b8">/</text>
+  <text x="340" y="66" font-size="12" fill="#1e293b" font-weight="500">RSA 工具</text>
+
+  <!-- Tab 栏 -->
+  <line x1="264" y1="80" x2="1184" y2="80" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 密钥生成 选中 -->
+  <rect x="264" y="80" width="120" height="36" fill="#ffffff"/>
+  <line x1="264" y1="115" x2="384" y2="115" stroke="#3b82f6" stroke-width="2"/>
+  <text x="304" y="103" font-size="13" fill="#2563eb" font-weight="500">密钥生成</text>
+  <!-- 加解密 -->
+  <rect x="384" y="80" width="120" height="36" fill="#ffffff"/>
+  <text x="434" y="103" font-size="13" fill="#475569">加解密</text>
+  <!-- 签名验签 -->
+  <rect x="504" y="80" width="120" height="36" fill="#ffffff"/>
+  <text x="542" y="103" font-size="13" fill="#475569">签名验签</text>
+
+  <!-- 密钥生成 Tab 内容 -->
+  <!-- 密钥长度选择 -->
+  <text x="264" y="148" font-size="13" fill="#1e293b" font-weight="600">密钥长度</text>
+  <rect x="264" y="158" width="600" height="40" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 1024 单选 -->
+  <circle cx="290" cy="178" r="8" fill="none" stroke="#d0d5dd" stroke-width="1.5"/>
+  <circle cx="290" cy="178" r="4" fill="#d0d5dd"/>
+  <text x="306" y="183" font-size="13" fill="#475569">1024</text>
+  <!-- 2048 单选 选中 -->
+  <circle cx="370" cy="178" r="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+  <circle cx="370" cy="178" r="4" fill="#3b82f6"/>
+  <text x="386" y="183" font-size="13" fill="#2563eb" font-weight="500">2048</text>
+  <!-- 4096 单选 -->
+  <circle cx="450" cy="178" r="8" fill="none" stroke="#d0d5dd" stroke-width="1.5"/>
+  <circle cx="450" cy="178" r="4" fill="#d0d5dd"/>
+  <text x="466" y="183" font-size="13" fill="#475569">4096</text>
+
+  <!-- 提示文字 -->
+  <text x="550" y="183" font-size="11" fill="#94a3b8">推荐使用 2048 位或更高密钥长度</text>
+
+  <!-- 公钥指数(Public Exponent) -->
+  <text x="264" y="222" font-size="13" fill="#1e293b" font-weight="600">公钥指数</text>
+  <rect x="348" y="208" width="200" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="364" y="228" font-size="12" fill="#1e293b">65537</text>
+  <polygon points="536,222 544,222 540,230" fill="#475569"/>
+  <text x="560" y="228" font-size="11" fill="#94a3b8">默认 65537，可选 3 / 17</text>
+
+  <!-- 密钥格式 -->
+  <text x="264" y="262" font-size="13" fill="#1e293b" font-weight="600">密钥格式</text>
+  <rect x="348" y="248" width="200" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="364" y="268" font-size="12" fill="#1e293b">PKCS#1</text>
+  <polygon points="536,262 544,262 540,270" fill="#475569"/>
+  <text x="560" y="268" font-size="11" fill="#94a3b8">可选 PKCS#1 / PKCS#8</text>
+
+  <!-- 生成密钥对 按钮 -->
+  <rect x="264" y="296" width="140" height="40" rx="8" fill="url(#primaryBtn)"/>
+  <text x="298" y="321" font-size="14" fill="#ffffff" font-weight="500">生成密钥对</text>
+
+  <!-- 进度指示 -->
+  <rect x="420" y="306" width="16" height="16" rx="3" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="423" y="318" font-size="10" fill="#22c55e">✓</text>
+  <text x="444" y="319" font-size="12" fill="#64748b">密钥已生成</text>
+
+  <!-- 公钥区域 左侧 -->
+  <rect x="264" y="352" width="440" height="230" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="264" y="352" width="440" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="264" y="380" width="440" height="8" fill="#f8fafc"/>
+  <text x="280" y="375" font-size="12" fill="#1e293b" font-weight="600">公钥 (Public Key)</text>
+  <!-- 复制按钮 -->
+  <rect x="630" y="360" width="60" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="642" y="376" font-size="11" fill="#475569">复制</text>
+  <!-- PEM 内容 -->
+  <text x="280" y="408" font-size="11" fill="#64748b" font-family="'Consolas',monospace">-----BEGIN PUBLIC KEY-----</text>
+  <text x="280" y="426" font-size="11" fill="#64748b" font-family="'Consolas',monospace">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA</text>
+  <text x="280" y="444" font-size="11" fill="#64748b" font-family="'Consolas',monospace">wJY/qGJSaKd3mHPrJYjSdfJ7cEhb4rp3jINW26jGi7oP</text>
+  <text x="280" y="462" font-size="11" fill="#64748b" font-family="'Consolas',monospace">f2YHKPkXQbRZwkRZJ9vH1MXJhR7kChDLkDXub3KBLGtZ</text>
+  <text x="280" y="480" font-size="11" fill="#64748b" font-family="'Consolas',monospace">k+E4NSvn3FL+8QKXbPvtS3rY8TYqDnCx9M6B8S5TQke+</text>
+  <text x="280" y="498" font-size="11" fill="#64748b" font-family="'Consolas',monospace">HjFwCKMXaVPKPT5TPYp3dAJmCMJbGN3f7F/GvKh5KdwQ</text>
+  <text x="280" y="516" font-size="11" fill="#64748b" font-family="'Consolas',monospace">Um5WXoLOhXpFnBQIDAQAB</text>
+  <text x="280" y="534" font-size="11" fill="#64748b" font-family="'Consolas',monospace">-----END PUBLIC KEY-----</text>
+  <!-- 下载按钮 -->
+  <rect x="280" y="548" width="100" height="26" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="298" y="566" font-size="11" fill="#475569">下载 .pem</text>
+  <!-- 公钥区滚动条 -->
+  <rect x="698" y="388" width="6" height="190" rx="3" fill="#f1f5f9"/>
+  <rect x="698" y="398" width="6" height="76" rx="3" fill="#cbd5e1"/>
+
+  <!-- 私钥区域 右侧 -->
+  <rect x="720" y="352" width="464" height="230" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="720" y="352" width="464" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="720" y="380" width="464" height="8" fill="#f8fafc"/>
+  <text x="736" y="375" font-size="12" fill="#1e293b" font-weight="600">私钥 (Private Key)</text>
+  <!-- 复制按钮 -->
+  <rect x="1106" y="360" width="60" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1118" y="376" font-size="11" fill="#475569">复制</text>
+  <!-- PEM 内容 -->
+  <text x="736" y="408" font-size="11" fill="#64748b" font-family="'Consolas',monospace">-----BEGIN PRIVATE KEY-----</text>
+  <text x="736" y="426" font-size="11" fill="#64748b" font-family="'Consolas',monospace">MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSk</text>
+  <text x="736" y="444" font-size="11" fill="#64748b" font-family="'Consolas',monospace">AgEAAoIBAQDAlj6oYlJop3eYc+sliNJ18ntwSFvi</text>
+  <text x="736" y="462" font-size="11" fill="#64748b" font-family="'Consolas',monospace">uneMg1bbqMaLug9/Zgco+RdBtFnCRFkn28fUxcmF</text>
+  <text x="736" y="480" font-size="11" fill="#64748b" font-family="'Consolas',monospace">HuQKEMuQNe5vcoEsa1mT4Tg1K+fcUv7xApds++1L</text>
+  <text x="736" y="498" font-size="11" fill="#64748b" font-family="'Consolas',monospace">etjxNioOcLH0zoHxLlNCR74eMXAIoxdpU8o9PlM9i</text>
+  <text x="736" y="516" font-size="11" fill="#64748b" font-family="'Consolas',monospace">nd0AmYIwlsY3d/sX8a8qHkp3BDipLefR0dmPuXmDx</text>
+  <text x="736" y="534" font-size="11" fill="#64748b" font-family="'Consolas',monospace">-----END PRIVATE KEY-----</text>
+  <!-- 下载按钮 -->
+  <rect x="736" y="548" width="100" height="26" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="754" y="566" font-size="11" fill="#475569">下载 .pem</text>
+  <!-- 私钥区滚动条 -->
+  <rect x="1178" y="388" width="6" height="190" rx="3" fill="#f1f5f9"/>
+  <rect x="1178" y="398" width="6" height="76" rx="3" fill="#cbd5e1"/>
+
+  <!-- 底部提示区域 -->
+  <rect x="264" y="600" width="920" height="44" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/>
+  <text x="284" y="618" font-size="12" fill="#92400e" font-weight="500">安全提示</text>
+  <text x="356" y="618" font-size="11" fill="#a16207">请妥善保管私钥，不要在不安全的环境中传输或存储。建议使用 2048 位及以上密钥长度以确保安全性。</text>
+
+  <!-- 密钥信息摘要 -->
+  <rect x="264" y="658" width="920" height="110" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="684" font-size="12" fill="#1e293b" font-weight="600">密钥信息</text>
+  <line x1="264" y1="692" x2="1184" y2="692" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="712" font-size="12" fill="#64748b">算法：</text>
+  <text x="320" y="712" font-size="12" fill="#1e293b">RSA</text>
+  <text x="380" y="712" font-size="12" fill="#64748b">密钥长度：</text>
+  <text x="440" y="712" font-size="12" fill="#1e293b">2048 bit</text>
+  <text x="540" y="712" font-size="12" fill="#64748b">公钥指数：</text>
+  <text x="610" y="712" font-size="12" fill="#1e293b">65537</text>
+  <text x="680" y="712" font-size="12" fill="#64748b">格式：</text>
+  <text x="720" y="712" font-size="12" fill="#1e293b">PEM (PKCS#1)</text>
+  <text x="860" y="712" font-size="12" fill="#64748b">生成时间：</text>
+  <text x="920" y="712" font-size="12" fill="#1e293b">2024-01-15 10:30:45</text>
+  <text x="280" y="738" font-size="12" fill="#64748b">公钥指纹：</text>
+  <text x="350" y="738" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">SHA256:aB3cDeFgHiJkLmNoPqRsTuVwXyZ0123456789</text>
+  <text x="280" y="758" font-size="12" fill="#64748b">私钥指纹：</text>
+  <text x="350" y="758" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">SHA256:xY9zAbCdEfGhIjKlMnOpQrStUvWxYz12345678</text>
+</svg>

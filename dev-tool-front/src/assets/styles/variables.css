@@ -1,0 +1,147 @@
+/* DevToolkit - Design System Variables */
+
+:root {
+  /* Primary Colors */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #eff6ff;
+  --primary-rgb: 59, 130, 246;
+
+  /* Background Colors */
+  --bg-white: #ffffff;
+  --bg-page: #f7f8fa;
+  --bg-sidebar: #f7f8fa;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-code: #f8fafc;
+  --bg-code-alt: #f8faff;
+  --bg-hover: #f1f5f9;
+  --bg-line-number: #f8fafc;
+
+  /* Border Colors */
+  --border-light: #e8eaef;
+  --border-input: #d0d5dd;
+  --border-card: #e2e8f0;
+
+  /* Text Colors */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-placeholder: #94a3b8;
+  --text-disabled: #cbd5e1;
+  --text-link: #2563eb;
+
+  /* Accent Colors */
+  --accent-blue: #3b82f6;
+  --accent-green: #28c840;
+  --accent-red: #ff5f57;
+  --accent-yellow: #febc2e;
+
+  /* Layout Dimensions */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 60px;
+  --titlebar-height: 40px;
+  --content-padding: 16px;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 22px;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 2px rgba(59, 130, 246, 0.1);
+
+  /* Scrollbar */
+  --scrollbar-width: 4px;
+  --scrollbar-thumb: var(--text-disabled);
+  --scrollbar-track: transparent;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+  --primary-light: #1e293b;
+  --primary-rgb: 96, 165, 250;
+
+  --bg-white: #0f1117;
+  --bg-page: #0f1117;
+  --bg-sidebar: #151720;
+  --bg-card: #1a1d2e;
+  --bg-input: #1a1d2e;
+  --bg-code: #151720;
+  --bg-code-alt: #131620;
+  --bg-hover: #1e2235;
+  --bg-line-number: #151720;
+
+  --border-light: #2a2d3e;
+  --border-input: #363a4e;
+  --border-card: #2a2d3e;
+
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-placeholder: #475569;
+  --text-disabled: #334155;
+  --text-link: #60a5fa;
+
+  --accent-green: #34d058;
+  --accent-red: #f85149;
+  --accent-yellow: #d29922;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-focus: 0 0 0 2px rgba(96, 165, 250, 0.2);
+
+  --scrollbar-thumb: #363a4e;
+
+  /* Tag colors - dark variants */
+  --tag-blue-bg: rgba(59, 130, 246, 0.15);
+  --tag-blue-text: #60a5fa;
+  --tag-green-bg: rgba(34, 197, 94, 0.15);
+  --tag-green-text: #4ade80;
+  --tag-red-bg: rgba(239, 68, 68, 0.15);
+  --tag-red-text: #f87171;
+  --tag-yellow-bg: rgba(234, 179, 8, 0.15);
+  --tag-yellow-text: #facc15;
+  --tag-gray-bg: rgba(100, 116, 139, 0.15);
+  --tag-gray-text: #94a3b8;
+
+  /* Highlight colors - dark variants */
+  --highlight-match-bg: rgba(254, 240, 138, 0.2);
+  --highlight-add-bg: rgba(34, 197, 94, 0.15);
+  --highlight-add-text: #4ade80;
+  --highlight-del-bg: rgba(239, 68, 68, 0.15);
+  --highlight-del-text: #f87171;
+  --highlight-mod-bg: rgba(234, 179, 8, 0.15);
+  --highlight-mod-text: #facc15;
+
+  /* JWT segment colors - dark variants */
+  --jwt-header-bg: rgba(59, 130, 246, 0.15);
+  --jwt-header-text: #60a5fa;
+  --jwt-payload-bg: rgba(234, 179, 8, 0.15);
+  --jwt-payload-text: #facc15;
+  --jwt-signature-bg: rgba(100, 116, 139, 0.15);
+  --jwt-signature-text: #94a3b8;
+}

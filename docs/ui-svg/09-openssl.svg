@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON 工具 -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+
+  <!-- 加密解密 (OpenSSL 选中) -->
+  <text x="16" y="478" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="486" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="506" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="522" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="542" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="556" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="576" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="590" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="610" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="624" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="644" font-size="12" fill="#475569">密钥工具</text>
+  <!-- OpenSSL 选中 -->
+  <rect x="8" y="658" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="658" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="678" font-size="12" fill="#2563eb" font-weight="500">OpenSSL</text>
+
+  <!-- 数字计算 -->
+  <text x="16" y="714" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="722" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="742" font-size="12" fill="#475569">进制转换</text>
+
+  <!-- 主内容区 -->
+  <!-- 面包屑 -->
+  <text x="264" y="66" font-size="12" fill="#94a3b8">加密解密</text>
+  <text x="328" y="66" font-size="12" fill="#94a3b8">/</text>
+  <text x="340" y="66" font-size="12" fill="#1e293b" font-weight="500">OpenSSL</text>
+
+  <!-- Tab 栏 -->
+  <line x1="264" y1="80" x2="1184" y2="80" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 命令生成器 选中 -->
+  <rect x="264" y="80" width="120" height="36" fill="#ffffff"/>
+  <line x1="264" y1="115" x2="384" y2="115" stroke="#3b82f6" stroke-width="2"/>
+  <text x="288" y="103" font-size="13" fill="#2563eb" font-weight="500">命令生成器</text>
+  <!-- 证书解析 -->
+  <rect x="384" y="80" width="120" height="36" fill="#ffffff"/>
+  <text x="416" y="103" font-size="13" fill="#475569">证书解析</text>
+  <!-- 格式转换 -->
+  <rect x="504" y="80" width="120" height="36" fill="#ffffff"/>
+  <text x="536" y="103" font-size="13" fill="#475569">格式转换</text>
+
+  <!-- 命令生成器 Tab 内容 -->
+  <!-- 操作类型 -->
+  <text x="264" y="148" font-size="13" fill="#1e293b" font-weight="600">操作类型</text>
+  <rect x="264" y="160" width="300" height="36" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="280" y="183" font-size="13" fill="#1e293b">生成私钥</text>
+  <!-- 下拉箭头 -->
+  <polygon points="548,176 556,176 552,184" fill="#475569"/>
+
+  <!-- 参数配置区 -->
+  <rect x="264" y="212" width="920" height="310" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="238" font-size="13" fill="#1e293b" font-weight="600">参数配置</text>
+
+  <!-- 平台选择 -->
+  <text x="280" y="268" font-size="12" fill="#64748b">平台</text>
+  <!-- Linux/macOS radio selected -->
+  <circle cx="340" cy="264" r="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+  <circle cx="340" cy="264" r="4" fill="#3b82f6"/>
+  <text x="356" y="268" font-size="12" fill="#2563eb" font-weight="500">Linux/macOS</text>
+  <!-- Windows radio -->
+  <circle cx="456" cy="264" r="8" fill="none" stroke="#d0d5dd" stroke-width="1.5"/>
+  <circle cx="456" cy="264" r="4" fill="#d0d5dd"/>
+  <text x="472" y="268" font-size="12" fill="#475569">Windows</text>
+  <text x="556" y="268" font-size="11" fill="#94a3b8">已适配 Linux/macOS 平台</text>
+
+  <!-- 算法选择 -->
+  <text x="280" y="298" font-size="12" fill="#64748b">算法</text>
+  <rect x="340" y="284" width="200" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="356" y="304" font-size="12" fill="#1e293b">RSA</text>
+  <polygon points="528,298 536,298 532,306" fill="#475569"/>
+
+  <!-- 密钥长度 -->
+  <text x="280" y="338" font-size="12" fill="#64748b">密钥长度</text>
+  <rect x="340" y="324" width="200" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="356" y="344" font-size="12" fill="#1e293b">2048</text>
+  <polygon points="528,338 536,338 532,346" fill="#475569"/>
+
+  <!-- 输出格式 -->
+  <text x="280" y="378" font-size="12" fill="#64748b">输出格式</text>
+  <rect x="340" y="364" width="200" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="356" y="384" font-size="12" fill="#1e293b">PEM</text>
+  <polygon points="528,378 536,378 532,386" fill="#475569"/>
+
+  <!-- 加密选项 -->
+  <text x="280" y="418" font-size="12" fill="#64748b">加密私钥</text>
+  <rect x="340" y="404" width="48" height="24" rx="12" fill="#e2e8f0"/>
+  <circle cx="360" cy="416" r="9" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="400" y="422" font-size="11" fill="#94a3b8">关闭</text>
+
+  <!-- 输出文件名 -->
+  <text x="280" y="458" font-size="12" fill="#64748b">输出文件</text>
+  <rect x="340" y="444" width="300" height="30" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="356" y="464" font-size="12" fill="#1e293b">private_key.pem</text>
+  <text x="650" y="464" font-size="11" fill="#94a3b8">.pem</text>
+
+  <!-- 右侧预览区 -->
+  <text x="680" y="298" font-size="12" fill="#64748b">快速选项</text>
+  <rect x="680" y="310" width="140" height="28" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="700" y="329" font-size="11" fill="#475569">生成 CSR</text>
+  <rect x="830" y="310" width="160" height="28" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="850" y="329" font-size="11" fill="#475569">自签名证书</text>
+  <rect x="1000" y="310" width="160" height="28" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1020" y="329" font-size="11" fill="#475569">查看证书信息</text>
+
+  <rect x="680" y="350" width="140" height="28" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="700" y="369" font-size="11" fill="#475569">转换 PEM/DER</text>
+  <rect x="830" y="350" width="160" height="28" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="850" y="369" font-size="11" fill="#475569">生成 PKCS12</text>
+  <rect x="1000" y="350" width="160" height="28" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1020" y="369" font-size="11" fill="#475569">验证证书链</text>
+
+  <!-- 生成命令按钮 -->
+  <rect x="264" y="538" width="140" height="40" rx="8" fill="url(#primaryBtn)"/>
+  <text x="290" y="563" font-size="14" fill="#ffffff" font-weight="500">生成命令</text>
+
+  <!-- 生成的命令区域 -->
+  <rect x="264" y="594" width="920" height="88" rx="8" fill="#f8faff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="264" y="594" width="920" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="264" y="622" width="920" height="8" fill="#f8fafc"/>
+  <text x="280" y="618" font-size="12" fill="#1e293b" font-weight="600">生成的 OpenSSL 命令</text>
+  <!-- 复制按钮 -->
+  <rect x="1106" y="604" width="60" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1118" y="620" font-size="11" fill="#475569">复制</text>
+  <!-- 命令内容 -->
+  <text x="280" y="654" font-size="13" fill="#2563eb" font-family="'Consolas',monospace">openssl genrsa -out private_key.pem 2048</text>
+  <!-- 命令说明 -->
+  <text x="280" y="674" font-size="11" fill="#94a3b8">生成 2048 位 RSA 私钥，输出到 private_key.pem 文件</text>
+
+  <!-- 命令区滚动条 -->
+  <rect x="1178" y="594" width="6" height="88" rx="3" fill="#f1f5f9"/>
+  <rect x="1178" y="604" width="6" height="35" rx="3" fill="#cbd5e1"/>
+
+  <!-- 常用命令模板 -->
+  <rect x="264" y="700" width="920" height="80" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="264" y="700" width="920" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="264" y="728" width="920" height="8" fill="#f8fafc"/>
+  <text x="280" y="724" font-size="12" fill="#1e293b" font-weight="600">常用命令模板</text>
+
+  <!-- 模板列表 -->
+  <line x1="264" y1="736" x2="1184" y2="736" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="756" font-size="12" fill="#475569">1.</text>
+  <text x="300" y="756" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">openssl req -new -key key.pem -out cert.csr</text>
+  <text x="680" y="756" font-size="11" fill="#94a3b8">生成证书签名请求(CSR)</text>
+
+  <text x="280" y="776" font-size="12" fill="#475569">2.</text>
+  <text x="300" y="776" font-size="11" fill="#3b82f6" font-family="'Consolas',monospace">openssl x509 -in cert.pem -text -noout</text>
+  <text x="680" y="776" font-size="11" fill="#94a3b8">查看证书详细信息</text>
+</svg>

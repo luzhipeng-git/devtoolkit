@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JWT 编解码 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .jwt-input-section {
+      margin-bottom: 12px;
+    }
+    .jwt-input-section .editor-body {
+      min-height: 60px;
+    }
+    .jwt-input-section .editor-textarea {
+      word-break: break-all;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .decode-action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .btn-decode {
+      padding: 7px 20px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-decode:hover { opacity: 0.9; }
+
+    /* JWT Segments */
+    .jwt-segments {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .jwt-segment {
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .jwt-segment-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .jwt-segment-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .jwt-segment-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .jwt-segment-header-sep {
+      border-bottom: 2px solid rgba(0,0,0,0.06);
+      margin-bottom: 12px;
+    }
+    .segment-header-bg { background: #dbeafe; }
+    .segment-header-bg .jwt-segment-title { color: #1d4ed8; }
+    .segment-header-bg .jwt-segment-tag { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+
+    .segment-payload-bg { background: #fef9c3; }
+    .segment-payload-bg .jwt-segment-title { color: #a16207; }
+    .segment-payload-bg .jwt-segment-tag { background: rgba(202, 138, 4, 0.12); color: #a16207; }
+
+    .segment-signature-bg { background: #f1f5f9; }
+    .segment-signature-bg .jwt-segment-title { color: #475569; }
+
+    .segment-json {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .segment-json .json-key { color: #2563eb; }
+    .segment-json .json-string { color: #16a34a; }
+    .segment-json .json-number { color: #7c3aed; }
+
+    .segment-info-line {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .segment-signature-value {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+      word-break: break-all;
+    }
+    .segment-note {
+      font-size: 11px;
+      color: var(--text-placeholder);
+      margin-top: 8px;
+    }
+
+    /* Encode Tab Placeholder */
+    .encode-placeholder {
+      border: 2px dashed var(--border-card);
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 16px;
+    }
+    .encode-form-group {
+      margin-bottom: 14px;
+    }
+    .encode-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .encode-select {
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 12px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      min-width: 140px;
+    }
+    .encode-textarea {
+      width: 100%;
+      min-height: 60px;
+      border: 1px solid var(--border-card);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--text-primary);
+      resize: vertical;
+      outline: none;
+      background: var(--bg-code);
+    }
+    .encode-textarea:focus {
+      border-color: var(--primary);
+    }
+    .secret-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .secret-input {
+      flex: 1;
+      height: 30px;
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+    }
+    .secret-input:focus {
+      border-color: var(--primary);
+    }
+    .eye-toggle {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      background: var(--bg-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .eye-toggle:hover {
+      color: var(--text-primary);
+    }
+    .encode-output {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #eff6ff;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 8px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      color: var(--primary);
+      word-break: break-all;
+      line-height: 1.6;
+    }
+    .encode-output-label {
+      font-size: 11px;
+      color: var(--text-placeholder);
+      margin-bottom: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    }
+    .jwt-error {
+      color: #dc2626;
+      font-size: 12px;
+      padding: 8px 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .jwt-error.show { display: block; }
+
+    /* Exp status badges */
+    .exp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-top: 6px;
+    }
+    .exp-badge.valid { background: #f0fdf4; color: #16a34a; }
+    .exp-badge.expired { background: #fef2f2; color: #dc2626; }
+    .exp-note {
+      font-size: 11px;
+      color: var(--text-placeholder);
+      margin-top: 4px;
+    }
+
+    /* HTML Entity section */
+    .html-entity-direction {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .direction-radio {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+    .direction-radio input[type="radio"] {
+      accent-color: var(--primary);
+    }
+    .html-entity-input, .html-entity-output {
+      width: 100%;
+      min-height: 80px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 12px 14px;
+      font-size: 13px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .html-entity-input:focus, .html-entity-output:focus {
+      border-color: var(--primary);
+    }
+    .html-entity-output {
+      background: var(--bg-code);
+    }
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    /* Color converter */
+    .color-converter {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-top: 16px;
+    }
+    .color-preview-block {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      border: 2px solid var(--border-card);
+      flex-shrink: 0;
+      background: #000000;
+    }
+    .color-inputs {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .color-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .color-input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 36px;
+      flex-shrink: 0;
+    }
+    .color-input-field {
+      flex: 1;
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 12px;
+      font-size: 13px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+    }
+    .color-input-field:focus {
+      border-color: var(--primary);
+    }
+    .color-picker-input {
+      width: 40px;
+      height: 34px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item active" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">编码解码</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">编码解码</span>
+        </div>
+
+        <div class="tool-card">
+          <!-- Sub-tool Tab Bar -->
+          <div class="tool-header">
+            <button class="tool-tab active" id="tab-btn-jwt">JWT 解码</button>
+            <button class="tool-tab" id="tab-btn-html-entity">HTML Entity</button>
+            <button class="tool-tab" id="tab-btn-color">颜色转换</button>
+          </div>
+
+          <!-- ====== Tab 1: JWT Decode ====== -->
+          <div id="tab-jwt">
+            <div class="jwt-error" id="decode-error"></div>
+
+            <!-- JWT Token Input -->
+            <div class="jwt-input-section">
+              <div class="editor-header">
+                <span class="editor-title">JWT Token</span>
+                <div class="editor-actions">
+                  <button class="btn-outline" id="btn-paste">粘贴</button>
+                  <button class="btn-outline" id="btn-clear-decode">清空</button>
+                </div>
+              </div>
+              <div class="editor-body">
+                <div class="line-numbers">1</div>
+                <textarea class="editor-textarea" id="jwt-input" style="white-space: pre-wrap; word-break: break-all; min-height: 60px; resize: vertical;" placeholder="粘贴 JWT Token...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IuenuiDkjYwiLCJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjI0MjYyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</textarea>
+              </div>
+            </div>
+
+            <!-- Decode Button -->
+            <div class="decode-action-row">
+              <button class="btn-decode" id="btn-decode">解码</button>
+            </div>
+
+            <!-- JWT Segments Output -->
+            <div class="jwt-segments" id="jwt-segments" style="display:none;">
+              <!-- Header Segment -->
+              <div class="jwt-segment segment-header-bg">
+                <div class="jwt-segment-header">
+                  <span class="jwt-segment-title">HEADER</span>
+                  <span class="jwt-segment-tag" id="header-tag">alg: HS256, typ: JWT</span>
+                </div>
+                <div class="jwt-segment-header-sep"></div>
+                <div class="segment-json" id="header-json"></div>
+              </div>
+
+              <!-- Payload Segment -->
+              <div class="jwt-segment segment-payload-bg">
+                <div class="jwt-segment-header">
+                  <span class="jwt-segment-title">PAYLOAD</span>
+                  <span class="jwt-segment-tag">DATA</span>
+                </div>
+                <div class="jwt-segment-header-sep"></div>
+                <div class="segment-json" id="payload-json"></div>
+                <div class="segment-info-line" id="payload-info"></div>
+                <div id="exp-status"></div>
+              </div>
+
+              <!-- Signature Segment -->
+              <div class="jwt-segment segment-signature-bg">
+                <div class="jwt-segment-header">
+                  <span class="jwt-segment-title">SIGNATURE</span>
+                </div>
+                <div class="jwt-segment-header-sep"></div>
+                <div class="segment-signature-value" id="signature-value"></div>
+                <div class="segment-note">使用 Header 中指定的算法和密钥计算</div>
+              </div>
+
+              <div class="exp-note">注意：仅解码 Token 内容，未验证签名有效性</div>
+            </div>
+          </div>
+
+          <!-- ====== Tab 2: HTML Entity ====== -->
+          <div id="tab-html-entity" style="display:none;">
+            <div class="html-entity-direction">
+              <label class="direction-radio">
+                <input type="radio" name="entity-direction" value="encode" checked> 编码
+              </label>
+              <label class="direction-radio">
+                <input type="radio" name="entity-direction" value="decode"> 解码
+              </label>
+            </div>
+
+            <div class="section-label">输入</div>
+            <textarea class="html-entity-input" id="html-entity-input" placeholder="请输入需要编码/解码的文本..."></textarea>
+
+            <div class="decode-action-row" style="margin-top: 12px;">
+              <button class="btn-decode" id="btn-html-execute">执行</button>
+            </div>
+
+            <div class="section-label" style="margin-top: 12px;">输出</div>
+            <textarea class="html-entity-output" id="html-entity-output" readonly placeholder="结果将显示在这里..."></textarea>
+
+            <div style="margin-top: 8px; text-align: right;">
+              <button class="btn-outline copy-btn" id="btn-copy-entity">复制</button>
+            </div>
+          </div>
+
+          <!-- ====== Tab 3: Color Converter ====== -->
+          <div id="tab-color" style="display:none;">
+            <div class="color-converter">
+              <div>
+                <div class="section-label">预览</div>
+                <div class="color-preview-block" id="color-preview"></div>
+                <input type="color" id="color-picker" class="color-picker-input" value="#000000" style="margin-top: 8px;">
+              </div>
+              <div class="color-inputs">
+                <div class="color-input-row">
+                  <span class="color-input-label">HEX</span>
+                  <input type="text" class="color-input-field" id="color-hex" value="#000000" placeholder="#000000">
+                  <button class="btn-outline copy-btn" data-color-target="color-hex" style="white-space:nowrap;">复制</button>
+                </div>
+                <div class="color-input-row">
+                  <span class="color-input-label">RGB</span>
+                  <input type="text" class="color-input-field" id="color-rgb" value="rgb(0, 0, 0)" placeholder="rgb(0, 0, 0)">
+                  <button class="btn-outline copy-btn" data-color-target="color-rgb" style="white-space:nowrap;">复制</button>
+                </div>
+                <div class="color-input-row">
+                  <span class="color-input-label">HSL</span>
+                  <input type="text" class="color-input-field" id="color-hsl" value="hsl(0, 0%, 0%)" placeholder="hsl(0, 0%, 0%)">
+                  <button class="btn-outline copy-btn" data-color-target="color-hsl" style="white-space:nowrap;">复制</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      // ======= Utility functions =======
+      function base64UrlEncode(str) {
+        return btoa(unescape(encodeURIComponent(str)))
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '');
+      }
+
+      function base64UrlDecode(str) {
+        var s = str.replace(/-/g, '+').replace(/_/g, '/');
+        while (s.length % 4 !== 0) s += '=';
+        try {
+          return decodeURIComponent(escape(atob(s)));
+        } catch (e) {
+          return atob(s);
+        }
+      }
+
+      function highlightJson(jsonStr) {
+        return jsonStr
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"([^"]+)"(\s*:)/g, '<span class="json-key">"$1"</span>$2')
+          .replace(/:\s*"([^"]*?)"/g, ': <span class="json-string">"$1"</span>')
+          .replace(/:\s*(\d+(\.\d+)?)/g, ': <span class="json-number">$1</span>');
+      }
+
+      function prettyJson(str) {
+        try {
+          return JSON.stringify(JSON.parse(str), null, 2);
+        } catch (e) {
+          return str;
+        }
+      }
+
+      function formatDate(date) {
+        var y = date.getFullYear();
+        var M = ('0' + (date.getMonth() + 1)).slice(-2);
+        var d = ('0' + date.getDate()).slice(-2);
+        var h = ('0' + date.getHours()).slice(-2);
+        var m = ('0' + date.getMinutes()).slice(-2);
+        var s = ('0' + date.getSeconds()).slice(-2);
+        return y + '-' + M + '-' + d + ' ' + h + ':' + m + ':' + s;
+      }
+
+      // Copy feedback helper: 1.2s "已复制" green
+      function copyWithFeedback(btn, text) {
+        dtCopy(text).then(function () {
+          var orig = btn.textContent;
+          btn.textContent = '已复制';
+          btn.style.color = '#16a34a';
+          btn.style.borderColor = '#16a34a';
+          setTimeout(function () {
+            btn.textContent = orig;
+            btn.style.color = '';
+            btn.style.borderColor = '';
+          }, 1200);
+        });
+      }
+
+      // ======= Sub-tool Tab Switching (with dedup) =======
+      var tabBtnJwt = document.getElementById('tab-btn-jwt');
+      var tabBtnHtmlEntity = document.getElementById('tab-btn-html-entity');
+      var tabBtnColor = document.getElementById('tab-btn-color');
+      var tabJwt = document.getElementById('tab-jwt');
+      var tabHtmlEntity = document.getElementById('tab-html-entity');
+      var tabColor = document.getElementById('tab-color');
+      var activeSubTool = 'jwt';
+
+      function switchSubTool(tool) {
+        // Dedup: clicking already-active sub-tool = no-op
+        if (tool === activeSubTool) return;
+        activeSubTool = tool;
+
+        tabBtnJwt.classList.toggle('active', tool === 'jwt');
+        tabBtnHtmlEntity.classList.toggle('active', tool === 'html-entity');
+        tabBtnColor.classList.toggle('active', tool === 'color');
+
+        tabJwt.style.display = tool === 'jwt' ? 'block' : 'none';
+        tabHtmlEntity.style.display = tool === 'html-entity' ? 'block' : 'none';
+        tabColor.style.display = tool === 'color' ? 'block' : 'none';
+      }
+
+      tabBtnJwt.addEventListener('click', function () { switchSubTool('jwt'); });
+      tabBtnHtmlEntity.addEventListener('click', function () { switchSubTool('html-entity'); });
+      tabBtnColor.addEventListener('click', function () { switchSubTool('color'); });
+
+      // ======= JWT Decode =======
+      var jwtInput = document.getElementById('jwt-input');
+      var btnDecode = document.getElementById('btn-decode');
+      var decodeError = document.getElementById('decode-error');
+      var jwtSegments = document.getElementById('jwt-segments');
+      var headerTag = document.getElementById('header-tag');
+      var headerJson = document.getElementById('header-json');
+      var payloadJson = document.getElementById('payload-json');
+      var payloadInfo = document.getElementById('payload-info');
+      var signatureValue = document.getElementById('signature-value');
+      var expStatus = document.getElementById('exp-status');
+
+      function hideDecodeError() {
+        decodeError.classList.remove('show');
+      }
+
+      function showDecodeError(msg) {
+        decodeError.textContent = msg;
+        decodeError.classList.add('show');
+      }
+
+      function doDecode() {
+        hideDecodeError();
+        var token = jwtInput.value.trim();
+        // Strip Bearer prefix if present
+        if (token.toLowerCase().startsWith('bearer ')) {
+          token = token.substring(7).trim();
+        }
+
+        if (!token) {
+          showDecodeError('请输入 JWT Token');
+          jwtSegments.style.display = 'none';
+          return;
+        }
+
+        var parts = token.split('.');
+        if (parts.length !== 3) {
+          showDecodeError('无效的 JWT Token 格式，JWT 应包含 3 个部分（以 . 分隔）');
+          jwtSegments.style.display = 'none';
+          return;
+        }
+
+        var headerRaw, payloadRaw;
+        try {
+          headerRaw = base64UrlDecode(parts[0]);
+        } catch (e) {
+          showDecodeError('无法解码 Header 部分: ' + e.message);
+          jwtSegments.style.display = 'none';
+          return;
+        }
+
+        try {
+          payloadRaw = base64UrlDecode(parts[1]);
+        } catch (e) {
+          showDecodeError('无法解码 Payload 部分: ' + e.message);
+          jwtSegments.style.display = 'none';
+          return;
+        }
+
+        var headerObj;
+        try {
+          headerObj = JSON.parse(headerRaw);
+        } catch (e) {
+          showDecodeError('Header 不是有效的 JSON');
+          jwtSegments.style.display = 'none';
+          return;
+        }
+
+        // Header display
+        var tagParts = [];
+        if (headerObj.alg) tagParts.push('alg: ' + headerObj.alg);
+        if (headerObj.typ) tagParts.push('typ: ' + headerObj.typ);
+        headerTag.textContent = tagParts.join(', ') || 'Unknown';
+        headerJson.innerHTML = highlightJson(prettyJson(headerRaw));
+
+        // Payload display
+        payloadJson.innerHTML = highlightJson(prettyJson(payloadRaw));
+
+        // Payload info
+        var infoParts = [];
+        var payloadObj;
+        try {
+          payloadObj = JSON.parse(payloadRaw);
+          if (payloadObj.iat) infoParts.push('签发时间: ' + formatDate(new Date(payloadObj.iat * 1000)));
+          if (payloadObj.nbf) infoParts.push('生效时间: ' + formatDate(new Date(payloadObj.nbf * 1000)));
+        } catch (e) { /* ignore */ }
+        payloadInfo.textContent = infoParts.join('  |  ');
+
+        // Expiration status check
+        expStatus.innerHTML = '';
+        if (payloadObj && payloadObj.exp) {
+          var expDate = new Date(payloadObj.exp * 1000);
+          var now = new Date();
+          if (now > expDate) {
+            expStatus.innerHTML = '<div class="exp-badge expired">Token 已过期</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">过期时间: ' + formatDate(expDate) + '</div>';
+          } else {
+            var remaining = expDate - now;
+            var days = Math.floor(remaining / 86400000);
+            var hours = Math.floor((remaining % 86400000) / 3600000);
+            var mins = Math.floor((remaining % 3600000) / 60000);
+            var timeStr = '';
+            if (days > 0) timeStr += days + ' 天 ';
+            timeStr += hours + ' 小时 ' + mins + ' 分钟';
+            expStatus.innerHTML = '<div class="exp-badge valid">Token 有效</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">过期时间: ' + formatDate(expDate) + '（剩余 ' + timeStr + '）</div>';
+          }
+        } else if (payloadObj) {
+          expStatus.innerHTML = '<div style="font-size:11px;color:var(--text-placeholder);margin-top:4px;">无过期时间声明</div>';
+        }
+
+        // Signature display
+        signatureValue.textContent = parts[2];
+        jwtSegments.style.display = 'flex';
+      }
+
+      btnDecode.addEventListener('click', doDecode);
+      jwtInput.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.key === 'Enter') doDecode();
+      });
+
+      document.getElementById('btn-paste').addEventListener('click', function () {
+        // paste requires user gesture on file://
+        var _ta = document.createElement('textarea'); document.body.appendChild(_ta); _ta.focus(); document.execCommand('paste'); var _t = _ta.value; document.body.removeChild(_ta); if(_t) { jwtInput.value = _t; doDecode(); } else { jwtInput.focus(); }
+      });
+
+      document.getElementById('btn-clear-decode').addEventListener('click', function () {
+        jwtInput.value = '';
+        jwtSegments.style.display = 'none';
+        hideDecodeError();
+      });
+
+      // ======= HTML Entity Encode/Decode =======
+      var entityDirection = 'encode';
+      var lastDirection = 'encode';
+      var entityInput = document.getElementById('html-entity-input');
+      var entityOutput = document.getElementById('html-entity-output');
+
+      // Dedup: re-selecting same direction = no-op
+      document.querySelectorAll('input[name="entity-direction"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          if (this.value === lastDirection) {
+            this.checked = true;
+            return;
+          }
+          lastDirection = this.value;
+          entityDirection = this.value;
+        });
+      });
+
+      function encodeHtmlEntity(text) {
+        return text.replace(/[&<>"']/g, function (c) {
+          var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return map[c] || c;
+        }).replace(/[-￿]/g, function (c) {
+          return '&#' + c.charCodeAt(0) + ';';
+        });
+      }
+
+      function decodeHtmlEntity(text) {
+        var el = document.createElement('div');
+        el.innerHTML = text;
+        return el.textContent || el.innerText;
+      }
+
+      document.getElementById('btn-html-execute').addEventListener('click', function () {
+        var input = entityInput.value;
+        if (!input) {
+          entityOutput.value = '';
+          return;
+        }
+        if (entityDirection === 'encode') {
+          entityOutput.value = encodeHtmlEntity(input);
+        } else {
+          entityOutput.value = decodeHtmlEntity(input);
+        }
+      });
+
+      document.getElementById('btn-copy-entity').addEventListener('click', function () {
+        var text = entityOutput.value;
+        if (!text) return;
+        copyWithFeedback(this, text);
+      });
+
+      // ======= Color Converter =======
+      var colorPicker = document.getElementById('color-picker');
+      var colorHex = document.getElementById('color-hex');
+      var colorRgb = document.getElementById('color-rgb');
+      var colorHsl = document.getElementById('color-hsl');
+      var colorPreview = document.getElementById('color-preview');
+      var colorDebounceTimer = null;
+
+      function hexToRgb(hex) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        var r = parseInt(hex.substring(0, 2), 16);
+        var g = parseInt(hex.substring(2, 4), 16);
+        var b = parseInt(hex.substring(4, 6), 16);
+        return { r: r, g: g, b: b };
+      }
+
+      function rgbToHex(r, g, b) {
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+      }
+
+      function rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+        var h, s, l = (max + min) / 2;
+        if (max === min) {
+          h = s = 0;
+        } else {
+          var d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch (max) {
+            case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+            case g: h = ((b - r) / d + 2) / 6; break;
+            case b: h = ((r - g) / d + 4) / 6; break;
+          }
+        }
+        return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+      }
+
+      function hslToRgb(h, s, l) {
+        h /= 360; s /= 100; l /= 100;
+        var r, g, b;
+        if (s === 0) {
+          r = g = b = l;
+        } else {
+          function hue2rgb(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+          }
+          var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          var p = 2 * l - q;
+          r = hue2rgb(p, q, h + 1/3);
+          g = hue2rgb(p, q, h);
+          b = hue2rgb(p, q, h - 1/3);
+        }
+        return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+      }
+
+      function updateColorFromHex(hex, source) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        if (!/^[0-9A-Fa-f]{6}$/.test(hex)) return;
+        var rgb = hexToRgb(hex);
+        var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+        colorPreview.style.background = '#' + hex;
+        colorPicker.value = '#' + hex;
+        if (source !== 'hex') colorHex.value = '#' + hex.toUpperCase();
+        if (source !== 'rgb') colorRgb.value = 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
+        if (source !== 'hsl') colorHsl.value = 'hsl(' + hsl.h + ', ' + hsl.s + '%, ' + hsl.l + '%)';
+      }
+
+      function updateColorFromRgb(str, source) {
+        var m = str.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+        if (!m) return;
+        var r = Math.min(255, Math.max(0, parseInt(m[1])));
+        var g = Math.min(255, Math.max(0, parseInt(m[2])));
+        var b = Math.min(255, Math.max(0, parseInt(m[3])));
+        var hex = rgbToHex(r, g, b);
+        var hsl = rgbToHsl(r, g, b);
+        colorPreview.style.background = hex;
+        colorPicker.value = hex;
+        if (source !== 'hex') colorHex.value = hex.toUpperCase();
+        if (source !== 'rgb') colorRgb.value = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+        if (source !== 'hsl') colorHsl.value = 'hsl(' + hsl.h + ', ' + hsl.s + '%, ' + hsl.l + '%)';
+      }
+
+      function updateColorFromHsl(str, source) {
+        var m = str.match(/(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?/);
+        if (!m) return;
+        var h = Math.min(360, Math.max(0, parseInt(m[1])));
+        var s = Math.min(100, Math.max(0, parseInt(m[2])));
+        var l = Math.min(100, Math.max(0, parseInt(m[3])));
+        var rgb = hslToRgb(h, s, l);
+        var hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+        colorPreview.style.background = hex;
+        colorPicker.value = hex;
+        if (source !== 'hex') colorHex.value = hex.toUpperCase();
+        if (source !== 'rgb') colorRgb.value = 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
+        if (source !== 'hsl') colorHsl.value = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
+      }
+
+      // 150ms debounced color conversion
+      function onColorInput(source) {
+        clearTimeout(colorDebounceTimer);
+        colorDebounceTimer = setTimeout(function () {
+          if (source === 'hex') {
+            updateColorFromHex(colorHex.value, 'hex');
+          } else if (source === 'rgb') {
+            updateColorFromRgb(colorRgb.value, 'rgb');
+          } else if (source === 'hsl') {
+            updateColorFromHsl(colorHsl.value, 'hsl');
+          }
+        }, 150);
+      }
+
+      colorHex.addEventListener('input', function () { onColorInput('hex'); });
+      colorRgb.addEventListener('input', function () { onColorInput('rgb'); });
+      colorHsl.addEventListener('input', function () { onColorInput('hsl'); });
+      colorPicker.addEventListener('input', function () {
+        updateColorFromHex(colorPicker.value, 'picker');
+      });
+
+      // Color copy buttons
+      document.querySelectorAll('[data-color-target]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var targetId = btn.getAttribute('data-color-target');
+          var el = document.getElementById(targetId);
+          if (!el || !el.value) return;
+          copyWithFeedback(btn, el.value);
+        });
+      });
+
+      // ======= Sidebar navigation dedup =======
+      document.querySelectorAll('.sidebar-item').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          if (item.classList.contains('active')) {
+            e.preventDefault();
+          }
+        });
+      });
+
+      // Auto-decode the default JWT on load
+      doDecode();
+    })();
+  </script>
+</body>
+</html>

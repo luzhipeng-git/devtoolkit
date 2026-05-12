@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <!-- macOS 三色按钮 -->
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <!-- 应用图标 -->
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <!-- 右侧窗口操作按钮 -->
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <!-- 折叠按钮 -->
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 (5项, 无选中) -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON工具 (JSON 压缩 选中) -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <!-- 选中项: JSON 压缩 -->
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="354" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="374" font-size="12" fill="#2563eb" font-weight="500">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+  <rect x="8" y="456" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="476" font-size="12" fill="#475569">JSON 校验</text>
+  <rect x="8" y="490" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="510" font-size="12" fill="#475569">JSON Diff</text>
+
+  <!-- 加密解密 (5项) -->
+  <text x="16" y="546" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="554" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="574" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="588" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="608" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="622" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="642" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="656" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="676" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="690" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="710" font-size="12" fill="#475569">密钥工具</text>
+
+  <!-- 数字计算 (3项) -->
+  <text x="16" y="746" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="754" width="224" height="26" rx="6" fill="transparent"/>
+  <text x="24" y="772" font-size="12" fill="#475569">进制转换</text>
+
+  <!-- ========== 内容区 ========== -->
+  <rect x="240" y="40" width="960" height="760" fill="#ffffff"/>
+
+  <!-- 面包屑 -->
+  <text x="268" y="70" font-size="12" fill="#94a3b8">JSON 工具</text>
+  <text x="340" y="70" font-size="12" fill="#cbd5e1">/</text>
+  <text x="352" y="70" font-size="12" fill="#1e293b" font-weight="500">JSON 压缩</text>
+
+  <!-- 面板卡片 -->
+  <rect x="260" y="84" width="920" height="696" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 输入区标题 -->
+  <text x="280" y="114" font-size="14" fill="#1e293b" font-weight="600">输入 JSON</text>
+  <text x="380" y="114" font-size="11" fill="#94a3b8">粘贴需要压缩的 JSON 数据</text>
+
+  <!-- 输入区文本框 -->
+  <rect x="280" y="124" width="880" height="240" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 行号区 -->
+  <rect x="280" y="124" width="36" height="240" rx="6" fill="#f8fafc"/>
+  <text x="292" y="148" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">1</text>
+  <text x="292" y="168" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">2</text>
+  <text x="292" y="188" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">3</text>
+  <text x="292" y="208" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">4</text>
+  <text x="292" y="228" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">5</text>
+  <text x="292" y="248" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">6</text>
+  <text x="292" y="268" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">7</text>
+  <text x="292" y="288" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">8</text>
+  <text x="292" y="308" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">9</text>
+  <text x="292" y="328" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">10</text>
+  <text x="292" y="348" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">11</text>
+  <!-- 分隔线 -->
+  <line x1="316" y1="124" x2="316" y2="364" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 格式化JSON示例 -->
+  <text x="328" y="148" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">{</text>
+  <text x="340" y="168" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"name"</text>
+  <text x="390" y="168" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="398" y="168" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"张三"</text>
+  <text x="445" y="168" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="340" y="188" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"age"</text>
+  <text x="380" y="188" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="388" y="188" font-size="12" fill="#f59e0b" font-family="'Consolas',monospace">25</text>
+  <text x="404" y="188" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="340" y="208" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"address"</text>
+  <text x="416" y="208" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="424" y="208" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">{</text>
+  <text x="356" y="228" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"city"</text>
+  <text x="400" y="228" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="408" y="228" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"北京"</text>
+  <text x="452" y="228" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="356" y="248" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"zip"</text>
+  <text x="392" y="248" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="400" y="248" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"100000"</text>
+  <text x="340" y="268" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">},</text>
+  <text x="340" y="288" font-size="12" fill="#64748b" font-family="'Consolas',monospace">"tags"</text>
+  <text x="384" y="288" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">:</text>
+  <text x="392" y="288" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">[</text>
+  <text x="356" y="308" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"dev"</text>
+  <text x="392" y="308" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">,</text>
+  <text x="356" y="328" font-size="12" fill="#3b82f6" font-family="'Consolas',monospace">"test"</text>
+  <text x="340" y="348" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">]</text>
+  <text x="328" y="358" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">}</text>
+
+  <!-- 压缩按钮 (居中) -->
+  <rect x="660" y="378" width="120" height="36" rx="6" fill="url(#primaryBtn)"/>
+  <text x="688" y="401" font-size="13" fill="#ffffff" font-weight="500">压缩</text>
+  <!-- 箭头图标 -->
+  <path d="M 710 396 L 720 390 L 720 394 L 730 394 L 730 398 L 720 398 L 720 402 Z" fill="#ffffff"/>
+
+  <!-- 分割线 -->
+  <line x1="280" y1="430" x2="1160" y2="430" stroke="#f1f5f9" stroke-width="1"/>
+
+  <!-- 输出区标题 -->
+  <text x="280" y="456" font-size="14" fill="#1e293b" font-weight="600">压缩结果</text>
+  <text x="380" y="456" font-size="11" fill="#94a3b8">已移除所有空白字符和换行</text>
+
+  <!-- 输出区文本框 -->
+  <rect x="280" y="466" width="880" height="180" rx="6" fill="#f8faff" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 行号区 -->
+  <rect x="280" y="466" width="36" height="180" rx="6" fill="#f8faff"/>
+  <text x="292" y="490" font-size="11" fill="#cbd5e1" font-family="'Consolas',monospace">1</text>
+  <!-- 分隔线 -->
+  <line x1="316" y1="466" x2="316" y2="646" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 压缩后的JSON (单行) -->
+  <text x="328" y="490" font-size="12" fill="#1e293b" font-family="'Consolas',monospace">{"name":"张三","age":25,"address":{"city":"北京","zip":"100000"},"tags":["dev","test"]}</text>
+
+  <!-- 底部操作栏 -->
+  <line x1="280" y1="660" x2="1160" y2="660" stroke="#f1f5f9" stroke-width="1"/>
+
+  <!-- 复制按钮 -->
+  <rect x="280" y="674" width="80" height="32" rx="6" fill="url(#primaryBtn)"/>
+  <text x="300" y="694" font-size="12" fill="#ffffff" font-weight="500">复制</text>
+  <!-- 复制图标 -->
+  <rect x="290" y="684" width="8" height="10" rx="1" fill="none" stroke="#ffffff" stroke-width="1"/>
+  <rect x="293" y="681" width="8" height="10" rx="1" fill="none" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- 统计信息 -->
+  <text x="400" y="694" font-size="12" fill="#64748b">原始</text>
+  <text x="430" y="694" font-size="12" fill="#1e293b" font-weight="600">256</text>
+  <text x="454" y="694" font-size="12" fill="#64748b">字节</text>
+  <text x="484" y="694" font-size="12" fill="#94a3b8">&gt;</text>
+  <text x="500" y="694" font-size="12" fill="#64748b">压缩后</text>
+  <text x="548" y="694" font-size="12" fill="#1e293b" font-weight="600">86</text>
+  <text x="566" y="694" font-size="12" fill="#64748b">字节</text>
+  <text x="596" y="694" font-size="12" fill="#94a3b8">，</text>
+  <text x="612" y="694" font-size="12" fill="#22c55e" font-weight="600">节省 66.4%</text>
+
+  <!-- 节省比例进度条 -->
+  <rect x="740" y="682" width="160" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="740" y="682" width="106" height="8" rx="4" fill="#22c55e"/>
+  <text x="910" y="694" font-size="11" fill="#64748b">66.4%</text>
+</svg>

@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 外框 -->
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 分类 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">URL 编解码</text>
+
+  <!-- 其他工具 分类 -->
+  <text x="16" y="250" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">其他工具</text>
+  <rect x="8" y="258" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="278" font-size="12" fill="#475569">时间戳转换</text>
+  <rect x="8" y="292" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="312" font-size="12" fill="#475569">Cron 表达式</text>
+  <rect x="8" y="326" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="346" font-size="12" fill="#475569">正则调试</text>
+
+  <!-- Grok调试 选中 -->
+  <rect x="8" y="360" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="360" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="380" font-size="12" fill="#2563eb" font-weight="500">Grok 调试</text>
+
+  <!-- 数字计算 分类 -->
+  <text x="16" y="418" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="426" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="446" font-size="12" fill="#475569">进制转换</text>
+  <rect x="8" y="460" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="480" font-size="12" fill="#475569">公式求值</text>
+
+  <!-- 内容区 -->
+  <rect x="240" y="40" width="960" height="760" fill="#ffffff"/>
+
+  <!-- 面包屑 -->
+  <text x="268" y="70" font-size="12" fill="#94a3b8">Grok 表达式调试</text>
+
+  <!-- ========== 上方: Grok表达式输入 + 模式选择 ========== -->
+  <rect x="256" y="88" width="928" height="76" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="114" font-size="12" fill="#64748b">Grok 表达式</text>
+
+  <!-- Grok表达式输入框 -->
+  <rect x="390" y="98" width="600" height="32" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="402" y="119" font-size="13" fill="#3b82f6" font-family="Consolas, monospace">%{IP:client_ip} - - [%{HTTPDATE:timestamp}] "%{WORD:method} %{URIPATH:url}</text>
+
+  <!-- 内置模式下拉选择 -->
+  <text x="280" y="150" font-size="11" fill="#64748b">内置模式</text>
+  <rect x="348" y="138" width="200" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="360" y="154" font-size="11" fill="#1e293b">Nginx Access Log  ▾</text>
+
+  <!-- 解析按钮 -->
+  <rect x="1080" y="106" width="80" height="32" rx="6" fill="url(#primaryBtn)"/>
+  <text x="1096" y="126" font-size="12" fill="#ffffff" font-weight="500">解析</text>
+
+  <!-- ========== 中部: 左右分栏 ========== -->
+  <!-- 左侧: 日志文本 -->
+  <rect x="256" y="176" width="540" height="310" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="256" y="176" width="540" height="28" rx="10" fill="#f8fafc"/>
+  <rect x="256" y="196" width="540" height="8" fill="#f8fafc"/>
+  <line x1="256" y1="204" x2="796" y2="204" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="194" font-size="12" fill="#64748b" font-weight="500">日志文本</text>
+
+  <!-- 多行输入区 Nginx access log 示例 -->
+  <rect x="268" y="212" width="516" height="264" fill="#ffffff"/>
+  <text x="284" y="234" font-size="12" fill="#1e293b" font-family="Consolas, monospace">192.168.1.100 - - [22/Apr/2026:14:30:00</text>
+  <text x="284" y="254" font-size="12" fill="#1e293b" font-family="Consolas, monospace"> +0800] "GET /api/users HTTP/1.1" 200</text>
+  <text x="284" y="274" font-size="12" fill="#1e293b" font-family="Consolas, monospace"> 1234 "https://example.com" "Mozilla</text>
+  <text x="284" y="294" font-size="12" fill="#1e293b" font-family="Consolas, monospace">/5.0 (Windows NT 10.0; Win64; x64)"</text>
+  <text x="284" y="324" font-size="12" fill="#94a3b8" font-family="Consolas, monospace"></text>
+  <text x="284" y="344" font-size="12" fill="#94a3b8" font-family="Consolas, monospace">192.168.1.101 - - [22/Apr/2026:14:31:05</text>
+  <text x="284" y="364" font-size="12" fill="#94a3b8" font-family="Consolas, monospace"> +0800] "POST /api/login HTTP/1.1" 401</text>
+  <text x="284" y="384" font-size="12" fill="#94a3b8" font-family="Consolas, monospace"> 89 "https://example.com/login" "</text>
+  <text x="284" y="404" font-size="12" fill="#94a3b8" font-family="Consolas, monospace">curl/7.88.1"</text>
+
+  <!-- 右侧: 解析结果 -->
+  <rect x="808" y="176" width="376" height="310" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="808" y="176" width="376" height="28" rx="10" fill="#f8fafc"/>
+  <rect x="808" y="196" width="376" height="8" fill="#f8fafc"/>
+  <line x1="808" y1="204" x2="1184" y2="204" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="832" y="194" font-size="12" fill="#64748b" font-weight="500">解析结果</text>
+
+  <!-- 字段名值对表格 -->
+  <!-- 表头 -->
+  <rect x="820" y="212" width="352" height="26" rx="4" fill="#f1f5f9"/>
+  <text x="838" y="229" font-size="11" fill="#64748b" font-weight="600">字段名</text>
+  <text x="998" y="229" font-size="11" fill="#64748b" font-weight="600">值</text>
+  <line x1="820" y1="238" x2="1172" y2="238" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="988" y1="212" x2="988" y2="480" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 1: client_ip -->
+  <text x="838" y="258" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">client_ip</text>
+  <text x="998" y="258" font-size="11" fill="#1e293b" font-family="Consolas, monospace">192.168.1.100</text>
+  <line x1="820" y1="268" x2="1172" y2="268" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 2: timestamp -->
+  <text x="838" y="288" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">timestamp</text>
+  <text x="998" y="288" font-size="11" fill="#1e293b" font-family="Consolas, monospace">22/Apr/2026:14:30:00 +0800</text>
+  <line x1="820" y1="298" x2="1172" y2="298" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 3: method -->
+  <text x="838" y="318" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">method</text>
+  <text x="998" y="318" font-size="11" fill="#1e293b" font-family="Consolas, monospace">GET</text>
+  <line x1="820" y1="328" x2="1172" y2="328" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 4: url -->
+  <text x="838" y="348" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">url</text>
+  <text x="998" y="348" font-size="11" fill="#1e293b" font-family="Consolas, monospace">/api/users</text>
+  <line x1="820" y1="358" x2="1172" y2="358" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 5: status (unmatched shown gray) -->
+  <text x="838" y="378" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">status</text>
+  <text x="998" y="378" font-size="11" fill="#1e293b" font-family="Consolas, monospace">200</text>
+  <line x1="820" y1="388" x2="1172" y2="388" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 6: bytes -->
+  <text x="838" y="408" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">bytes</text>
+  <text x="998" y="408" font-size="11" fill="#1e293b" font-family="Consolas, monospace">1234</text>
+  <line x1="820" y1="418" x2="1172" y2="418" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 7: 未匹配文字 -->
+  <text x="838" y="438" font-size="11" fill="#94a3b8" font-style="italic" font-family="Consolas, monospace">(unmatched)</text>
+  <text x="998" y="438" font-size="11" fill="#94a3b8" font-family="Consolas, monospace">"https://example.com"</text>
+  <line x1="820" y1="448" x2="1172" y2="448" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Row 8: user_agent -->
+  <text x="838" y="468" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">user_agent</text>
+  <text x="998" y="468" font-size="11" fill="#1e293b" font-family="Consolas, monospace">Mozilla/5.0...</text>
+
+  <!-- ========== 下方左: 自定义Grok模式编辑器 ========== -->
+  <rect x="256" y="500" width="540" height="180" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="526" font-size="13" fill="#1e293b" font-weight="600">自定义 Grok 模式</text>
+  <!-- 折叠箭头 -->
+  <polyline points="396,518 402,524 408,518" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 编辑器输入框 -->
+  <rect x="272" y="540" width="508" height="100" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <rect x="272" y="540" width="30" height="100" fill="#f8fafc"/>
+  <text x="280" y="560" font-size="10" fill="#cbd5e1" font-family="Consolas, monospace">1</text>
+  <text x="280" y="578" font-size="10" fill="#cbd5e1" font-family="Consolas, monospace">2</text>
+  <text x="280" y="596" font-size="10" fill="#cbd5e1" font-family="Consolas, monospace">3</text>
+  <line x1="302" y1="540" x2="302" y2="640" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="314" y="560" font-size="12" fill="#1e293b" font-family="Consolas, monospace">MYIP \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}</text>
+  <text x="314" y="578" font-size="12" fill="#1e293b" font-family="Consolas, monospace">MYDATE %{YEAR}-%{MONTHNUM}-%{MONTHDAY}</text>
+  <text x="314" y="596" font-size="12" fill="#94a3b8" font-family="Consolas, monospace"></text>
+
+  <!-- 保存按钮 -->
+  <rect x="700" y="648" width="80" height="26" rx="6" fill="url(#primaryBtn)"/>
+  <text x="716" y="666" font-size="12" fill="#ffffff" font-weight="500">保存</text>
+
+  <!-- ========== 下方右: 内置模式库 ========== -->
+  <rect x="808" y="500" width="376" height="180" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="832" y="526" font-size="13" fill="#1e293b" font-weight="600">内置模式库</text>
+  <!-- 折叠箭头 -->
+  <polyline points="936,518 942,524 948,518" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 模式列表 -->
+  <rect x="820" y="538" width="352" height="26" rx="4" fill="#f8fafc"/>
+  <text x="838" y="556" font-size="11" fill="#3b82f6" font-weight="600" font-family="Consolas, monospace">%{IP}</text>
+  <text x="930" y="556" font-size="10" fill="#94a3b8">匹配IP地址 (v4/v6)</text>
+
+  <rect x="820" y="568" width="352" height="26" rx="4" fill="transparent"/>
+  <text x="838" y="586" font-size="11" fill="#1e293b" font-weight="600" font-family="Consolas, monospace">%{TIMESTAMP_ISO8601}</text>
+  <text x="1020" y="586" font-size="10" fill="#94a3b8">ISO8601时间戳</text>
+
+  <rect x="820" y="598" width="352" height="26" rx="4" fill="transparent"/>
+  <text x="838" y="616" font-size="11" fill="#1e293b" font-weight="600" font-family="Consolas, monospace">%{WORD}</text>
+  <text x="930" y="616" font-size="10" fill="#94a3b8">匹配单词</text>
+
+  <rect x="820" y="628" width="352" height="26" rx="4" fill="transparent"/>
+  <text x="838" y="646" font-size="11" fill="#1e293b" font-weight="600" font-family="Consolas, monospace">%{NUMBER}</text>
+  <text x="950" y="646" font-size="10" fill="#94a3b8">匹配数字</text>
+
+  <text x="838" y="668" font-size="10" fill="#94a3b8">更多模式: HOSTNAME, URI, QS, DATA, GREEDYDATA...</text>
+</svg>

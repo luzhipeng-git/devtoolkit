@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 编解码 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <span class="dot dot-close"></span>
+        <span class="dot dot-minimize"></span>
+        <span class="dot dot-maximize"></span>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <span class="titlebar-title">DevToolkit</span>
+      <span class="titlebar-version">v1.0.0</span>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item active" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">字符编码</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Base64 编解码</span>
+        </div>
+
+        <!-- Tool Card -->
+        <div class="tool-card">
+          <!-- Tab Bar -->
+          <div class="tool-header">
+            <button class="tool-tab active" id="tab-encode">编码</button>
+            <button class="tool-tab" id="tab-decode">解码</button>
+          </div>
+
+          <!-- Options Panel -->
+          <div class="options-panel">
+            <div class="option-group">
+              <span class="option-label">字符集</span>
+              <select class="option-select" id="opt-charset">
+                <option value="utf-8" selected>UTF-8</option>
+                <option value="gbk">GBK</option>
+                <option value="gb2312">GB2312</option>
+                <option value="iso-8859-1">ISO-8859-1</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <span class="option-label">换行</span>
+              <select class="option-select" id="opt-wrap">
+                <option value="0" selected>无换行</option>
+                <option value="64">每64字符</option>
+                <option value="76">每76字符</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Input Editor -->
+          <div class="editor-header">
+            <span class="editor-title" id="input-label">输入（字符串）</span>
+            <div class="editor-actions">
+              <button class="btn-outline" id="btn-clear-input">清空</button>
+            </div>
+          </div>
+          <div class="editor-body">
+            <div class="line-numbers" id="input-line-numbers">1</div>
+            <textarea class="editor-textarea" id="input-area" placeholder="在此输入文本...">Hello World 你好世界</textarea>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="swap-btn-container">
+            <button class="swap-btn" id="btn-swap">&#8693; 交换</button>
+          </div>
+
+          <!-- Output Editor -->
+          <div class="editor-header">
+            <span class="editor-title" id="output-label">输出（Base64）</span>
+            <div class="editor-actions">
+              <button class="btn-primary" id="btn-copy">复制</button>
+            </div>
+          </div>
+          <div class="editor-body output">
+            <div class="line-numbers" id="output-line-numbers">1</div>
+            <div class="editor-output" id="output-area"></div>
+          </div>
+
+          <!-- Info Tip -->
+          <div class="info-tip" id="info-tip"></div>
+
+          <!-- History Section -->
+          <div class="history-section" id="history-section" style="display:none;">
+            <div class="history-header">
+              <span class="history-title">历史记录（最近 5 条）</span>
+              <span class="history-clear" id="btn-clear-history">清空</span>
+            </div>
+            <div class="history-items" id="history-items"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      var mode = 'encode';
+      var historyList = [];
+      var MAX_HISTORY = 5;
+
+      // Config dedup tracking
+      var currentCharset = 'utf-8';
+      var currentWrap = '0';
+
+      var tabEncode = document.getElementById('tab-encode');
+      var tabDecode = document.getElementById('tab-decode');
+      var optCharset = document.getElementById('opt-charset');
+      var optWrap = document.getElementById('opt-wrap');
+      var inputArea = document.getElementById('input-area');
+      var inputLabel = document.getElementById('input-label');
+      var outputArea = document.getElementById('output-area');
+      var outputLabel = document.getElementById('output-label');
+      var inputLineNums = document.getElementById('input-line-numbers');
+      var outputLineNums = document.getElementById('output-line-numbers');
+      var infoTip = document.getElementById('info-tip');
+      var btnClearInput = document.getElementById('btn-clear-input');
+      var btnSwap = document.getElementById('btn-swap');
+      var btnCopy = document.getElementById('btn-copy');
+      var btnClearHistory = document.getElementById('btn-clear-history');
+      var historyItems = document.getElementById('history-items');
+      var historySection = document.getElementById('history-section');
+
+      function textToBase64(text) {
+        var encoder = new TextEncoder();
+        var bytes = encoder.encode(text);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        var b64 = btoa(binary);
+        var wrapAt = parseInt(optWrap.value, 10);
+        if (wrapAt > 0) {
+          b64 = b64.match(new RegExp('.{1,' + wrapAt + '}', 'g')).join('\n');
+        }
+        return b64;
+      }
+
+      function base64ToText(b64) {
+        var cleaned = b64.replace(/[\s\n\r]/g, '');
+        try {
+          var binary = atob(cleaned);
+          var bytes = new Uint8Array(binary.length);
+          for (var i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+          }
+          var decoder = new TextDecoder('utf-8');
+          return decoder.decode(bytes);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function doConvert() {
+        var input = inputArea.value;
+        if (!input) {
+          outputArea.textContent = '';
+          infoTip.textContent = '';
+          updateLineNumbers(outputLineNums, '');
+          return;
+        }
+        var result = '';
+        if (mode === 'encode') {
+          result = textToBase64(input);
+        } else {
+          var decoded = base64ToText(input);
+          if (decoded === null) {
+            outputArea.textContent = '错误：无效的 Base64 输入';
+            outputArea.style.color = '#dc2626';
+            infoTip.textContent = '';
+            return;
+          }
+          result = decoded;
+        }
+        outputArea.style.color = '';
+        outputArea.textContent = result;
+        updateLineNumbers(outputLineNums, result);
+        if (mode === 'encode') {
+          var raw = result.replace(/\n/g, '');
+          infoTip.textContent = 'Base64 长度: ' + raw.length + ' 字符';
+        } else {
+          infoTip.textContent = '已解码为 UTF-8 文本，共 ' + result.length + ' 个字符';
+        }
+      }
+
+      function updateLineNumbers(el, text) {
+        var lines = (text || '').split('\n');
+        var nums = [];
+        for (var i = 1; i <= Math.max(lines.length, 1); i++) nums.push(i);
+        el.textContent = nums.join('\n');
+      }
+
+      function updateInputLineNumbers() {
+        updateLineNumbers(inputLineNums, inputArea.value);
+      }
+
+      function setMode(newMode) {
+        if (mode === newMode) return; // dedup: ignore same tab click
+        mode = newMode;
+        tabEncode.className = 'tool-tab' + (mode === 'encode' ? ' active' : '');
+        tabDecode.className = 'tool-tab' + (mode === 'decode' ? ' active' : '');
+        if (mode === 'encode') {
+          inputLabel.textContent = '输入（字符串）';
+          outputLabel.textContent = '输出（Base64）';
+          inputArea.placeholder = '在此输入文本...';
+        } else {
+          inputLabel.textContent = '输入（Base64）';
+          outputLabel.textContent = '输出（字符串）';
+          inputArea.placeholder = '在此输入 Base64 字符串...';
+        }
+        var prevOutput = outputArea.textContent;
+        if (prevOutput && prevOutput.indexOf('错误') !== 0) {
+          inputArea.value = prevOutput;
+        }
+        outputArea.textContent = '';
+        outputArea.style.color = '';
+        infoTip.textContent = '';
+        updateInputLineNumbers();
+        doConvert();
+      }
+
+      tabEncode.addEventListener('click', function () { setMode('encode'); });
+      tabDecode.addEventListener('click', function () { setMode('decode'); });
+      optCharset.addEventListener('change', function () {
+        if (this.value === currentCharset) return; // dedup
+        currentCharset = this.value;
+        doConvert();
+      });
+      optWrap.addEventListener('change', function () {
+        if (this.value === currentWrap) return; // dedup
+        currentWrap = this.value;
+        doConvert();
+      });
+
+      inputArea.addEventListener('input', function () {
+        updateInputLineNumbers();
+        doConvert();
+      });
+
+      btnClearInput.addEventListener('click', function () {
+        inputArea.value = '';
+        outputArea.textContent = '';
+        outputArea.style.color = '';
+        infoTip.textContent = '';
+        updateInputLineNumbers();
+        updateLineNumbers(outputLineNums, '');
+      });
+
+      btnSwap.addEventListener('click', function () {
+        var outputText = outputArea.textContent;
+        if (!outputText || outputText.indexOf('错误') === 0) return;
+        var swappedContent = outputText;
+        var newMode = mode === 'encode' ? 'decode' : 'encode';
+        mode = newMode;
+        tabEncode.className = 'tool-tab' + (mode === 'encode' ? ' active' : '');
+        tabDecode.className = 'tool-tab' + (mode === 'decode' ? ' active' : '');
+        if (mode === 'encode') {
+          inputLabel.textContent = '输入（字符串）';
+          outputLabel.textContent = '输出（Base64）';
+          inputArea.placeholder = '在此输入文本...';
+        } else {
+          inputLabel.textContent = '输入（Base64）';
+          outputLabel.textContent = '输出（字符串）';
+          inputArea.placeholder = '在此输入 Base64 字符串...';
+        }
+        inputArea.value = swappedContent;
+        updateInputLineNumbers();
+        doConvert();
+        addHistory(swappedContent, inputArea.value);
+      });
+
+      function copyWithFeedback(btn, text) {
+        dtCopy(text).then(function () {
+          var orig = btn.textContent;
+          btn.textContent = '已复制';
+          btn.style.color = '#16a34a';
+          btn.style.borderColor = '#16a34a';
+          setTimeout(function () {
+            btn.textContent = orig;
+            btn.style.color = '';
+            btn.style.borderColor = '';
+          }, 1200);
+        });
+      }
+
+      btnCopy.addEventListener('click', function () {
+        var text = outputArea.textContent;
+        if (!text || text.indexOf('错误') === 0) return;
+        copyWithFeedback(btnCopy, text);
+        addHistory(inputArea.value, text);
+      });
+
+      function addHistory(inputVal, outputVal) {
+        if (!inputVal || !outputVal || outputVal.indexOf('错误') === 0) return;
+        var shortIn = inputVal.length > 20 ? inputVal.substring(0, 20) + '…' : inputVal;
+        var shortOut = outputVal.length > 20 ? outputVal.substring(0, 20) + '…' : outputVal;
+        var label = shortIn + ' → ' + shortOut;
+        for (var i = 0; i < historyList.length; i++) {
+          if (historyList[i].label === label) return;
+        }
+        historyList.unshift({ label: label, input: inputVal, output: outputVal, mode: mode });
+        if (historyList.length > MAX_HISTORY) historyList.pop();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        historyItems.innerHTML = '';
+        if (historyList.length === 0) { historySection.style.display = 'none'; return; }
+        historySection.style.display = '';
+        for (var i = 0; i < historyList.length; i++) {
+          var item = historyList[i];
+          var el = document.createElement('div');
+          el.className = 'history-item';
+          el.textContent = item.label;
+          el.title = '点击恢复此转换';
+          el.style.cursor = 'pointer';
+          (function (entry) {
+            el.addEventListener('click', function () {
+              setMode(entry.mode);
+              inputArea.value = entry.input;
+              updateInputLineNumbers();
+              doConvert();
+            });
+          })(item);
+          historyItems.appendChild(el);
+        }
+      }
+
+      btnClearHistory.addEventListener('click', function () {
+        historyList = [];
+        renderHistory();
+      });
+
+      updateInputLineNumbers();
+      doConvert();
+    })();
+  </script>
+</body>
+</html>

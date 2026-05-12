@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Diff - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .action-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+    .btn-action {
+      padding: 7px 20px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white; font-size: 13px; font-weight: 500; border: none; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-action:hover { opacity: 0.9; }
+    .copy-btn {
+      padding: 3px 10px; border-radius: 4px; background: var(--bg-white);
+      color: var(--text-muted); font-size: 11px; border: 1px solid var(--border-input);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .copy-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .copy-btn.copied { color: #16a34a; border-color: #16a34a; }
+    .error-msg {
+      padding: 8px 12px; background: #fef2f2; color: #dc2626; border-radius: 6px;
+      font-size: 12px; margin-bottom: 8px; display: none;
+    }
+    .error-msg.show { display: block; }
+    /* JSON syntax highlight */
+    .json-key { color: #2563eb; }
+    .json-string { color: #16a34a; }
+    .json-number { color: #7c3aed; }
+    .json-bool { color: #d97706; }
+    .json-null { color: #dc2626; }
+    .json-bracket { color: #475569; }
+    /* Side by side layout */
+    .side-by-side { display: flex; gap: 12px; }
+    .side-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .side-panel .editor-body { min-height: 140px; }
+    /* Diff colors */
+    .diff-add {
+      background: #dcfce7; color: #16a34a; padding: 1px 4px; border-radius: 2px;
+    }
+    .diff-del {
+      background: #fee2e2; color: #dc2626; padding: 1px 4px; border-radius: 2px;
+      text-decoration: line-through;
+    }
+    .diff-mod {
+      background: #fef3c7; color: #d97706; padding: 1px 4px; border-radius: 2px;
+    }
+    .diff-unchanged { color: var(--text-primary); }
+    /* Color legend */
+    .diff-legend {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
+    }
+    .diff-legend-item {
+      display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary);
+    }
+    .legend-dot {
+      width: 12px; height: 12px; border-radius: 3px;
+    }
+    .legend-dot-add { background: #dcfce7; border: 1px solid #16a34a; }
+    .legend-dot-del { background: #fee2e2; border: 1px solid #dc2626; }
+    .legend-dot-mod { background: #fef3c7; border: 1px solid #d97706; }
+    /* Diff result view */
+    .diff-result-container {
+      border: 1px solid var(--border-card); border-radius: 0 0 8px 8px;
+      background: #f8faff; padding: 14px 16px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px; line-height: 2;
+      min-height: 80px;
+    }
+    .diff-line {
+      display: flex; align-items: center; gap: 8px; padding: 2px 0;
+    }
+    .diff-line-prefix {
+      width: 16px; text-align: center; font-weight: 600; font-size: 12px; flex-shrink: 0;
+    }
+    .diff-line-prefix.prefix-space { color: var(--text-disabled); }
+    .diff-line-prefix.prefix-add { color: #16a34a; }
+    .diff-line-prefix.prefix-del { color: #dc2626; }
+    .diff-line-prefix.prefix-mod { color: #d97706; }
+    .diff-line-content { flex: 1; }
+    .diff-arrow { color: var(--text-muted); margin: 0 4px; }
+    .diff-empty { color: var(--text-placeholder); font-style: italic; text-align: center; padding: 20px; }
+    /* Statistics bar */
+    .diff-stats {
+      display: flex; align-items: center; gap: 16px; padding: 8px 14px;
+      background: var(--bg-code); border: 1px solid var(--border-card);
+      border-radius: 6px; margin-top: 12px; font-size: 12px;
+    }
+    .stat-item { display: flex; align-items: center; gap: 4px; }
+    .stat-label { color: var(--text-muted); }
+    .stat-value { font-weight: 600; }
+    .stat-value.stat-same { color: var(--text-secondary); }
+    .stat-value.stat-add { color: #16a34a; }
+    .stat-value.stat-del { color: #dc2626; }
+    .stat-value.stat-mod { color: #d97706; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div><div class="dot dot-minimize"></div><div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">D</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+    <div class="main-layout">
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item active" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+      <div class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">JSON 工具</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">JSON Diff</span>
+        </div>
+        <div class="tool-card">
+          <!-- Error message area -->
+          <div class="error-msg" id="errorMsg"></div>
+          <!-- Side-by-side input editors -->
+          <div class="side-by-side">
+            <!-- Left: JSON A -->
+            <div class="side-panel">
+              <div class="editor-header">
+                <span class="editor-title">JSON A</span>
+                <div class="editor-actions">
+                  <button class="copy-btn" id="btnPasteA">粘贴</button>
+                  <button class="copy-btn" id="btnClearA">清空</button>
+                </div>
+              </div>
+              <div class="editor-body">
+                <div class="line-numbers" id="lineNumbersA">1</div>
+                <textarea class="editor-textarea" id="jsonInputA" spellcheck="false"
+                  placeholder='输入第一份 JSON，如 {"name":"张三","age":25}'></textarea>
+              </div>
+            </div>
+            <!-- Right: JSON B -->
+            <div class="side-panel">
+              <div class="editor-header">
+                <span class="editor-title">JSON B</span>
+                <div class="editor-actions">
+                  <button class="copy-btn" id="btnPasteB">粘贴</button>
+                  <button class="copy-btn" id="btnClearB">清空</button>
+                </div>
+              </div>
+              <div class="editor-body">
+                <div class="line-numbers" id="lineNumbersB">1</div>
+                <textarea class="editor-textarea" id="jsonInputB" spellcheck="false"
+                  placeholder='输入第二份 JSON，如 {"name":"张三","age":26,"email":"test@example.com"}'></textarea>
+              </div>
+            </div>
+          </div>
+          <!-- Action Row -->
+          <div class="action-row">
+            <button class="btn-action" id="btnDiff">对比</button>
+            <button class="btn-outline" id="btnReset" style="padding:7px 16px;font-size:13px;">重置</button>
+          </div>
+          <!-- Diff Color Legend -->
+          <div class="diff-legend">
+            <div class="diff-legend-item">
+              <div class="legend-dot legend-dot-add"></div>
+              <span>ADD 新增</span>
+            </div>
+            <div class="diff-legend-item">
+              <div class="legend-dot legend-dot-del"></div>
+              <span>DEL 删除</span>
+            </div>
+            <div class="diff-legend-item">
+              <div class="legend-dot legend-dot-mod"></div>
+              <span>MOD 修改</span>
+            </div>
+          </div>
+          <!-- Diff Output Header -->
+          <div class="editor-header">
+            <span class="editor-title">对比结果</span>
+            <div class="editor-actions">
+              <button class="copy-btn" id="btnCopyResult">复制</button>
+            </div>
+          </div>
+          <!-- Diff Result -->
+          <div class="diff-result-container" id="diffResult">
+            <div class="diff-empty">输入两份 JSON 后点击「对比」查看差异</div>
+          </div>
+          <!-- Statistics -->
+          <div class="diff-stats" id="diffStats" style="display:none;">
+            <div class="stat-item">
+              <span class="stat-label">相同:</span>
+              <span class="stat-value stat-same" id="statSame">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">新增:</span>
+              <span class="stat-value stat-add" id="statAdd">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">删除:</span>
+              <span class="stat-value stat-del" id="statDel">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">修改:</span>
+              <span class="stat-value stat-mod" id="statMod">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="common.js"></script>
+<script>
+(function() {
+  // --- State ---
+  var diffResultText = '';
+
+  // --- DOM refs ---
+  var $inputA = document.getElementById('jsonInputA');
+  var $inputB = document.getElementById('jsonInputB');
+  var $linesA = document.getElementById('lineNumbersA');
+  var $linesB = document.getElementById('lineNumbersB');
+  var $diffResult = document.getElementById('diffResult');
+  var $diffStats = document.getElementById('diffStats');
+  var $errorMsg = document.getElementById('errorMsg');
+
+  // --- Line numbers sync ---
+  function updateLineNumbers(textarea, lineEl) {
+    var lines = textarea.value.split('\n').length;
+    lineEl.innerHTML = Array.from({length: lines}, function(_, i) { return i + 1; }).join('\n');
+  }
+  $inputA.addEventListener('input', function() { updateLineNumbers($inputA, $linesA); });
+  $inputB.addEventListener('input', function() { updateLineNumbers($inputB, $linesB); });
+  $inputA.addEventListener('scroll', function() { $linesA.scrollTop = $inputA.value ? $inputA.scrollTop : 0; });
+  $inputB.addEventListener('scroll', function() { $linesB.scrollTop = $inputB.value ? $inputB.scrollTop : 0; });
+
+  // --- Escape HTML ---
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // --- Format a value for display ---
+  function formatValue(val) {
+    if (val === null) return 'null';
+    if (typeof val === 'string') return '"' + val + '"';
+    if (typeof val === 'object') return JSON.stringify(val);
+    return String(val);
+  }
+
+  function escapeAndHighlight(val) {
+    var str = formatValue(val);
+    str = escapeHtml(str);
+    // Simple highlighting
+    str = str.replace(/&quot;([^&]*)&quot;/g, '<span class="json-string">"$1"</span>');
+    return str;
+  }
+
+  // --- Deep diff comparison ---
+  function deepDiff(a, b, path, results) {
+    var typeA = (a === null) ? 'null' : typeof a;
+    var typeB = (b === null) ? 'null' : typeof b;
+    if (Array.isArray(a)) typeA = 'array';
+    if (Array.isArray(b)) typeB = 'array';
+    if (typeA === 'object' && a !== null && !Array.isArray(a)) typeA = 'object';
+    if (typeB === 'object' && b !== null && !Array.isArray(b)) typeB = 'object';
+
+    if (typeA !== typeB) {
+      results.push({ type: 'mod', path: path, oldVal: a, newVal: b });
+      return;
+    }
+
+    if (typeA === 'array') {
+      var maxLen = Math.max(a.length, b.length);
+      for (var i = 0; i < maxLen; i++) {
+        var itemPath = path + '[' + i + ']';
+        if (i >= a.length) {
+          results.push({ type: 'add', path: itemPath, oldVal: undefined, newVal: b[i] });
+        } else if (i >= b.length) {
+          results.push({ type: 'del', path: itemPath, oldVal: a[i], newVal: undefined });
+        } else {
+          deepDiff(a[i], b[i], itemPath, results);
+        }
+      }
+      return;
+    }
+
+    if (typeA === 'object') {
+      var keysA = Object.keys(a);
+      var keysB = Object.keys(b);
+      var allKeys = keysA.concat(keysB.filter(function(k) { return keysA.indexOf(k) === -1; }));
+
+      allKeys.forEach(function(key) {
+        var keyPath = path ? path + '.' + key : key;
+        var inA = keysA.indexOf(key) !== -1;
+        var inB = keysB.indexOf(key) !== -1;
+        if (inA && !inB) {
+          results.push({ type: 'del', path: keyPath, oldVal: a[key], newVal: undefined });
+        } else if (!inA && inB) {
+          results.push({ type: 'add', path: keyPath, oldVal: undefined, newVal: b[key] });
+        } else {
+          deepDiff(a[key], b[key], keyPath, results);
+        }
+      });
+      return;
+    }
+
+    // Primitive comparison
+    if (a !== b) {
+      results.push({ type: 'mod', path: path, oldVal: a, newVal: b });
+    } else {
+      results.push({ type: 'same', path: path, oldVal: a, newVal: b });
+    }
+  }
+
+  // --- Main diff function ---
+  function executeDiff() {
+    $errorMsg.classList.remove('show');
+    $errorMsg.textContent = '';
+
+    var strA = $inputA.value.trim();
+    var strB = $inputB.value.trim();
+
+    if (!strA && !strB) {
+      $errorMsg.textContent = '请输入两份 JSON 数据';
+      $errorMsg.classList.add('show');
+      return;
+    }
+    if (!strA) {
+      $errorMsg.textContent = '请输入 JSON A';
+      $errorMsg.classList.add('show');
+      return;
+    }
+    if (!strB) {
+      $errorMsg.textContent = '请输入 JSON B';
+      $errorMsg.classList.add('show');
+      return;
+    }
+
+    var parsedA, parsedB;
+    try {
+      parsedA = JSON.parse(strA);
+    } catch (e) {
+      var match = e.message.match(/position\s+(\d+)/);
+      var hint = 'JSON A 解析错误: ' + e.message;
+      if (match) {
+        var pos = parseInt(match[1]);
+        var before = strA.substring(0, pos);
+        var line = (before.match(/\n/g) || []).length + 1;
+        var col = pos - before.lastIndexOf('\n');
+        hint = 'JSON A 解析错误 - 第 ' + line + ' 行第 ' + col + ' 列: ' + e.message;
+      }
+      $errorMsg.textContent = hint;
+      $errorMsg.classList.add('show');
+      $diffResult.innerHTML = '<div class="diff-empty">修复错误后重试</div>';
+      $diffStats.style.display = 'none';
+      diffResultText = '';
+      return;
+    }
+    try {
+      parsedB = JSON.parse(strB);
+    } catch (e) {
+      var match = e.message.match(/position\s+(\d+)/);
+      var hint = 'JSON B 解析错误: ' + e.message;
+      if (match) {
+        var pos = parseInt(match[1]);
+        var before = strB.substring(0, pos);
+        var line = (before.match(/\n/g) || []).length + 1;
+        var col = pos - before.lastIndexOf('\n');
+        hint = 'JSON B 解析错误 - 第 ' + line + ' 行第 ' + col + ' 列: ' + e.message;
+      }
+      $errorMsg.textContent = hint;
+      $errorMsg.classList.add('show');
+      $diffResult.innerHTML = '<div class="diff-empty">修复错误后重试</div>';
+      $diffStats.style.display = 'none';
+      diffResultText = '';
+      return;
+    }
+
+    // Perform diff
+    var results = [];
+    deepDiff(parsedA, parsedB, '', results);
+
+    // Count stats
+    var stats = { same: 0, add: 0, del: 0, mod: 0 };
+    results.forEach(function(r) { stats[r.type]++; });
+
+    // Render diff lines
+    var html = '';
+    diffResultText = '';
+    results.forEach(function(r) {
+      var prefix = '';
+      var prefixClass = 'prefix-space';
+      var contentHtml = '';
+      var contentText = '';
+
+      if (r.type === 'same') {
+        prefix = '&nbsp;';
+        prefixClass = 'prefix-space';
+        var displayPath = r.path || '(root)';
+        contentHtml = '<span class="diff-unchanged">' + escapeHtml(displayPath) + ': ' + escapeAndHighlight(r.oldVal) + '</span>';
+        contentText = '  ' + displayPath + ': ' + formatValue(r.oldVal);
+      } else if (r.type === 'add') {
+        prefix = '+';
+        prefixClass = 'prefix-add';
+        contentHtml = '<span class="diff-add">' + escapeHtml(r.path) + ': ' + escapeAndHighlight(r.newVal) + '</span>';
+        contentText = '+ ' + r.path + ': ' + formatValue(r.newVal);
+      } else if (r.type === 'del') {
+        prefix = '-';
+        prefixClass = 'prefix-del';
+        contentHtml = '<span class="diff-del">' + escapeHtml(r.path) + ': ' + escapeAndHighlight(r.oldVal) + '</span>';
+        contentText = '- ' + r.path + ': ' + formatValue(r.oldVal);
+      } else if (r.type === 'mod') {
+        prefix = '~';
+        prefixClass = 'prefix-mod';
+        contentHtml = escapeHtml(r.path) + ': ' +
+          '<span class="diff-mod">' + escapeAndHighlight(r.oldVal) + '</span>' +
+          ' <span class="diff-arrow">&rarr;</span> ' +
+          '<span class="diff-mod">' + escapeAndHighlight(r.newVal) + '</span>';
+        contentText = '~ ' + r.path + ': ' + formatValue(r.oldVal) + ' -> ' + formatValue(r.newVal);
+      }
+
+      html += '<div class="diff-line">' +
+        '<span class="diff-line-prefix ' + prefixClass + '">' + prefix + '</span>' +
+        '<span class="diff-line-content">' + contentHtml + '</span>' +
+        '</div>';
+      diffResultText += contentText + '\n';
+    });
+
+    if (results.length === 0) {
+      html = '<div class="diff-empty">两份 JSON 完全相同</div>';
+      diffResultText = '两份 JSON 完全相同';
+    }
+
+    $diffResult.innerHTML = html;
+
+    // Update stats
+    document.getElementById('statSame').textContent = stats.same;
+    document.getElementById('statAdd').textContent = stats.add;
+    document.getElementById('statDel').textContent = stats.del;
+    document.getElementById('statMod').textContent = stats.mod;
+    $diffStats.style.display = 'flex';
+  }
+
+  // --- Copy with feedback ---
+  function copyText(text, btn) {
+    if (!text) return;
+    dtCopy(text).then(function() {
+      btn.textContent = '已复制';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1200);
+    });
+  }
+
+  // --- Button events ---
+  document.getElementById('btnDiff').addEventListener('click', executeDiff);
+  document.getElementById('btnReset').addEventListener('click', function() {
+    $inputA.value = '';
+    $inputB.value = '';
+    updateLineNumbers($inputA, $linesA);
+    updateLineNumbers($inputB, $linesB);
+    $diffResult.innerHTML = '<div class="diff-empty">输入两份 JSON 后点击「对比」查看差异</div>';
+    $diffStats.style.display = 'none';
+    diffResultText = '';
+    $errorMsg.classList.remove('show');
+  });
+  document.getElementById('btnClearA').addEventListener('click', function() {
+    $inputA.value = '';
+    updateLineNumbers($inputA, $linesA);
+  });
+  document.getElementById('btnClearB').addEventListener('click', function() {
+    $inputB.value = '';
+    updateLineNumbers($inputB, $linesB);
+  });
+  document.getElementById('btnPasteA').addEventListener('click', function() {
+    // paste requires user gesture on file://
+    var _ta = document.createElement('textarea'); document.body.appendChild(_ta); _ta.focus(); document.execCommand('paste'); var _t = _ta.value; document.body.removeChild(_ta); if(_t) { $inputA.value = _t; updateLineNumbers($inputA, $linesA); }
+  });
+  document.getElementById('btnPasteB').addEventListener('click', function() {
+    // paste requires user gesture on file://
+    var _ta = document.createElement('textarea'); document.body.appendChild(_ta); _ta.focus(); document.execCommand('paste'); var _t = _ta.value; document.body.removeChild(_ta); if(_t) { $inputB.value = _t; updateLineNumbers($inputB, $linesB); }
+  });
+  document.getElementById('btnCopyResult').addEventListener('click', function() { copyText(diffResultText, this); });
+
+  // --- Keyboard shortcut: Ctrl+Enter ---
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      executeDiff();
+    }
+  });
+
+  // --- Sidebar search filter ---
+  document.querySelector('.sidebar-search input').addEventListener('input', function() {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('.sidebar-item').forEach(function(item) {
+      var text = item.textContent.toLowerCase();
+      item.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+    });
+  });
+
+  // Init
+  updateLineNumbers($inputA, $linesA);
+  updateLineNumbers($inputB, $linesB);
+})();
+</script>
+</body>
+</html>

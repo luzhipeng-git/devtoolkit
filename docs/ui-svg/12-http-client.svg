@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 外框 -->
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏背景 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 分类 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON 工具 分类 -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+
+  <!-- 加密解密 分类 -->
+  <text x="16" y="478" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="486" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="506" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="522" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="542" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="556" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="576" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="590" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="610" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="624" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="644" font-size="12" fill="#475569">密钥工具</text>
+
+  <!-- 其他工具 分类 -->
+  <text x="16" y="680" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">其他工具</text>
+  <rect x="8" y="688" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="708" font-size="12" fill="#475569">二维码</text>
+  <!-- HTTP Client 选中态 -->
+  <rect x="8" y="722" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="722" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="742" font-size="12" fill="#2563eb" font-weight="500">HTTP Client</text>
+  <rect x="8" y="756" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="776" font-size="12" fill="#475569">Nginx</text>
+
+  <!-- 内容区背景 -->
+  <rect x="240" y="40" width="960" height="760" fill="#ffffff"/>
+
+  <!-- 面包屑导航 -->
+  <text x="268" y="70" font-size="12" fill="#94a3b8">其他工具</text>
+  <text x="334" y="70" font-size="12" fill="#cbd5e1">/</text>
+  <text x="346" y="70" font-size="12" fill="#1e293b" font-weight="500">HTTP Client</text>
+
+  <!-- 请求行: 方法 + URL + 发送 -->
+  <!-- 请求方法下拉 -->
+  <rect x="260" y="88" width="100" height="38" rx="6" fill="url(#primaryBtn)"/>
+  <text x="288" y="112" font-size="13" fill="#ffffff" font-weight="600">GET  ▾</text>
+
+  <!-- URL输入框 -->
+  <rect x="368" y="88" width="660" height="38" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="384" y="112" font-size="13" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">https://api.example.com/v1/users</text>
+
+  <!-- 发送按钮 -->
+  <rect x="1038" y="88" width="130" height="38" rx="6" fill="url(#primaryBtn)"/>
+  <text x="1078" y="112" font-size="13" fill="#ffffff" font-weight="600">发送</text>
+
+  <!-- 请求配置区 -->
+  <rect x="260" y="138" width="908" height="200" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="276" y="162" font-size="12" fill="#64748b" font-weight="500">请求配置</text>
+  <!-- 折叠箭头 -->
+  <text x="340" y="162" font-size="10" fill="#94a3b8">▾</text>
+
+  <!-- 请求配置 Tab: Headers | Body | Params -->
+  <rect x="276" y="172" width="72" height="28" rx="4" fill="url(#primaryBtn)"/>
+  <text x="290" y="190" font-size="12" fill="#ffffff" font-weight="500">Headers</text>
+  <rect x="356" y="172" width="56" height="28" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="368" y="190" font-size="12" fill="#64748b">Body</text>
+  <rect x="420" y="172" width="72" height="28" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="432" y="190" font-size="12" fill="#64748b">Params</text>
+
+  <!-- 导出/导入cURL按钮 -->
+  <rect x="960" y="172" width="90" height="28" rx="4" fill="url(#primaryBtn)"/>
+  <text x="976" y="190" font-size="11" fill="#ffffff">导出cURL</text>
+  <rect x="1058" y="172" width="90" height="28" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1074" y="190" font-size="11" fill="#475569">导入cURL</text>
+
+  <!-- Headers Key-Value 表格 -->
+  <!-- 表头 -->
+  <rect x="276" y="208" width="876" height="24" rx="4" fill="#f8fafc"/>
+  <text x="292" y="224" font-size="11" fill="#64748b" font-weight="500">Key</text>
+  <text x="540" y="224" font-size="11" fill="#64748b" font-weight="500">Value</text>
+  <text x="1120" y="224" font-size="11" fill="#94a3b8">✕</text>
+
+  <!-- Row 1 -->
+  <rect x="276" y="234" width="876" height="28" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="292" y="253" font-size="12" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">Content-Type</text>
+  <text x="540" y="253" font-size="12" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">application/json</text>
+  <text x="1120" y="253" font-size="11" fill="#94a3b8">✕</text>
+
+  <!-- Row 2 -->
+  <rect x="276" y="264" width="876" height="28" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="292" y="283" font-size="12" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">Accept</text>
+  <text x="540" y="283" font-size="12" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">application/json</text>
+  <text x="1120" y="283" font-size="11" fill="#94a3b8">✕</text>
+
+  <!-- Row 3 -->
+  <rect x="276" y="294" width="876" height="28" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="292" y="313" font-size="12" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">Authorization</text>
+  <text x="540" y="313" font-size="12" fill="#1e293b" font-family="Consolas, 'Courier New', monospace">Bearer eyJhbGciOiJIUzI1NiJ9...</text>
+  <text x="1120" y="313" font-size="11" fill="#94a3b8">✕</text>
+
+  <!-- 添加行按钮 -->
+  <rect x="276" y="326" width="100" height="24" rx="4" fill="#f8fafc" stroke="#d0d5dd" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="298" y="342" font-size="11" fill="#94a3b8">+ 添加行</text>
+
+  <!-- 响应区 -->
+  <rect x="260" y="350" width="908" height="430" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 状态栏 -->
+  <rect x="260" y="350" width="908" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="260" y="372" width="908" height="14" fill="#f8fafc"/>
+  <line x1="260" y1="386" x2="1168" y2="386" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 状态 -->
+  <rect x="276" y="358" width="70" height="22" rx="4" fill="#dcfce7"/>
+  <text x="288" y="374" font-size="12" fill="#16a34a" font-weight="600">200 OK</text>
+  <text x="362" y="374" font-size="12" fill="#64748b">耗时 234ms</text>
+  <text x="462" y="374" font-size="12" fill="#64748b">大小 1.2KB</text>
+
+  <!-- 响应 Tab: Body(选中) | Headers | Cookies -->
+  <rect x="276" y="396" width="56" height="28" rx="4" fill="url(#primaryBtn)"/>
+  <text x="288" y="414" font-size="12" fill="#ffffff" font-weight="500">Body</text>
+  <rect x="340" y="396" width="72" height="28" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="352" y="414" font-size="12" fill="#64748b">Headers</text>
+  <rect x="420" y="396" width="72" height="28" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="432" y="414" font-size="12" fill="#64748b">Cookies</text>
+
+  <!-- 复制按钮 -->
+  <rect x="1120" y="396" width="34" height="28" rx="4" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1127" y="414" font-size="10" fill="#64748b">复制</text>
+
+  <!-- 响应Body代码区 -->
+  <rect x="276" y="432" width="876" height="336" rx="6" fill="#f8faff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="296" y="460" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">{</text>
+  <text x="316" y="480" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"code": 200,</text>
+  <text x="316" y="500" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"message": "success",</text>
+  <text x="316" y="520" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"data": {</text>
+  <text x="336" y="540" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"users": [</text>
+  <text x="356" y="560" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">{</text>
+  <text x="376" y="580" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"id": 1,</text>
+  <text x="376" y="600" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"name": "张三",</text>
+  <text x="376" y="620" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"email": "zhangsan@example.com"</text>
+  <text x="356" y="640" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">},</text>
+  <text x="356" y="660" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">{</text>
+  <text x="376" y="680" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"id": 2,</text>
+  <text x="376" y="700" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"name": "李四",</text>
+  <text x="376" y="720" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">"email": "lisi@example.com"</text>
+  <text x="356" y="740" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">}</text>
+  <text x="336" y="760" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">]</text>
+  <text x="316" y="760" font-size="12" fill="#3b82f6" font-family="Consolas, 'Courier New', monospace">}</text>
+</svg>

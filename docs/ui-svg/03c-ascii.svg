@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">_</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 (ASCII 选中) -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="188" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="208" font-size="12" fill="#2563eb" font-weight="500">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON 工具 -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+  <rect x="8" y="456" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="476" font-size="12" fill="#475569">Diff</text>
+
+  <!-- 加密解密 -->
+  <text x="16" y="512" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="520" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="540" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="554" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="574" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="588" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="608" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="622" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="642" font-size="12" fill="#475569">哈希摘要</text>
+  <rect x="8" y="656" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="676" font-size="12" fill="#475569">密钥工具</text>
+  <rect x="8" y="690" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="710" font-size="12" fill="#475569">OpenSSL</text>
+
+  <!-- 数字计算 -->
+  <text x="16" y="746" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="754" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="774" font-size="12" fill="#475569">进制转换</text>
+
+  <!-- 侧边栏滚动条 -->
+  <rect x="232" y="96" width="6" height="640" rx="3" fill="#f1f5f9"/>
+  <rect x="232" y="96" width="6" height="200" rx="3" fill="#cbd5e1"/>
+
+  <!-- 内容区 -->
+  <rect x="240" y="40" width="960" height="760" fill="#ffffff"/>
+
+  <!-- 面包屑 -->
+  <text x="268" y="70" font-size="12" fill="#94a3b8">字符编码</text>
+  <text x="330" y="70" font-size="12" fill="#cbd5e1">/</text>
+  <text x="342" y="70" font-size="12" fill="#1e293b" font-weight="500">ASCII 转换</text>
+
+  <!-- 工具面板卡片 -->
+  <rect x="256" y="88" width="928" height="690" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Tab: 字符转ASCII(选中) | ASCII转字符 | 码表查询 -->
+  <rect x="276" y="104" width="120" height="32" rx="6" fill="url(#primaryBtn)"/>
+  <text x="290" y="124" font-size="13" fill="#ffffff" font-weight="500">字符转ASCII</text>
+  <rect x="404" y="104" width="120" height="32" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="418" y="124" font-size="13" fill="#64748b">ASCII转字符</text>
+  <rect x="532" y="104" width="100" height="32" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="546" y="124" font-size="13" fill="#64748b">码表查询</text>
+
+  <!-- 输入行 -->
+  <rect x="276" y="148" width="888" height="44" rx="8" fill="#f8fafc"/>
+  <text x="292" y="175" font-size="12" fill="#64748b" font-weight="500">输入字符串</text>
+  <rect x="380" y="158" width="500" height="26" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="392" y="176" font-size="12" fill="#1e293b" font-family="'Consolas', monospace">Hello</text>
+  <rect x="894" y="158" width="80" height="26" rx="4" fill="url(#primaryBtn)"/>
+  <text x="914" y="176" font-size="11" fill="#ffffff">转换</text>
+  <rect x="984" y="158" width="80" height="26" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1004" y="176" font-size="11" fill="#64748b">清空</text>
+
+  <!-- 结果表格 -->
+  <text x="276" y="216" font-size="12" fill="#64748b" font-weight="500">转换结果</text>
+  <rect x="1080" y="204" width="82" height="20" rx="4" fill="url(#primaryBtn)"/>
+  <text x="1090" y="218" font-size="10" fill="#ffffff">紧凑复制</text>
+
+  <!-- 表头 -->
+  <rect x="276" y="228" width="888" height="32" rx="6" fill="#f1f5f9"/>
+  <text x="300" y="248" font-size="11" fill="#64748b" font-weight="600">字符</text>
+  <text x="420" y="248" font-size="11" fill="#64748b" font-weight="600">ASCII码 (十进制)</text>
+  <text x="600" y="248" font-size="11" fill="#64748b" font-weight="600">ASCII码 (十六进制)</text>
+  <text x="790" y="248" font-size="11" fill="#64748b" font-weight="600">二进制</text>
+
+  <!-- 表格行 1: H -->
+  <rect x="276" y="260" width="888" height="36" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="276" y="260" width="60" height="36" fill="#f8fafc"/>
+  <text x="300" y="283" font-size="14" fill="#1e293b" font-weight="600" font-family="'Consolas', monospace">H</text>
+  <text x="420" y="283" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">72</text>
+  <text x="600" y="283" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">0x48</text>
+  <text x="790" y="283" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">01001000</text>
+
+  <!-- 表格行 2: e -->
+  <rect x="276" y="296" width="888" height="36" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="276" y="296" width="60" height="36" fill="#f8fafc"/>
+  <text x="300" y="319" font-size="14" fill="#1e293b" font-weight="600" font-family="'Consolas', monospace">e</text>
+  <text x="420" y="319" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">101</text>
+  <text x="600" y="319" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">0x65</text>
+  <text x="790" y="319" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">01100101</text>
+
+  <!-- 表格行 3: l -->
+  <rect x="276" y="332" width="888" height="36" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="276" y="332" width="60" height="36" fill="#f8fafc"/>
+  <text x="300" y="355" font-size="14" fill="#1e293b" font-weight="600" font-family="'Consolas', monospace">l</text>
+  <text x="420" y="355" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">108</text>
+  <text x="600" y="355" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">0x6C</text>
+  <text x="790" y="355" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">01101100</text>
+
+  <!-- 表格行 4: l -->
+  <rect x="276" y="368" width="888" height="36" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="276" y="368" width="60" height="36" fill="#f8fafc"/>
+  <text x="300" y="391" font-size="14" fill="#1e293b" font-weight="600" font-family="'Consolas', monospace">l</text>
+  <text x="420" y="391" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">108</text>
+  <text x="600" y="391" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">0x6C</text>
+  <text x="790" y="391" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">01101100</text>
+
+  <!-- 表格行 5: o -->
+  <rect x="276" y="404" width="888" height="36" rx="0" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="276" y="404" width="60" height="36" fill="#f8fafc"/>
+  <text x="300" y="427" font-size="14" fill="#1e293b" font-weight="600" font-family="'Consolas', monospace">o</text>
+  <text x="420" y="427" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">111</text>
+  <text x="600" y="427" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">0x6F</text>
+  <text x="790" y="427" font-size="13" fill="#3b82f6" font-family="'Consolas', monospace">01101111</text>
+
+  <!-- 表格外边框 -->
+  <rect x="276" y="228" width="888" height="212" rx="0" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- 码表查询 Tab 预览（半透明标注） -->
+  <text x="276" y="470" font-size="12" fill="#94a3b8" font-style="italic">码表查询 Tab: 显示 ASCII 码表 (0-127)，控制字符与可打印字符分区，支持滚动</text>
+
+  <!-- 快速统计 -->
+  <rect x="276" y="496" width="888" height="36" rx="8" fill="#f8fafc"/>
+  <text x="292" y="518" font-size="11" fill="#64748b">共 5 个字符 | 可打印字符: 5 | 控制字符: 0</text>
+
+  <!-- 底部复制按钮组 -->
+  <rect x="276" y="550" width="888" height="40" fill="transparent"/>
+  <rect x="276" y="556" width="100" height="28" rx="4" fill="url(#primaryBtn)"/>
+  <text x="298" y="574" font-size="11" fill="#ffffff">复制十进制</text>
+  <rect x="386" y="556" width="110" height="28" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="400" y="574" font-size="11" fill="#64748b">复制十六进制</text>
+  <rect x="506" y="556" width="100" height="28" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="520" y="574" font-size="11" fill="#64748b">复制二进制</text>
+  <rect x="616" y="556" width="80" height="28" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="630" y="574" font-size="11" fill="#64748b">复制全部</text>
+
+  <!-- 历史记录 -->
+  <rect x="276" y="610" width="888" height="160" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="292" y="632" font-size="11" fill="#94a3b8" font-weight="500">历史记录（最近 5 条）</text>
+  <text x="1132" y="632" font-size="11" fill="#cbd5e1">清除</text>
+  <rect x="292" y="644" width="856" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="292" y="644" width="3" height="30" rx="1" fill="#3b82f6"/>
+  <text x="306" y="663" font-size="11" fill="#64748b">字符转ASCII | Hello → 72 101 108 108 111</text>
+  <text x="900" y="663" font-size="10" fill="#94a3b8">2 分钟前</text>
+  <rect x="1088" y="650" width="44" height="18" rx="3" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1094" y="663" font-size="9" fill="#64748b">复制</text>
+
+  <rect x="292" y="680" width="856" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="306" y="699" font-size="11" fill="#64748b">ASCII转字符 | 72 101 108 108 111 → Hello</text>
+  <text x="900" y="699" font-size="10" fill="#94a3b8">15 分钟前</text>
+  <rect x="1088" y="686" width="44" height="18" rx="3" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1094" y="699" font-size="9" fill="#64748b">复制</text>
+
+  <rect x="292" y="716" width="856" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="306" y="735" font-size="11" fill="#64748b">字符转ASCII | ABC → 65 66 67</text>
+  <text x="900" y="735" font-size="10" fill="#94a3b8">1 小时前</text>
+  <rect x="1088" y="722" width="44" height="18" rx="3" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1094" y="735" font-size="9" fill="#64748b">复制</text>
+
+  <rect x="292" y="748" width="856" height="16" rx="4" fill="transparent"/>
+  <text x="306" y="760" font-size="9" fill="#94a3b8">码表查询 | 搜索: NUL ...</text>
+</svg>

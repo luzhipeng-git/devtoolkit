@@ -1,0 +1,38 @@
+[package]
+name = "dev-toolkit"
+version = "1.0.0"
+description = "DevToolkit - Developer Tools Desktop App"
+authors = ["DevToolkit"]
+edition = "2021"
+
+[lib]
+name = "devtoolkit_lib"
+crate-type = ["lib"]
+path = "src/lib.rs"
+
+[[bin]]
+name = "devtoolkit-server"
+path = "src/bin/server.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", optional = true }
+
+[dependencies]
+tauri = { version = "2", optional = true }
+tauri-plugin-http = { version = "2", optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+hex = "0.4"
+ring = "0.17"
+rand = "0.8"
+x509-parser = "0.16"
+openssl = "0.10"
+reqwest = { version = "0.12", features = ["json", "multipart"] }
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.6", features = ["cors"] }
+
+[features]
+default = []
+tauri-mode = ["dep:tauri", "dep:tauri-plugin-http", "dep:tauri-build"]

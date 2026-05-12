@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳转换 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .time-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .time-section:last-child {
+      margin-bottom: 0;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title-icon {
+      font-size: 16px;
+    }
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .input-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      min-width: 60px;
+    }
+    .input-field {
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    .input-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .input-field.wide {
+      flex: 1;
+      min-width: 200px;
+    }
+    .input-field.medium {
+      width: 160px;
+    }
+    .radio-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .radio-item input[type="radio"] {
+      accent-color: var(--primary);
+    }
+    .radio-item input[type="radio"]:checked + span {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .output-card {
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 4px;
+    }
+    .output-main {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .output-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .format-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .format-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .format-input {
+      height: 30px;
+      border-radius: 4px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 12px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      flex: 1;
+    }
+    .format-input:focus {
+      border-color: var(--primary);
+    }
+    .output-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .output-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    .output-unit {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .calc-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .calc-select {
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+    }
+    .calc-select:focus {
+      border-color: var(--primary);
+    }
+    .calc-result {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .calc-arrow {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .btn-copy {
+      padding: 5px 14px;
+      border-radius: 4px;
+      background: var(--bg-white);
+      color: var(--text-muted);
+      font-size: 11px;
+      border: 1px solid var(--border-input);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-copy:hover {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+    .btn-convert {
+      padding: 6px 18px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-convert:hover {
+      opacity: 0.9;
+    }
+    .now-link {
+      font-size: 11px;
+      color: var(--text-link);
+      cursor: pointer;
+      text-decoration: underline;
+      margin-left: 8px;
+    }
+    .now-link:hover {
+      color: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item active" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">时间计算</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">时间戳转换</span>
+        </div>
+
+        <!-- Section 1: Timestamp to Date -->
+        <div class="time-section">
+          <div class="section-title">
+            <span class="section-title-icon">&#9202;</span>
+            时间戳 &rarr; 日期
+          </div>
+
+          <div class="input-row">
+            <span class="input-label">时间戳</span>
+            <input type="text" class="input-field wide" id="ts2date-input" value="" placeholder="输入时间戳，如 1714060800000">
+            <span class="now-link" id="ts2date-now">当前时间戳</span>
+            <button class="btn-convert" id="ts2date-btn">转换</button>
+          </div>
+
+          <div class="input-row">
+            <span class="input-label">单位</span>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="ts-unit" value="ms" checked>
+                <span>毫秒</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="ts-unit" value="s">
+                <span>秒</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="output-card" id="ts2date-output" style="display:none;">
+            <div class="output-main" id="ts2date-main"></div>
+            <div class="output-sub" id="ts2date-utc"></div>
+            <div class="format-row">
+              <span class="format-label">格式</span>
+              <select class="calc-select" id="ts2date-format-select" style="height:28px;font-size:12px;">
+                <option value="yyyy-MM-dd HH:mm:ss.SSS" selected>yyyy-MM-dd HH:mm:ss.SSS</option>
+                <option value="yyyy-MM-dd HH:mm:ss">yyyy-MM-dd HH:mm:ss</option>
+                <option value="yyyy/MM/dd HH:mm:ss">yyyy/MM/dd HH:mm:ss</option>
+                <option value="yyyyMMddHHmmssSSS">yyyyMMddHHmmssSSS（纯数字+毫秒）</option>
+                <option value="yyyyMMddHHmmss">yyyyMMddHHmmss（纯数字）</option>
+                <option value="yyyyMMdd">yyyyMMdd（纯日期）</option>
+                <option value="yyyy-MM-ddTHH:mm:ss">yyyy-MM-ddTHH:mm:ss</option>
+                <option value="yyyy-MM-dd">yyyy-MM-dd（仅日期）</option>
+                <option value="HH:mm:ss">HH:mm:ss（仅时间）</option>
+                <option value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
+                <option value="MM/dd/yyyy HH:mm:ss">MM/dd/yyyy HH:mm:ss</option>
+                <option value="yyyy年MM月dd日 HH:mm:ss">yyyy年MM月dd日 HH:mm:ss</option>
+                <option value="ISO 8601">ISO 8601</option>
+                <option value="RFC 2822">RFC 2822</option>
+                <option value="custom">自定义...</option>
+              </select>
+              <input type="text" class="format-input" id="ts2date-format" value="yyyy-MM-dd HH:mm:ss.SSS" style="display:none;">
+            </div>
+            <div style="margin-top: 8px;">
+              <button class="btn-copy" id="ts2date-copy">复制</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Date to Timestamp -->
+        <div class="time-section">
+          <div class="section-title">
+            <span class="section-title-icon">&#128197;</span>
+            日期 &rarr; 时间戳
+          </div>
+
+          <div class="input-row">
+            <span class="input-label">日期</span>
+            <input type="text" class="input-field medium" id="date2ts-date" placeholder="YYYY-MM-DD">
+            <span class="input-label">时间</span>
+            <input type="text" class="input-field medium" id="date2ts-time" placeholder="HH:mm:ss">
+            <span class="now-link" id="date2ts-now">当前时间</span>
+            <button class="btn-convert" id="date2ts-btn">转换</button>
+          </div>
+
+          <div class="output-card" id="date2ts-output" style="display:none;">
+            <div class="output-row">
+              <span class="output-value" id="date2ts-ms"></span>
+              <span class="output-unit">(毫秒)</span>
+              <button class="btn-copy" data-copy="date2ts-ms">复制</button>
+            </div>
+            <div class="output-row" style="margin-top: 8px;">
+              <span class="output-value" id="date2ts-s"></span>
+              <span class="output-unit">(秒)</span>
+              <button class="btn-copy" data-copy="date2ts-s">复制</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Time Calculation -->
+        <div class="time-section">
+          <div class="section-title">
+            <span class="section-title-icon">&#9201;</span>
+            时间推算
+          </div>
+
+          <div class="input-row">
+            <span class="input-label">基准</span>
+            <input type="text" class="input-field wide" id="calc-base" placeholder="输入基准时间戳">
+            <span class="now-link" id="calc-now">当前时间戳</span>
+          </div>
+
+          <div class="calc-row">
+            <span class="input-label">运算</span>
+            <select class="calc-select" id="calc-op">
+              <option selected>+</option>
+              <option>-</option>
+            </select>
+            <input type="text" class="input-field" id="calc-value" value="1" style="width: 80px; text-align: center;">
+            <select class="calc-select" id="calc-unit">
+              <option value="d" selected>天</option>
+              <option value="h">时</option>
+              <option value="m">分</option>
+              <option value="s">秒</option>
+            </select>
+            <button class="btn-convert" id="calc-btn">计算</button>
+          </div>
+
+          <div class="output-card" id="calc-output" style="display:none;">
+            <div class="calc-result">
+              <span class="output-value" id="calc-result-datetime"></span>
+              <span class="calc-arrow">&rarr;</span>
+              <span class="output-value" id="calc-result-ts"></span>
+              <button class="btn-copy" id="calc-copy">复制</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      // Utility: pad number with leading zeros
+      function pad(n, len) {
+        var s = String(n);
+        while (s.length < len) s = '0' + s;
+        return s;
+      }
+
+      // Format a Date according to pattern
+      function formatDate(date, pattern) {
+        return pattern
+          .replace('yyyy', date.getFullYear())
+          .replace('MM', pad(date.getMonth() + 1, 2))
+          .replace('dd', pad(date.getDate(), 2))
+          .replace('HH', pad(date.getHours(), 2))
+          .replace('mm', pad(date.getMinutes(), 2))
+          .replace('ss', pad(date.getSeconds(), 2))
+          .replace('SSS', pad(date.getMilliseconds(), 3));
+      }
+
+      // Default datetime string for display
+      function defaultFormat(date) {
+        return formatDate(date, 'yyyy-MM-dd HH:mm:ss.SSS');
+      }
+
+      // Copy helper with feedback
+      function copyWithFeedback(btn, text) {
+        if (!text) return;
+        dtCopy(text).then(function () {
+          var orig = btn.textContent;
+          btn.textContent = '已复制';
+          btn.style.color = '#16a34a';
+          btn.style.borderColor = '#16a34a';
+          setTimeout(function () {
+            btn.textContent = orig;
+            btn.style.color = '';
+            btn.style.borderColor = '';
+          }, 1200);
+        });
+      }
+
+      // ======= Section 1: Timestamp -> Date =======
+      var ts2dateInput = document.getElementById('ts2date-input');
+      var ts2dateBtn = document.getElementById('ts2date-btn');
+      var ts2dateOutput = document.getElementById('ts2date-output');
+      var ts2dateMain = document.getElementById('ts2date-main');
+      var ts2dateUtc = document.getElementById('ts2date-utc');
+      var ts2dateFormat = document.getElementById('ts2date-format');
+      var ts2dateCopy = document.getElementById('ts2date-copy');
+      var ts2dateNow = document.getElementById('ts2date-now');
+
+      function getTsUnit() {
+        return document.querySelector('input[name="ts-unit"]:checked').value;
+      }
+
+      ts2dateNow.addEventListener('click', function () {
+        var now = Date.now();
+        ts2dateInput.value = getTsUnit() === 's' ? Math.floor(now / 1000) : now;
+        doTs2Date();
+      });
+
+      ts2dateBtn.addEventListener('click', doTs2Date);
+      ts2dateInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') doTs2Date();
+      });
+
+      // Re-format when pattern changes
+      var ts2dateCurrentDate = null;
+      var ts2dateFormatSelect = document.getElementById('ts2date-format-select');
+      var currentFormatSelectValue = 'yyyy-MM-dd HH:mm:ss.SSS';
+
+      ts2dateFormatSelect.addEventListener('change', function () {
+        var val = ts2dateFormatSelect.value;
+        // Dedup: ignore if same value selected
+        if (val === currentFormatSelectValue) return;
+        currentFormatSelectValue = val;
+
+        if (val === 'custom') {
+          ts2dateFormat.style.display = 'block';
+          ts2dateFormat.value = '';
+          ts2dateFormat.focus();
+          return;
+        }
+        ts2dateFormat.style.display = 'none';
+        ts2dateFormat.value = val;
+        if (ts2dateCurrentDate) {
+          ts2dateMain.textContent = formatWithPreset(ts2dateCurrentDate, val);
+        }
+      });
+
+      ts2dateFormat.addEventListener('input', function () {
+        if (ts2dateCurrentDate && ts2dateFormatSelect.value === 'custom') {
+          ts2dateMain.textContent = formatDate(ts2dateCurrentDate, ts2dateFormat.value);
+        }
+      });
+
+      function formatWithPreset(date, preset) {
+        if (preset === 'ISO 8601') return date.toISOString();
+        if (preset === 'RFC 2822') {
+          var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+          var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          return days[date.getDay()] + ', ' + pad(date.getDate(), 2) + ' ' + months[date.getMonth()] + ' ' + date.getFullYear() + ' ' + pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2) + ':' + pad(date.getSeconds(), 2) + ' +0000';
+        }
+        return formatDate(date, preset);
+      }
+
+      function doTs2Date() {
+        var raw = ts2dateInput.value.trim();
+        if (!raw) return;
+        var ts = Number(raw);
+        if (isNaN(ts)) { ts2dateMain.textContent = '无效时间戳'; ts2dateOutput.style.display = 'block'; return; }
+        if (getTsUnit() === 's') ts = ts * 1000;
+        var date = new Date(ts);
+        if (isNaN(date.getTime())) { ts2dateMain.textContent = '无效时间戳'; ts2dateOutput.style.display = 'block'; return; }
+        ts2dateCurrentDate = date;
+        var selectedFormat = ts2dateFormatSelect.value;
+        ts2dateMain.textContent = formatWithPreset(date, selectedFormat === 'custom' ? ts2dateFormat.value : selectedFormat);
+        ts2dateUtc.textContent = 'UTC: ' + date.toISOString();
+        ts2dateOutput.style.display = 'block';
+      }
+
+      ts2dateCopy.addEventListener('click', function () {
+        copyWithFeedback(ts2dateCopy, ts2dateMain.textContent);
+      });
+
+      // Initialize with current timestamp
+      ts2dateInput.value = Date.now();
+      doTs2Date();
+
+      // ======= Section 2: Date -> Timestamp =======
+      var date2tsDate = document.getElementById('date2ts-date');
+      var date2tsTime = document.getElementById('date2ts-time');
+      var date2tsBtn = document.getElementById('date2ts-btn');
+      var date2tsOutput = document.getElementById('date2ts-output');
+      var date2tsMs = document.getElementById('date2ts-ms');
+      var date2tsS = document.getElementById('date2ts-s');
+      var date2tsNow = document.getElementById('date2ts-now');
+
+      function nowDateStr() {
+        var d = new Date();
+        return pad(d.getFullYear(), 4) + '-' + pad(d.getMonth() + 1, 2) + '-' + pad(d.getDate(), 2);
+      }
+      function nowTimeStr() {
+        var d = new Date();
+        return pad(d.getHours(), 2) + ':' + pad(d.getMinutes(), 2) + ':' + pad(d.getSeconds(), 2);
+      }
+
+      date2tsNow.addEventListener('click', function () {
+        date2tsDate.value = nowDateStr();
+        date2tsTime.value = nowTimeStr();
+        doDate2Ts();
+      });
+
+      date2tsBtn.addEventListener('click', doDate2Ts);
+
+      function doDate2Ts() {
+        var dateStr = date2tsDate.value.trim();
+        var timeStr = date2tsTime.value.trim() || '00:00:00';
+        var combined = dateStr + 'T' + timeStr;
+        var date = new Date(combined);
+        if (isNaN(date.getTime())) {
+          date2tsMs.textContent = '无效日期';
+          date2tsS.textContent = '';
+          date2tsOutput.style.display = 'block';
+          return;
+        }
+        var ms = date.getTime();
+        date2tsMs.textContent = String(ms);
+        date2tsS.textContent = String(Math.floor(ms / 1000));
+        date2tsOutput.style.display = 'block';
+      }
+
+      // Copy buttons for section 2
+      document.querySelectorAll('[data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var targetId = btn.getAttribute('data-copy');
+          var targetEl = document.getElementById(targetId);
+          if (targetEl) copyWithFeedback(btn, targetEl.textContent);
+        });
+      });
+
+      // Initialize section 2 with current time
+      date2tsDate.value = nowDateStr();
+      date2tsTime.value = nowTimeStr();
+      doDate2Ts();
+
+      // ======= Section 3: Time Calculation =======
+      var calcBase = document.getElementById('calc-base');
+      var calcOp = document.getElementById('calc-op');
+      var calcValue = document.getElementById('calc-value');
+      var calcUnit = document.getElementById('calc-unit');
+      var calcBtn = document.getElementById('calc-btn');
+      var calcOutput = document.getElementById('calc-output');
+      var calcResultDatetime = document.getElementById('calc-result-datetime');
+      var calcResultTs = document.getElementById('calc-result-ts');
+      var calcNow = document.getElementById('calc-now');
+      var calcCopy = document.getElementById('calc-copy');
+
+      calcNow.addEventListener('click', function () {
+        calcBase.value = Date.now();
+      });
+
+      calcBtn.addEventListener('click', doCalc);
+
+      function doCalc() {
+        var baseTs = Number(calcBase.value.trim());
+        if (isNaN(baseTs) || calcBase.value.trim() === '') {
+          calcBase.value = Date.now();
+          baseTs = Date.now();
+        }
+        var val = Number(calcValue.value.trim());
+        if (isNaN(val)) { calcResultDatetime.textContent = '无效数值'; calcOutput.style.display = 'block'; return; }
+
+        var unitMs = 1;
+        switch (calcUnit.value) {
+          case 'd': unitMs = 86400000; break;
+          case 'h': unitMs = 3600000; break;
+          case 'm': unitMs = 60000; break;
+          case 's': unitMs = 1000; break;
+        }
+
+        var offset = val * unitMs;
+        if (calcOp.value === '-') offset = -offset;
+        var resultTs = baseTs + offset;
+        var resultDate = new Date(resultTs);
+
+        calcResultDatetime.textContent = defaultFormat(resultDate);
+        calcResultTs.textContent = String(resultTs);
+        calcOutput.style.display = 'block';
+      }
+
+      calcCopy.addEventListener('click', function () {
+        copyWithFeedback(calcCopy, calcResultTs.textContent);
+      });
+
+      // Initialize section 3
+      calcBase.value = Date.now();
+      doCalc();
+    })();
+  </script>
+</body>
+</html>

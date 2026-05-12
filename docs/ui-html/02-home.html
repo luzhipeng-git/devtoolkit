@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevToolkit - 开发者工具箱</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* Home-specific styles */
+    .home-header {
+      margin-bottom: 24px;
+    }
+    .home-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .home-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .home-search {
+      margin-bottom: 20px;
+    }
+    .home-search input {
+      width: 100%;
+      max-width: 400px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border-input);
+      padding: 0 14px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .home-search input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .home-search input::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    /* Recently used section */
+    .recent-section {
+      margin-bottom: 24px;
+    }
+    .recent-title {
+      font-size: 12px;
+      color: var(--text-placeholder);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .recent-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .recent-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .recent-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .recent-item-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .recent-item-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .recent-item-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Category section */
+    .category-section {
+      margin-bottom: 24px;
+    }
+    .category-title {
+      font-size: 12px;
+      color: var(--text-placeholder);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    /* Tool card grid */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .tool-card-link {
+      display: block;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .tool-card-link:hover {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+    }
+    .tool-card-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .tool-card-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: var(--bg-code);
+    }
+    .tool-card-text {
+      min-width: 0;
+    }
+    .tool-card-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tool-card-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Responsive: 3 columns when narrower */
+    @media (max-width: 900px) {
+      .tool-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .recent-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 700px) {
+      .tool-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .recent-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item active" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Welcome header -->
+        <div class="home-header">
+          <div class="home-title">开发者工具箱</div>
+          <div class="home-subtitle">常用开发工具集，离线使用</div>
+        </div>
+
+        <!-- Search tools -->
+        <div class="home-search">
+          <input type="text" id="home-search" placeholder="搜索工具...">
+        </div>
+
+        <!-- Recently used -->
+        <div class="recent-section">
+          <div class="recent-title">最近使用</div>
+          <div class="recent-grid" id="recent-grid">
+            <a class="recent-item" href="03b-base64.html">
+              <div class="recent-item-icon">🔗</div>
+              <div>
+                <div class="recent-item-name">Base64 编解码</div>
+                <div class="recent-item-desc">文本与 Base64 互转</div>
+              </div>
+            </a>
+            <a class="recent-item" href="04-json.html">
+              <div class="recent-item-icon">📋</div>
+              <div>
+                <div class="recent-item-name">格式化 & 压缩</div>
+                <div class="recent-item-desc">格式化与压缩 JSON</div>
+              </div>
+            </a>
+            <a class="recent-item" href="13-time.html">
+              <div class="recent-item-icon">🕐</div>
+              <div>
+                <div class="recent-item-name">时间戳转换</div>
+                <div class="recent-item-desc">时间戳与日期互转</div>
+              </div>
+            </a>
+            <a class="recent-item" href="15-regex.html">
+              <div class="recent-item-icon">🔍</div>
+              <div>
+                <div class="recent-item-name">正则调试</div>
+                <div class="recent-item-desc">正则表达式在线测试</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 字符编码 -->
+        <div class="category-section">
+          <div class="category-title">字符编码</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="03-encoding.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔢</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">Hex 转换</div>
+                  <div class="tool-card-desc">文本与十六进制互转</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="03b-base64.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔗</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">Base64 编解码</div>
+                  <div class="tool-card-desc">文本与 Base64 互转</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="03c-ascii.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔤</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">ASCII 转换</div>
+                  <div class="tool-card-desc">ASCII 码与字符互转</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="03d-url.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🌐</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">URL 编解码</div>
+                  <div class="tool-card-desc">URL 编码与解码转换</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="03e-unicode.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">💎</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">Unicode 编解码</div>
+                  <div class="tool-card-desc">Unicode 编码与解码转换</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- JSON 工具 -->
+        <div class="category-section">
+          <div class="category-title">JSON 工具</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="04-json.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">📋</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">格式化 & 压缩</div>
+                  <div class="tool-card-desc">格式化与压缩 JSON</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="04c-json-deserialize.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔄</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">反序列化</div>
+                  <div class="tool-card-desc">JSON 转为数据结构</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="04d-json-path.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔎</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">JSONPath 查询</div>
+                  <div class="tool-card-desc">使用 JSONPath 查询数据</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="04e-json-diff.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">⚖️</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">JSON Diff</div>
+                  <div class="tool-card-desc">对比两个 JSON 差异</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 加密解密 -->
+        <div class="category-section">
+          <div class="category-title">加密解密</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="05-crypto-aes.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔐</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">AES 加密/解密</div>
+                  <div class="tool-card-desc">AES 对称加密解密</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="05b-crypto-des.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔒</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">DES/3DES</div>
+                  <div class="tool-card-desc">DES/3DES 加密解密</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="06-crypto-rsa.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔑</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">RSA 工具</div>
+                  <div class="tool-card-desc">RSA 非对称加密解密</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="07-hash.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔏</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">哈希摘要</div>
+                  <div class="tool-card-desc">MD5/SHA 哈希计算</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="08-keygen.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🗝️</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">密钥工具</div>
+                  <div class="tool-card-desc">密钥生成与管理</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 数字计算 -->
+        <div class="category-section">
+          <div class="category-title">数字计算</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="10-calculator.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔢</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">进制转换</div>
+                  <div class="tool-card-desc">二/八/十/十六进制互转</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="10-calculator.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🧮</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">公式求值</div>
+                  <div class="tool-card-desc">数学表达式计算</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="10-calculator.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">➗</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">取模/整除</div>
+                  <div class="tool-card-desc">取模与整除运算</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 二维码 -->
+        <div class="category-section">
+          <div class="category-title">二维码</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="11-qrcode.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">📱</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">二维码生成</div>
+                  <div class="tool-card-desc">文本生成二维码图片</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="11b-qrcode-parse.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">📷</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">二维码解析</div>
+                  <div class="tool-card-desc">解析二维码图片内容</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- HTTP Client -->
+        <div class="category-section">
+          <div class="category-title">HTTP Client</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="12-http-client.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🌍</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">HTTP 请求</div>
+                  <div class="tool-card-desc">发送 HTTP/HTTPS 请求</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 时间计算 -->
+        <div class="category-section">
+          <div class="category-title">时间计算</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="13-time.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🕐</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">时间戳转换</div>
+                  <div class="tool-card-desc">时间戳与日期互转</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="13-time.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">📅</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">时间推算</div>
+                  <div class="tool-card-desc">日期加减与推算</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Cron -->
+        <div class="category-section">
+          <div class="category-title">Cron</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="14-cron.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">⏰</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">Cron 表达式</div>
+                  <div class="tool-card-desc">Cron 表达式生成与解析</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 正则调试 -->
+        <div class="category-section">
+          <div class="category-title">正则调试</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="15-regex.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔍</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">正则调试</div>
+                  <div class="tool-card-desc">正则表达式在线测试</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Grok -->
+        <div class="category-section">
+          <div class="category-title">Grok</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="16-grok.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">📝</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">Grok 调试</div>
+                  <div class="tool-card-desc">Grok 模式调试与测试</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Nginx -->
+        <div class="category-section">
+          <div class="category-title">Nginx</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="17-nginx.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">⚙️</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">Nginx 工具</div>
+                  <div class="tool-card-desc">Nginx 配置生成与解析</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 配置转换 -->
+        <div class="category-section">
+          <div class="category-title">配置转换</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="18-config-converter.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🔧</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">配置文件转换</div>
+                  <div class="tool-card-desc">不同配置格式互转</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 编码解码 -->
+        <div class="category-section">
+          <div class="category-title">编码解码</div>
+          <div class="tool-grid">
+            <a class="tool-card-link" href="19-codec.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🎫</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">JWT 编解码</div>
+                  <div class="tool-card-desc">JWT Token 解码与验证</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="19-codec.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">📄</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">HTML 实体</div>
+                  <div class="tool-card-desc">HTML 实体编码与解码</div>
+                </div>
+              </div>
+            </a>
+            <a class="tool-card-link" href="19-codec.html">
+              <div class="tool-card-inner">
+                <div class="tool-card-icon">🎨</div>
+                <div class="tool-card-text">
+                  <div class="tool-card-name">颜色转换</div>
+                  <div class="tool-card-desc">HEX/RGB/HSL 颜色互转</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      var STORAGE_KEY = 'devtoolkit_recent_tools';
+
+      // ===== Recent Tools =====
+      function getRecentTools() {
+        try {
+          var data = localStorage.getItem(STORAGE_KEY);
+          return data ? JSON.parse(data) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveRecentTool(toolId, toolName, toolHref) {
+        var recent = getRecentTools();
+        // Remove duplicate
+        recent = recent.filter(function (r) { return r.id !== toolId; });
+        recent.unshift({ id: toolId, name: toolName, href: toolHref, ts: Date.now() });
+        // Keep max 50
+        if (recent.length > 50) recent = recent.slice(0, 50);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(recent));
+        } catch (e) { /* ignore */ }
+      }
+
+      function renderRecentTools() {
+        var recent = getRecentTools();
+        var grid = document.getElementById('recent-grid');
+        if (!grid) return;
+
+        if (recent.length === 0) {
+          // Keep the default static cards as fallback
+          return;
+        }
+
+        // Show up to 4 recent tools
+        var display = recent.slice(0, 4);
+        grid.innerHTML = display.map(function (tool) {
+          return '<a class="recent-item" href="' + escapeAttr(tool.href) + '">' +
+            '<div class="recent-item-icon">' + getToolIcon(tool.id) + '</div>' +
+            '<div>' +
+            '<div class="recent-item-name">' + escapeHtml(tool.name) + '</div>' +
+            '</div>' +
+            '</a>';
+        }).join('');
+      }
+
+      function getToolIcon(id) {
+        var icons = {
+          '03-encoding': '🔢', '03b-base64': '🔗', '03c-ascii': '🔤', '03d-url': '🌐', '03e-unicode': '💎',
+          '04-json': '📋', '04c-json-deserialize': '🔄', '04d-json-path': '🔎', '04e-json-diff': '⚖️',
+          '05-crypto-aes': '🔐', '05b-crypto-des': '🔒', '06-crypto-rsa': '🔑', '07-hash': '🔏', '08-keygen': '🗝️', '09-openssl': '🛡️',
+          '10-calculator': '🔢',
+          '11-qrcode': '📱', '11b-qrcode-parse': '📷',
+          '12-http-client': '🌍',
+          '13-time': '🕐',
+          '14-cron': '⏰',
+          '15-regex': '🔍',
+          '16-grok': '📝',
+          '17-nginx': '⚙️',
+          '18-config-converter': '🔧',
+          '19-codec': '🎫'
+        };
+        return icons[id] || '🔧';
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function escapeAttr(str) {
+        return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+      }
+
+      // ===== Track tool card clicks =====
+      document.querySelectorAll('.tool-card-link, .recent-item').forEach(function (card) {
+        card.addEventListener('click', function () {
+          var href = card.getAttribute('href') || '';
+          var nameEl = card.querySelector('.tool-card-name, .recent-item-name');
+          var name = nameEl ? nameEl.textContent : '';
+          var toolId = href.replace('.html', '');
+          saveRecentTool(toolId, name, href);
+        });
+      });
+
+      // ===== Dedup: clicking active sidebar item = no-op =====
+      document.querySelectorAll('.sidebar-item').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          if (item.classList.contains('active')) {
+            e.preventDefault();
+          }
+        });
+      });
+
+      // ===== Dedup: clicking tool card pointing to same page = no-op =====
+      var currentPage = window.location.pathname.split('/').pop() || '02-home.html';
+      document.querySelectorAll('.tool-card-link').forEach(function (card) {
+        var href = card.getAttribute('href');
+        if (href === currentPage) {
+          card.addEventListener('click', function (e) {
+            e.preventDefault();
+          });
+        }
+      });
+
+      // ===== Sidebar search/filter =====
+      var sidebarSearch = document.querySelector('.sidebar-search input');
+      if (sidebarSearch) {
+        sidebarSearch.addEventListener('input', function () {
+          var q = this.value.toLowerCase().trim();
+          document.querySelectorAll('.sidebar-item').forEach(function (item) {
+            var text = item.textContent.toLowerCase();
+            item.style.display = (!q || text.includes(q)) ? '' : 'none';
+          });
+          // Also toggle group titles based on whether they have visible items
+          document.querySelectorAll('.sidebar-group-title').forEach(function (title) {
+            if (!q) { title.style.display = ''; return; }
+            var next = title.nextElementSibling;
+            var hasVisible = false;
+            while (next && !next.classList.contains('sidebar-group-title')) {
+              if (next.classList.contains('sidebar-item') && next.style.display !== 'none') {
+                hasVisible = true;
+              }
+              next = next.nextElementSibling;
+            }
+            title.style.display = hasVisible ? '' : 'none';
+          });
+        });
+      }
+
+      // ===== Content area search/filter =====
+      var homeSearchInput = document.getElementById('home-search');
+      if (homeSearchInput) {
+        homeSearchInput.addEventListener('input', function () {
+          var q = this.value.toLowerCase().trim();
+          document.querySelectorAll('.tool-card-link').forEach(function (card) {
+            var name = card.querySelector('.tool-card-name');
+            var desc = card.querySelector('.tool-card-desc');
+            var nameText = name ? name.textContent.toLowerCase() : '';
+            var descText = desc ? desc.textContent.toLowerCase() : '';
+            card.style.display = (!q || nameText.includes(q) || descText.includes(q)) ? '' : 'none';
+          });
+          // Hide empty category sections
+          document.querySelectorAll('.category-section').forEach(function (section) {
+            var visibleCards = section.querySelectorAll('.tool-card-link:not([style*="display: none"])');
+            section.style.display = (!q || visibleCards.length > 0) ? '' : 'none';
+          });
+        });
+      }
+
+      // Render recent tools from localStorage on load
+      renderRecentTools();
+    })();
+  </script>
+</body>
+</html>

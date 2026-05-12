@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenSSL 工具 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .param-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+      margin-bottom: 16px;
+    }
+    .param-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .param-item.full-width { grid-column: 1 / -1; }
+    .param-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .param-input {
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+    }
+    .param-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .param-select {
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 0 10px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+    }
+    .param-select:focus { border-color: var(--primary); }
+    .param-textarea {
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      padding: 10px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      font-family: 'Consolas', 'Monaco', monospace;
+      resize: vertical;
+      line-height: 1.5;
+      min-height: 80px;
+    }
+    .param-textarea:focus { border-color: var(--primary); }
+    .file-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .file-input-row .param-input { flex: 1; }
+    .btn-file {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 6px;
+      background: var(--bg-code);
+      color: var(--text-secondary);
+      font-size: 12px;
+      border: 1px solid var(--border-input);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-file:hover { border-color: var(--primary); color: var(--primary); }
+    .input-mode-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 6px;
+    }
+    .input-mode-tab {
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      border: 1px solid var(--border-input);
+      background: var(--bg-code);
+      color: var(--text-muted);
+    }
+    .input-mode-tab:first-child { border-radius: 4px 0 0 4px; }
+    .input-mode-tab:last-child { border-radius: 0 4px 4px 0; }
+    .input-mode-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .command-output {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .command-text {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .command-text .cmd-keyword { color: #7dd3fc; }
+    .command-text .cmd-option { color: #86efac; }
+    .command-text .cmd-value { color: #fde68a; }
+    .command-copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.1);
+      color: #94a3b8;
+      font-size: 11px;
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+    }
+    .command-copy-btn:hover { background: rgba(255,255,255,0.2); color: #e2e8f0; }
+    .action-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .btn-exec {
+      padding: 8px 24px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-exec:hover { opacity: 0.9; }
+    .result-area {
+      background: var(--bg-code-alt);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      min-height: 60px;
+    }
+    .result-area .result-placeholder {
+      font-size: 12px;
+      color: var(--text-placeholder);
+    }
+    .quick-commands { margin-top: 16px; }
+    .quick-commands-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+    .quick-commands-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .quick-cmd-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; background: var(--bg-code);
+      border: 1px solid var(--border-card); border-radius: 6px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .quick-cmd-item:hover { border-color: var(--primary); background: var(--primary-light); }
+    .quick-cmd-icon { font-size: 14px; flex-shrink: 0; }
+    .quick-cmd-name { font-size: 12px; color: var(--text-primary); font-weight: 500; }
+    .quick-cmd-desc { font-size: 11px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+    <div class="main-layout">
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item active" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <div class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">加密解密</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">OpenSSL 工具</span>
+        </div>
+        <div class="tool-card">
+          <div class="tool-header">
+            <button class="tool-tab active" data-tab="generator" onclick="switchTab('generator', this)">命令生成器</button>
+            <button class="tool-tab" data-tab="parse" onclick="switchTab('parse', this)">证书解析</button>
+            <button class="tool-tab" data-tab="convert" onclick="switchTab('convert', this)">格式转换</button>
+          </div>
+
+          <!-- Tab 1: Command Generator -->
+          <div class="tab-content active" id="tab-generator">
+            <div class="param-form" style="grid-template-columns: 1fr 1fr; margin-bottom: 16px;">
+              <div class="param-item">
+                <span class="param-label">分类</span>
+                <select class="param-select" id="category" onchange="onCategoryChange()">
+                  <option value="cert">证书相关</option>
+                  <option value="key">密钥相关</option>
+                  <option value="enc">加密相关</option>
+                  <option value="csr">CSR 相关</option>
+                </select>
+              </div>
+              <div class="param-item">
+                <span class="param-label">子分类</span>
+                <select class="param-select" id="subcategory" onchange="onSubcategoryChange()"></select>
+              </div>
+            </div>
+            <div id="dynamic-form"></div>
+            <div class="action-bar">
+              <button class="btn-exec">执行</button>
+              <button class="btn-outline" style="height:36px;">复制命令</button>
+            </div>
+            <div class="command-output" id="command-output">
+              <div class="command-text" id="command-text"></div>
+            </div>
+            <div class="result-area">
+              <div class="result-placeholder" id="result-placeholder">点击"执行"运行命令，或点击"复制命令"复制到剪贴板</div>
+              <pre id="result-output" style="display:none; font-family: Consolas, monospace; font-size: 12px; color: var(--text-primary); white-space: pre-wrap; margin: 0;"></pre>
+            </div>
+            <div class="quick-commands">
+              <div class="quick-commands-title">常用命令</div>
+              <div class="quick-commands-grid">
+                <div class="quick-cmd-item" onclick="quickCmd('cert','selfsign')">
+                  <span class="quick-cmd-icon">&#x1F4DC;</span>
+                  <div><div class="quick-cmd-name">生成自签名证书</div><div class="quick-cmd-desc">openssl req -x509 -newkey ...</div></div>
+                </div>
+                <div class="quick-cmd-item" onclick="quickCmd('key','genrsa')">
+                  <span class="quick-cmd-icon">&#x1F511;</span>
+                  <div><div class="quick-cmd-name">生成 RSA 私钥</div><div class="quick-cmd-desc">openssl genrsa -out private.key 2048</div></div>
+                </div>
+                <div class="quick-cmd-item" onclick="quickCmd('csr','generate')">
+                  <span class="quick-cmd-icon">&#x1F510;</span>
+                  <div><div class="quick-cmd-name">生成 CSR</div><div class="quick-cmd-desc">openssl req -new -key key.pem ...</div></div>
+                </div>
+                <div class="quick-cmd-item" onclick="quickCmd('enc','aes-encrypt')">
+                  <span class="quick-cmd-icon">&#x1F512;</span>
+                  <div><div class="quick-cmd-name">AES 加密文件</div><div class="quick-cmd-desc">openssl enc -aes-256-cbc -salt ...</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Certificate Parse -->
+          <div class="tab-content" id="tab-parse">
+            <div class="param-form" style="grid-template-columns: 1fr; margin-bottom: 16px;">
+              <div class="param-item">
+                <span class="param-label">证书内容</span>
+                <div class="input-mode-tabs">
+                  <span class="input-mode-tab active" onclick="toggleMode(this,'parse-file','parse-pem')">选择文件</span>
+                  <span class="input-mode-tab" onclick="toggleMode(this,'parse-pem','parse-file')">粘贴 PEM</span>
+                </div>
+                <div id="parse-file" class="file-input-row">
+                  <input class="param-input" type="text" id="parse-file-path" placeholder="选择证书文件 (.pem, .cer, .crt, .der)...">
+                  <button class="btn-file" id="btn-parse-upload">上传文件</button>
+                </div>
+                <div id="parse-pem" style="display:none;">
+                  <textarea class="param-textarea" id="parse-pem-text" style="height:120px;" placeholder="-----BEGIN CERTIFICATE-----&#10;MIID...&#10;-----END CERTIFICATE-----"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="action-bar">
+              <button class="btn-exec">解析证书</button>
+            </div>
+            <div class="result-area" style="min-height: 200px;">
+              <div class="result-placeholder">粘贴或选择证书后点击"解析证书"查看详细信息</div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Format Convert -->
+          <div class="tab-content" id="tab-convert">
+            <div class="param-form" style="margin-bottom: 16px;">
+              <div class="param-item">
+                <span class="param-label">源格式</span>
+                <select class="param-select"><option selected>PEM</option><option>DER</option><option>P7B/PKCS#7</option><option>PFX/PKCS#12</option></select>
+              </div>
+              <div class="param-item">
+                <span class="param-label">目标格式</span>
+                <select class="param-select"><option>PEM</option><option selected>DER</option><option>P7B/PKCS#7</option><option>PFX/PKCS#12</option></select>
+              </div>
+            </div>
+            <div class="param-form" style="grid-template-columns: 1fr; margin-bottom: 16px;">
+              <div class="param-item">
+                <span class="param-label">证书内容</span>
+                <div class="input-mode-tabs">
+                  <span class="input-mode-tab active" onclick="toggleMode(this,'conv-file','conv-pem')">选择文件</span>
+                  <span class="input-mode-tab" onclick="toggleMode(this,'conv-pem','conv-file')">粘贴 PEM</span>
+                </div>
+                <div id="conv-file" class="file-input-row">
+                  <input class="param-input" type="text" placeholder="选择证书文件...">
+                  <button class="btn-file">选择文件</button>
+                </div>
+                <div id="conv-pem" style="display:none;">
+                  <textarea class="param-textarea" style="height:100px;" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="action-bar">
+              <button class="btn-exec">转换</button>
+              <button class="btn-outline" style="height:36px;">下载结果</button>
+            </div>
+            <div class="result-area">
+              <div class="result-placeholder">转换结果将在此处显示</div>
+            </div>
+          </div>
+
+          <div class="history-section">
+            <div class="history-header">
+              <span class="history-title">历史记录</span>
+              <span class="history-clear">清空</span>
+            </div>
+            <div class="history-items">
+              <div class="history-item">openssl req -x509 -newkey rsa:2048...</div>
+              <div class="history-item">openssl x509 -in cert.pem -text...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="common.js"></script>
+<script>
+/*
+ * Field types:
+ *   text    - plain text input
+ *   number  - number input
+ *   select  - dropdown
+ *   file    - text input + "选择文件" button (for binary/data files like encrypted files)
+ *   pem     - tab switch: "选择文件" (file picker) OR "粘贴 PEM" (textarea)
+ *             used for certificates, keys, CSR that can be pasted as text
+ *   savefile- text input + "选择位置" button (for output file save path)
+ */
+const DATA = {
+  cert: {
+    label: '证书相关',
+    subs: {
+      'selfsign': {
+        label: '生成自签名证书',
+        form: [
+          { type: 'select', label: '密钥长度', id: 'keylen', value: '2048', options: ['2048','4096'] },
+          { type: 'number', label: '有效期 (天)', id: 'days', value: '365' },
+          { type: 'text', label: '国家 (C)', id: 'subj_c', value: 'CN' },
+          { type: 'text', label: '省/州 (ST)', id: 'subj_st', placeholder: '如 Beijing' },
+          { type: 'text', label: '组织 (O)', id: 'subj_o', placeholder: '如 My Company' },
+          { type: 'text', label: '通用名 (CN)', id: 'subj_cn', placeholder: '如 example.com' },
+          { type: 'savefile', label: '私钥输出', id: 'keyout', value: 'key.pem' },
+          { type: 'savefile', label: '证书输出', id: 'certout', value: 'cert.pem' },
+        ],
+        cmd: (v) => {
+          let subj = '/C='+(v.subj_c||'CN');
+          if(v.subj_st) subj += '/ST='+v.subj_st;
+          if(v.subj_o) subj += '/O='+v.subj_o;
+          if(v.subj_cn) subj += '/CN='+v.subj_cn;
+          return `openssl req -x509 -newkey rsa:${v.keylen||'2048'} -keyout ${v.keyout||'key.pem'} -out ${v.certout||'cert.pem'} -days ${v.days||'365'} -nodes -subj "${subj}"`;
+        }
+      },
+      'view': {
+        label: '查看证书信息',
+        form: [
+          { type: 'pem', label: '证书', id: 'infile', placeholder: '选择证书文件...', pemPlaceholder: '-----BEGIN CERTIFICATE-----\n...' },
+          { type: 'select', label: '输出内容', id: 'what', value: '全部信息', options: ['全部信息','仅主题','仅有效期','仅序列号'] },
+        ],
+        cmd: (v) => {
+          const f = v.infile||'cert.pem';
+          if(v.what==='仅主题') return `openssl x509 -in ${f} -subject -noout`;
+          if(v.what==='仅有效期') return `openssl x509 -in ${f} -dates -noout`;
+          if(v.what==='仅序列号') return `openssl x509 -in ${f} -serial -noout`;
+          return `openssl x509 -in ${f} -text -noout`;
+        }
+      },
+      'convert': {
+        label: '证书格式转换',
+        form: [
+          { type: 'select', label: '源格式', id: 'srcfmt', value: 'PEM', options: ['PEM','DER','P7B','PFX'] },
+          { type: 'select', label: '目标格式', id: 'dstfmt', value: 'DER', options: ['PEM','DER','P7B','PFX'] },
+          { type: 'pem', label: '输入证书', id: 'infile', placeholder: '选择证书文件...', pemPlaceholder: '-----BEGIN CERTIFICATE-----\n...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'cert.der' },
+        ],
+        cmd: (v) => {
+          const s=v.srcfmt||'PEM',d=v.dstfmt||'DER',i=v.infile||'cert.pem',o=v.outfile||'cert.der';
+          if(s==='PEM'&&d==='DER') return `openssl x509 -in ${i} -outform DER -out ${o}`;
+          if(s==='DER'&&d==='PEM') return `openssl x509 -in ${i} -inform DER -out ${o}`;
+          if(s==='PEM'&&d==='P7B') return `openssl crl2pkcs7 -nocrl -certfile ${i} -out ${o}`;
+          if(s==='P7B'&&d==='PEM') return `openssl pkcs7 -in ${i} -print_certs -out ${o}`;
+          if(s==='PEM'&&d==='PFX') return `openssl pkcs12 -export -out ${o} -in ${i} -inkey key.pem`;
+          if(s==='PFX'&&d==='PEM') return `openssl pkcs12 -in ${i} -out ${o} -nodes`;
+          return `openssl x509 -in ${i} -out ${o}`;
+        }
+      },
+      'verify': {
+        label: '验证证书链',
+        form: [
+          { type: 'pem', label: 'CA 证书', id: 'cafile', placeholder: '选择 CA 证书...', pemPlaceholder: '-----BEGIN CERTIFICATE-----\n...' },
+          { type: 'pem', label: '待验证证书', id: 'certfile', placeholder: '选择待验证证书...', pemPlaceholder: '-----BEGIN CERTIFICATE-----\n...' },
+        ],
+        cmd: (v) => `openssl verify -CAfile ${v.cafile||'ca.pem'} ${v.certfile||'cert.pem'}`
+      },
+      'pubkey': {
+        label: '提取证书公钥',
+        form: [
+          { type: 'pem', label: '证书', id: 'infile', placeholder: '选择证书文件...', pemPlaceholder: '-----BEGIN CERTIFICATE-----\n...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'pubkey.pem' },
+        ],
+        cmd: (v) => `openssl x509 -in ${v.infile||'cert.pem'} -pubkey -noout -out ${v.outfile||'pubkey.pem'}`
+      },
+    }
+  },
+  key: {
+    label: '密钥相关',
+    subs: {
+      'genrsa': {
+        label: '生成 RSA 私钥',
+        form: [
+          { type: 'select', label: '密钥长度', id: 'keylen', value: '2048', options: ['2048','4096'] },
+          { type: 'select', label: '私钥加密', id: 'encrypt', value: '不加密', options: ['不加密','AES-256','DES'] },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'private.key' },
+        ],
+        cmd: (v) => {
+          const o=v.outfile||'private.key', k=v.keylen||'2048';
+          if(v.encrypt!=='不加密') return `openssl genrsa -${v.encrypt==='AES-256'?'aes256':'des'} -out ${o} ${k}`;
+          return `openssl genrsa -out ${o} ${k}`;
+        }
+      },
+      'genecc': {
+        label: '生成 ECC 私钥',
+        form: [
+          { type: 'select', label: '曲线', id: 'curve', value: 'prime256v1', options: ['prime256v1','secp384r1','secp521r1'] },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'ec.key' },
+        ],
+        cmd: (v) => `openssl ecparam -name ${v.curve||'prime256v1'} -genkey -noout -out ${v.outfile||'ec.key'}`
+      },
+      'viewkey': {
+        label: '查看私钥信息',
+        form: [
+          { type: 'pem', label: '私钥', id: 'infile', placeholder: '选择私钥文件...', pemPlaceholder: '-----BEGIN RSA PRIVATE KEY-----\n...' },
+          { type: 'select', label: '输入格式', id: 'infmt', value: 'PEM', options: ['PEM','DER'] },
+        ],
+        cmd: (v) => {
+          const f=v.infile||'private.key';
+          return v.infmt==='DER' ? `openssl rsa -in ${f} -inform DER -text -noout` : `openssl rsa -in ${f} -text -noout`;
+        }
+      },
+      'convertkey': {
+        label: '私钥格式转换',
+        form: [
+          { type: 'select', label: '源格式', id: 'srcfmt', value: 'PEM', options: ['PEM','DER'] },
+          { type: 'select', label: '目标格式', id: 'dstfmt', value: 'DER', options: ['PEM','DER'] },
+          { type: 'pem', label: '输入私钥', id: 'infile', placeholder: '选择私钥文件...', pemPlaceholder: '-----BEGIN RSA PRIVATE KEY-----\n...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'key.der' },
+        ],
+        cmd: (v) => `openssl rsa -in ${v.infile||'key.pem'} -inform ${v.srcfmt||'PEM'} -outform ${v.dstfmt||'DER'} -out ${v.outfile||'key.der'}`
+      },
+      'extractpub': {
+        label: '提取公钥',
+        form: [
+          { type: 'pem', label: '私钥', id: 'infile', placeholder: '选择私钥文件...', pemPlaceholder: '-----BEGIN RSA PRIVATE KEY-----\n...' },
+          { type: 'savefile', label: '公钥输出', id: 'outfile', value: 'public.key' },
+        ],
+        cmd: (v) => `openssl rsa -in ${v.infile||'private.key'} -pubout -out ${v.outfile||'public.key'}`
+      },
+    }
+  },
+  enc: {
+    label: '加密相关',
+    subs: {
+      'aes-encrypt': {
+        label: '对称加密',
+        form: [
+          { type: 'select', label: '算法', id: 'algo', value: 'aes-256-cbc', options: ['aes-256-cbc','aes-128-cbc','aes-256-ecb','des-ede3-cbc','chacha20'] },
+          { type: 'select', label: '密码输入方式', id: 'pass_src', value: '交互输入', options: ['交互输入','命令行传入','从文件读取'] },
+          { type: 'file', label: '输入文件', id: 'infile', value: '', placeholder: '选择要加密的文件...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'encrypted.enc' },
+        ],
+        cmd: (v) => {
+          let c = `openssl enc -${v.algo||'aes-256-cbc'} -salt -in ${v.infile||'plaintext.txt'} -out ${v.outfile||'encrypted.enc'}`;
+          if(v.pass_src==='命令行传入') c += ' -pass pass:your_password';
+          if(v.pass_src==='从文件读取') c += ' -pass file:password.txt';
+          return c;
+        }
+      },
+      'aes-decrypt': {
+        label: '对称解密',
+        form: [
+          { type: 'select', label: '算法', id: 'algo', value: 'aes-256-cbc', options: ['aes-256-cbc','aes-128-cbc','aes-256-ecb','des-ede3-cbc','chacha20'] },
+          { type: 'select', label: '密码输入方式', id: 'pass_src', value: '交互输入', options: ['交互输入','命令行传入','从文件读取'] },
+          { type: 'file', label: '输入文件', id: 'infile', value: '', placeholder: '选择加密文件...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'decrypted.txt' },
+        ],
+        cmd: (v) => {
+          let c = `openssl enc -${v.algo||'aes-256-cbc'} -d -in ${v.infile||'encrypted.enc'} -out ${v.outfile||'decrypted.txt'}`;
+          if(v.pass_src==='命令行传入') c += ' -pass pass:your_password';
+          if(v.pass_src==='从文件读取') c += ' -pass file:password.txt';
+          return c;
+        }
+      },
+      'rsa-encrypt': {
+        label: 'RSA 加密',
+        form: [
+          { type: 'pem', label: '公钥', id: 'pubkey', placeholder: '选择公钥文件...', pemPlaceholder: '-----BEGIN PUBLIC KEY-----\n...' },
+          { type: 'file', label: '输入文件', id: 'infile', value: '', placeholder: '选择要加密的文件...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'encrypted.enc' },
+        ],
+        cmd: (v) => `openssl rsautl -encrypt -inkey ${v.pubkey||'public.key'} -pubin -in ${v.infile||'plaintext.txt'} -out ${v.outfile||'encrypted.enc'}`
+      },
+      'rsa-decrypt': {
+        label: 'RSA 解密',
+        form: [
+          { type: 'pem', label: '私钥', id: 'privkey', placeholder: '选择私钥文件...', pemPlaceholder: '-----BEGIN RSA PRIVATE KEY-----\n...' },
+          { type: 'file', label: '输入文件', id: 'infile', value: '', placeholder: '选择加密文件...' },
+          { type: 'savefile', label: '输出文件', id: 'outfile', value: 'decrypted.txt' },
+        ],
+        cmd: (v) => `openssl rsautl -decrypt -inkey ${v.privkey||'private.key'} -in ${v.infile||'encrypted.enc'} -out ${v.outfile||'decrypted.txt'}`
+      },
+    }
+  },
+  csr: {
+    label: 'CSR 相关',
+    subs: {
+      'generate': {
+        label: '生成 CSR',
+        form: [
+          { type: 'file', label: '私钥文件', id: 'keyfile', value: '', placeholder: '选择私钥文件...' },
+          { type: 'savefile', label: 'CSR 输出', id: 'outfile', value: 'request.csr' },
+          { type: 'text', label: '国家 (C)', id: 'subj_c', value: 'CN' },
+          { type: 'text', label: '省/州 (ST)', id: 'subj_st', placeholder: '如 Beijing' },
+          { type: 'text', label: '组织 (O)', id: 'subj_o', placeholder: '如 My Company' },
+          { type: 'text', label: '通用名 (CN)', id: 'subj_cn', placeholder: '如 example.com' },
+        ],
+        cmd: (v) => {
+          let subj = '/C='+(v.subj_c||'CN');
+          if(v.subj_st) subj += '/ST='+v.subj_st;
+          if(v.subj_o) subj += '/O='+v.subj_o;
+          if(v.subj_cn) subj += '/CN='+v.subj_cn;
+          return `openssl req -new -key ${v.keyfile||'private.key'} -out ${v.outfile||'request.csr'} -subj "${subj}"`;
+        }
+      },
+      'viewcsr': {
+        label: '查看 CSR',
+        form: [
+          { type: 'pem', label: 'CSR', id: 'infile', placeholder: '选择 CSR 文件...', pemPlaceholder: '-----BEGIN CERTIFICATE REQUEST-----\n...' },
+          { type: 'select', label: '输出内容', id: 'what', value: '全部信息', options: ['全部信息','仅主题','仅公钥'] },
+        ],
+        cmd: (v) => {
+          const f=v.infile||'request.csr';
+          if(v.what==='仅主题') return `openssl req -in ${f} -subject -noout`;
+          if(v.what==='仅公钥') return `openssl req -in ${f} -pubkey -noout`;
+          return `openssl req -in ${f} -text -noout`;
+        }
+      },
+      'verifycsr': {
+        label: '验证 CSR 签名',
+        form: [
+          { type: 'pem', label: 'CSR', id: 'infile', placeholder: '选择 CSR 文件...', pemPlaceholder: '-----BEGIN CERTIFICATE REQUEST-----\n...' },
+        ],
+        cmd: (v) => `openssl req -in ${v.infile||'request.csr'} -verify -noout`
+      },
+    }
+  }
+};
+
+var currentActiveTab = 'generator';
+function switchTab(tab, btnEl) {
+  if (currentActiveTab === tab) return; // dedup
+  currentActiveTab = tab;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tool-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btnEl.classList.add('active');
+}
+
+var lastCategory = document.getElementById('category').value;
+function onCategoryChange() {
+  const cat = document.getElementById('category').value;
+  if (cat === lastCategory) return; // dedup
+  lastCategory = cat;
+  const subSel = document.getElementById('subcategory');
+  subSel.innerHTML = '';
+  for (const [k, v] of Object.entries(DATA[cat].subs)) {
+    subSel.innerHTML += `<option value="${k}">${v.label}</option>`;
+  }
+  lastSubcategory = subSel.value;
+  onSubcategoryChange();
+}
+
+var lastSubcategory = '';
+function onSubcategoryChange() {
+  const cat = document.getElementById('category').value;
+  const sub = document.getElementById('subcategory').value;
+  if (sub === lastSubcategory && document.getElementById('dynamic-form').innerHTML !== '') return; // dedup
+  lastSubcategory = sub;
+  const sub = document.getElementById('subcategory').value;
+  const d = DATA[cat].subs[sub];
+  if (!d) return;
+  const formDiv = document.getElementById('dynamic-form');
+  let html = '<div class="param-form">';
+  for (const f of d.form) {
+    if (f.type === 'pem') {
+      html += '<div class="param-item full-width">';
+      html += `<span class="param-label">${f.label}</span>`;
+      html += '<div class="input-mode-tabs">';
+      html += `<span class="input-mode-tab active" onclick="switchInputMode(this,'file-${f.id}')">选择文件</span>`;
+      html += `<span class="input-mode-tab" onclick="switchInputMode(this,'pem-${f.id}')">粘贴 PEM</span>`;
+      html += '</div>';
+      html += `<div id="file-${f.id}" class="file-input-row">`;
+      html += `<input class="param-input" type="text" id="p_${f.id}" placeholder="${f.placeholder||''}" onchange="updateCommand()" oninput="updateCommand()">`;
+      html += '<button class="btn-file">选择文件</button>';
+      html += '</div>';
+      html += `<div id="pem-${f.id}" style="display:none;">`;
+      html += `<textarea class="param-textarea" id="pt_${f.id}" placeholder="${f.pemPlaceholder||''}" style="height:100px;" oninput="updateCommand()"></textarea>`;
+      html += '</div>';
+      html += '</div>';
+    } else {
+      html += '<div class="param-item">';
+      html += `<span class="param-label">${f.label}</span>`;
+      if (f.type === 'select') {
+        html += `<select class="param-select" id="p_${f.id}" onchange="updateCommand()">`;
+        for (const o of f.options) html += `<option${o===f.value?' selected':''}>${o}</option>`;
+        html += '</select>';
+      } else if (f.type === 'number') {
+        html += `<input class="param-input" type="number" id="p_${f.id}" value="${f.value||''}" onchange="updateCommand()" oninput="updateCommand()">`;
+      } else if (f.type === 'file') {
+        html += '<div class="file-input-row">';
+        html += `<input class="param-input" type="text" id="p_${f.id}" value="${f.value||''}" placeholder="${f.placeholder||''}" onchange="updateCommand()" oninput="updateCommand()">`;
+        html += '<button class="btn-file">选择文件</button>';
+        html += '</div>';
+      } else if (f.type === 'savefile') {
+        html += '<div class="file-input-row">';
+        html += `<input class="param-input" type="text" id="p_${f.id}" value="${f.value||''}" placeholder="${f.placeholder||'输出文件路径...'}" onchange="updateCommand()" oninput="updateCommand()">`;
+        html += '<button class="btn-file">选择位置</button>';
+        html += '</div>';
+      } else {
+        html += `<input class="param-input" type="text" id="p_${f.id}" value="${f.value||''}" placeholder="${f.placeholder||''}" onchange="updateCommand()" oninput="updateCommand()">`;
+      }
+      html += '</div>';
+    }
+  }
+  html += '</div>';
+  formDiv.innerHTML = html;
+  updateCommand();
+}
+
+function updateCommand() {
+  const cat = document.getElementById('category').value;
+  const sub = document.getElementById('subcategory').value;
+  const d = DATA[cat].subs[sub];
+  if (!d) return;
+  const vals = {};
+  for (const f of d.form) {
+    const el = document.getElementById('p_' + f.id);
+    if (el) vals[f.id] = el.value;
+  }
+  renderCommand(d.cmd(vals));
+}
+
+function renderCommand(cmd) {
+  const parts = cmd.split(' ');
+  let html = `<span class="cmd-keyword">${parts[0]}</span>`;
+  for (let i = 1; i < parts.length; i++) {
+    const p = parts[i];
+    html += p.startsWith('-') ? ` <span class="cmd-option">${p}</span>` : ` <span class="cmd-value">${p}</span>`;
+  }
+  document.getElementById('command-text').innerHTML = html;
+}
+
+// Generic toggle: show div 'showId', hide div 'hideId'
+function toggleMode(tab, showId, hideId) {
+  tab.parentElement.querySelectorAll('.input-mode-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById(hideId).style.display = 'none';
+  const showEl = document.getElementById(showId);
+  showEl.style.display = showEl.classList.contains('file-input-row') ? 'flex' : 'block';
+  updateCommand();
+}
+
+// Legacy alias for dynamic forms
+function switchInputMode(tab, targetId) {
+  const fieldId = targetId.split('-').slice(1).join('-');
+  const fileDiv = document.getElementById('file-' + fieldId);
+  const pemDiv = document.getElementById('pem-' + fieldId);
+  if (targetId.startsWith('pem')) {
+    toggleMode(tab, 'pem-' + fieldId, 'file-' + fieldId);
+  } else {
+    toggleMode(tab, 'file-' + fieldId, 'pem-' + fieldId);
+  }
+}
+
+function quickCmd(cat, sub) {
+  document.getElementById('category').value = cat;
+  onCategoryChange();
+  document.getElementById('subcategory').value = sub;
+  onSubcategoryChange();
+}
+
+onCategoryChange();
+
+// ============ Certificate Parse File Upload ============
+document.getElementById('btn-parse-upload').addEventListener('click', function() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pem,.cer,.crt,.der';
+  input.addEventListener('change', function() {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    if (file.size > 1024 * 1024) {
+      alert('文件过大，最大支持 1MB');
+      return;
+    }
+    var filePathInput = document.getElementById('parse-file-path');
+    filePathInput.value = file.name;
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'der') {
+      // Binary DER: read as ArrayBuffer and convert to base64
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var bytes = new Uint8Array(e.target.result);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        var b64 = btoa(binary);
+        var pemContent = '-----BEGIN CERTIFICATE-----\n' +
+          b64.match(/.{1,64}/g).join('\n') + '\n-----END CERTIFICATE-----';
+        document.getElementById('parse-pem-text').value = pemContent;
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // PEM or other text-based: read as text
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('parse-pem-text').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+  });
+  input.click();
+});
+
+// ============ Source Format Dedup in Convert Tab ============
+var convSrcSelect = document.querySelector('#tab-convert .param-select:first-child');
+var convDstSelect = document.querySelector('#tab-convert .param-select:last-child');
+var lastConvSrc = convSrcSelect ? convSrcSelect.value : '';
+if (convSrcSelect) {
+  convSrcSelect.addEventListener('change', function() {
+    if (convSrcSelect.value === lastConvSrc) return; // dedup
+    lastConvSrc = convSrcSelect.value;
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unicode 编解码 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <span class="dot dot-close"></span>
+        <span class="dot dot-minimize"></span>
+        <span class="dot dot-maximize"></span>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <span class="titlebar-title">DevToolkit</span>
+      <span class="titlebar-version">v1.0.0</span>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item active" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">字符编码</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Unicode 编解码</span>
+        </div>
+
+        <!-- Tool Card -->
+        <div class="tool-card">
+          <!-- Tab Bar -->
+          <div class="tool-header">
+            <button class="tool-tab active" id="tab-encode">编码</button>
+            <button class="tool-tab" id="tab-decode">解码</button>
+          </div>
+
+          <!-- Options Panel -->
+          <div class="options-panel">
+            <div class="option-group">
+              <span class="option-label">输出格式</span>
+              <select class="option-select" id="opt-format">
+                <option value="slash-u" selected>\uXXXX</option>
+                <option value="u-plus">U+XXXX</option>
+                <option value="html-entity">HTML Entity</option>
+                <option value="numeric">&amp;#XXXX;</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <span class="option-label">分隔符</span>
+              <select class="option-select" id="opt-separator">
+                <option value="space" selected>空格</option>
+                <option value="none">无</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Input Editor -->
+          <div class="editor-header">
+            <span class="editor-title" id="input-label">输入（字符串）</span>
+            <div class="editor-actions">
+              <button class="btn-outline" id="btn-clear-input">清空</button>
+            </div>
+          </div>
+          <div class="editor-body">
+            <div class="line-numbers" id="input-line-numbers">1</div>
+            <textarea class="editor-textarea" id="input-area" placeholder="在此输入文本...">你好世界AB</textarea>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="swap-btn-container">
+            <button class="swap-btn" id="btn-swap">&#8693; 交换</button>
+          </div>
+
+          <!-- Output Editor -->
+          <div class="editor-header">
+            <span class="editor-title" id="output-label">输出（Unicode）</span>
+            <div class="editor-actions">
+              <button class="btn-primary" id="btn-copy">复制</button>
+            </div>
+          </div>
+          <div class="editor-body output">
+            <div class="line-numbers" id="output-line-numbers">1</div>
+            <div class="editor-output" id="output-area"></div>
+          </div>
+
+          <!-- Info Tip -->
+          <div class="info-tip" id="info-tip"></div>
+
+          <!-- History Section -->
+          <div class="history-section" id="history-section" style="display:none;">
+            <div class="history-header">
+              <span class="history-title">历史记录（最近 5 条）</span>
+              <span class="history-clear" id="btn-clear-history">清空</span>
+            </div>
+            <div class="history-items" id="history-items"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      var mode = 'encode';
+      var historyList = [];
+      var MAX_HISTORY = 5;
+
+      // Config dedup tracking
+      var currentFormat = 'slash-u';
+      var currentSeparator = 'space';
+
+      var tabEncode = document.getElementById('tab-encode');
+      var tabDecode = document.getElementById('tab-decode');
+      var optFormat = document.getElementById('opt-format');
+      var optSep = document.getElementById('opt-separator');
+      var inputArea = document.getElementById('input-area');
+      var inputLabel = document.getElementById('input-label');
+      var outputArea = document.getElementById('output-area');
+      var outputLabel = document.getElementById('output-label');
+      var inputLineNums = document.getElementById('input-line-numbers');
+      var outputLineNums = document.getElementById('output-line-numbers');
+      var infoTip = document.getElementById('info-tip');
+      var btnClearInput = document.getElementById('btn-clear-input');
+      var btnSwap = document.getElementById('btn-swap');
+      var btnCopy = document.getElementById('btn-copy');
+      var btnClearHistory = document.getElementById('btn-clear-history');
+      var historyItems = document.getElementById('history-items');
+      var historySection = document.getElementById('history-section');
+
+      function padHex4(code) {
+        var h = code.toString(16).toUpperCase();
+        while (h.length < 4) h = '0' + h;
+        return h;
+      }
+
+      function textToUnicode(text) {
+        var fmt = optFormat.value;
+        var sep = optSep.value === 'space' ? ' ' : '';
+        var parts = [];
+        for (var i = 0; i < text.length; i++) {
+          var code = text.charCodeAt(i);
+          if (code >= 0xD800 && code <= 0xDBFF && i + 1 < text.length) {
+            var low = text.charCodeAt(i + 1);
+            if (low >= 0xDC00 && low <= 0xDFFF) {
+              var full = ((code - 0xD800) << 10) + (low - 0xDC00) + 0x10000;
+              var h = padHex4(full);
+              if (fmt === 'slash-u') parts.push('\\u' + h);
+              else if (fmt === 'u-plus') parts.push('U+' + h);
+              else if (fmt === 'html-entity') parts.push('&#x' + h + ';');
+              else parts.push('&#' + full + ';');
+              i++;
+              continue;
+            }
+          }
+          var hex = padHex4(code);
+          if (fmt === 'slash-u') parts.push('\\u' + hex);
+          else if (fmt === 'u-plus') parts.push('U+' + hex);
+          else if (fmt === 'html-entity') parts.push('&#x' + hex + ';');
+          else parts.push('&#' + code + ';');
+        }
+        return parts.join(sep);
+      }
+
+      function unicodeToText(text) {
+        var unified = text;
+        unified = unified.replace(/&#x([0-9a-fA-F]{1,6});/g, function (m, hex) {
+          return '\\u' + padHex4(parseInt(hex, 16));
+        });
+        unified = unified.replace(/&#(\d{1,7});/g, function (m, dec) {
+          return '\\u' + padHex4(parseInt(dec, 10));
+        });
+        unified = unified.replace(/U\+([0-9a-fA-F]{4,6})/g, function (m, hex) {
+          return '\\u' + padHex4(parseInt(hex, 16));
+        });
+
+        var result = '';
+        var re = /\\u([0-9a-fA-F]{4,6})/g;
+        var lastIndex = 0;
+        var match;
+        while ((match = re.exec(unified)) !== null) {
+          result += unified.substring(lastIndex, match.index);
+          var code = parseInt(match[1], 16);
+          if (code > 0xFFFF) {
+            var hi = Math.floor((code - 0x10000) / 0x400) + 0xD800;
+            var lo = (code - 0x10000) % 0x400 + 0xDC00;
+            result += String.fromCharCode(hi, lo);
+          } else {
+            result += String.fromCharCode(code);
+          }
+          lastIndex = match.index + match[0].length;
+        }
+        result += unified.substring(lastIndex);
+        return result;
+      }
+
+      function doConvert() {
+        var input = inputArea.value;
+        if (!input) {
+          outputArea.textContent = '';
+          infoTip.textContent = '';
+          updateLineNumbers(outputLineNums, '');
+          return;
+        }
+        var result = '';
+        if (mode === 'encode') {
+          result = textToUnicode(input);
+        } else {
+          result = unicodeToText(input);
+        }
+        outputArea.style.color = '';
+        outputArea.textContent = result;
+        updateLineNumbers(outputLineNums, result);
+        if (mode === 'encode') {
+          infoTip.textContent = '共 ' + input.length + ' 个字符已转换为 Unicode';
+        } else {
+          infoTip.textContent = '已解码为文本，共 ' + result.length + ' 个字符';
+        }
+      }
+
+      function updateLineNumbers(el, text) {
+        var lines = (text || '').split('\n');
+        var nums = [];
+        for (var i = 1; i <= Math.max(lines.length, 1); i++) nums.push(i);
+        el.textContent = nums.join('\n');
+      }
+      function updateInputLineNumbers() { updateLineNumbers(inputLineNums, inputArea.value); }
+
+      function setMode(newMode) {
+        if (mode === newMode) return; // dedup: ignore same tab click
+        mode = newMode;
+        tabEncode.className = 'tool-tab' + (mode === 'encode' ? ' active' : '');
+        tabDecode.className = 'tool-tab' + (mode === 'decode' ? ' active' : '');
+        if (mode === 'encode') {
+          inputLabel.textContent = '输入（字符串）';
+          outputLabel.textContent = '输出（Unicode）';
+          inputArea.placeholder = '在此输入文本...';
+        } else {
+          inputLabel.textContent = '输入（Unicode）';
+          outputLabel.textContent = '输出（字符串）';
+          inputArea.placeholder = '在此输入 Unicode，如 \\u4F60\\u597D 或 U+4F60 U+597D...';
+        }
+        var prevOutput = outputArea.textContent;
+        if (prevOutput && prevOutput.indexOf('错误') !== 0) {
+          inputArea.value = prevOutput;
+        }
+        outputArea.textContent = '';
+        outputArea.style.color = '';
+        infoTip.textContent = '';
+        updateInputLineNumbers();
+        doConvert();
+      }
+
+      tabEncode.addEventListener('click', function () { setMode('encode'); });
+      tabDecode.addEventListener('click', function () { setMode('decode'); });
+      optFormat.addEventListener('change', function () {
+        if (this.value === currentFormat) return; // dedup
+        currentFormat = this.value;
+        doConvert();
+      });
+      optSep.addEventListener('change', function () {
+        if (this.value === currentSeparator) return; // dedup
+        currentSeparator = this.value;
+        doConvert();
+      });
+
+      inputArea.addEventListener('input', function () { updateInputLineNumbers(); doConvert(); });
+
+      btnClearInput.addEventListener('click', function () {
+        inputArea.value = '';
+        outputArea.textContent = '';
+        outputArea.style.color = '';
+        infoTip.textContent = '';
+        updateInputLineNumbers();
+        updateLineNumbers(outputLineNums, '');
+      });
+
+      btnSwap.addEventListener('click', function () {
+        var outputText = outputArea.textContent;
+        if (!outputText || outputText.indexOf('错误') === 0) return;
+        var newMode = mode === 'encode' ? 'decode' : 'encode';
+        mode = newMode;
+        tabEncode.className = 'tool-tab' + (mode === 'encode' ? ' active' : '');
+        tabDecode.className = 'tool-tab' + (mode === 'decode' ? ' active' : '');
+        if (mode === 'encode') {
+          inputLabel.textContent = '输入（字符串）';
+          outputLabel.textContent = '输出（Unicode）';
+        } else {
+          inputLabel.textContent = '输入（Unicode）';
+          outputLabel.textContent = '输出（字符串）';
+        }
+        inputArea.value = outputText;
+        updateInputLineNumbers();
+        doConvert();
+        addHistory(outputText, inputArea.value);
+      });
+
+      function copyWithFeedback(btn, text) {
+        dtCopy(text).then(function () {
+          var orig = btn.textContent;
+          btn.textContent = '已复制';
+          btn.style.color = '#16a34a';
+          btn.style.borderColor = '#16a34a';
+          setTimeout(function () { btn.textContent = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1200);
+        });
+      }
+
+      btnCopy.addEventListener('click', function () {
+        var text = outputArea.textContent;
+        if (!text || text.indexOf('错误') === 0) return;
+        copyWithFeedback(btnCopy, text);
+        addHistory(inputArea.value, text);
+      });
+
+      function addHistory(inputVal, outputVal) {
+        if (!inputVal || !outputVal || outputVal.indexOf('错误') === 0) return;
+        var shortIn = inputVal.length > 20 ? inputVal.substring(0, 20) + '…' : inputVal;
+        var shortOut = outputVal.length > 20 ? outputVal.substring(0, 20) + '…' : outputVal;
+        var label = shortIn + ' → ' + shortOut;
+        for (var i = 0; i < historyList.length; i++) { if (historyList[i].label === label) return; }
+        historyList.unshift({ label: label, input: inputVal, output: outputVal, mode: mode });
+        if (historyList.length > MAX_HISTORY) historyList.pop();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        historyItems.innerHTML = '';
+        if (historyList.length === 0) { historySection.style.display = 'none'; return; }
+        historySection.style.display = '';
+        for (var i = 0; i < historyList.length; i++) {
+          var item = historyList[i];
+          var el = document.createElement('div');
+          el.className = 'history-item';
+          el.textContent = item.label;
+          el.title = '点击恢复此转换';
+          el.style.cursor = 'pointer';
+          (function (entry) {
+            el.addEventListener('click', function () {
+              setMode(entry.mode);
+              inputArea.value = entry.input;
+              updateInputLineNumbers();
+              doConvert();
+            });
+          })(item);
+          historyItems.appendChild(el);
+        }
+      }
+
+      btnClearHistory.addEventListener('click', function () { historyList = []; renderHistory(); });
+
+      updateInputLineNumbers();
+      doConvert();
+    })();
+  </script>
+</body>
+</html>

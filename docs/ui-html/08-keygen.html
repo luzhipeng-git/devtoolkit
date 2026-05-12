@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>密钥工具 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .keygen-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border-card);
+      margin-bottom: 20px;
+    }
+    .keygen-tab {
+      padding: 8px 20px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      position: relative;
+      transition: color 0.15s;
+    }
+    .keygen-tab:hover {
+      color: var(--text-primary);
+    }
+    .keygen-tab.active {
+      color: var(--primary);
+    }
+    .keygen-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 1px;
+    }
+    .key-options-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .option-group-inline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .option-label-inline {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .number-input {
+      width: 70px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border-input);
+      padding: 0 8px;
+      font-size: 12px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      text-align: center;
+    }
+    .number-input:focus {
+      border-color: var(--primary);
+    }
+    .btn-action {
+      padding: 7px 20px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-action:hover { opacity: 0.9; }
+    .generated-keys {
+      margin-top: 16px;
+    }
+    .key-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .key-card-value {
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--accent-blue);
+      word-break: break-all;
+      flex: 1;
+      margin-right: 12px;
+      line-height: 1.5;
+    }
+    .key-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .key-card-info {
+      font-size: 11px;
+      color: var(--text-placeholder);
+      white-space: nowrap;
+    }
+    .batch-copy-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .preview-section {
+      margin-top: 24px;
+      padding: 16px;
+      border: 2px dashed var(--border-input);
+      border-radius: 10px;
+      background: var(--bg-code);
+    }
+    .preview-label {
+      font-size: 11px;
+      color: var(--text-placeholder);
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .preview-inner {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .kcv-output {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 6px;
+    }
+    .kcv-value {
+      font-size: 14px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--accent-blue);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .no-keys-msg {
+      font-size: 12px;
+      color: var(--text-placeholder);
+      padding: 16px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <span class="dot dot-close"></span>
+        <span class="dot dot-minimize"></span>
+        <span class="dot dot-maximize"></span>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <span class="titlebar-title">DevToolkit</span>
+      <span class="titlebar-version">v1.0.0</span>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item active" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">加密解密</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">密钥工具</span>
+        </div>
+
+        <!-- Tool Card -->
+        <div class="tool-card">
+          <!-- Section 1: 随机密钥生成 -->
+          <div class="tool-header" style="margin-bottom: 12px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">随机密钥生成</span>
+          </div>
+
+          <!-- Options -->
+          <div class="key-options-row">
+            <div class="option-group-inline">
+              <span class="option-label-inline">密钥长度</span>
+              <input class="number-input" type="number" id="key-length" value="32" min="1">
+              <span style="font-size: 11px; color: var(--text-placeholder);">字节</span>
+            </div>
+            <div class="option-group-inline">
+              <span class="option-label-inline">密钥格式</span>
+              <select class="option-select" id="key-format">
+                <option selected>Hex</option>
+                <option>Base64</option>
+              </select>
+            </div>
+            <div class="option-group-inline">
+              <span class="option-label-inline">生成数量</span>
+              <input class="number-input" type="number" id="key-quantity" value="1" min="1" max="100">
+            </div>
+          </div>
+
+          <!-- Generate Button -->
+          <div style="margin-bottom: 16px;">
+            <button class="btn-action" id="btn-generate">生成</button>
+          </div>
+
+          <!-- Generated Keys -->
+          <div class="generated-keys" id="generated-keys">
+            <div class="no-keys-msg">点击 "生成" 按钮生成随机密钥</div>
+          </div>
+
+          <!-- Batch Copy -->
+          <div class="batch-copy-row" id="batch-copy-row" style="display:none;">
+            <button class="btn-outline" id="btn-batch-copy">批量复制</button>
+          </div>
+        </div>
+
+        <!-- KCV 计算卡片 -->
+        <div class="tool-card" style="margin-top: 16px;">
+          <div class="tool-header" style="margin-bottom: 12px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">KCV 计算</span>
+            <span style="font-size: 11px; color: var(--text-placeholder); margin-left: 8px;">输入密钥，计算密钥校验值</span>
+          </div>
+
+          <!-- 密钥输入 + 算法选择 + KCV按钮 一行 -->
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+            <div class="option-group-inline" style="flex: 1; min-width: 300px;">
+              <span class="option-label-inline">密钥 (Hex)</span>
+              <input class="option-input" type="text" id="kcv-key-input" placeholder="输入十六进制密钥" value="0123456789abcdef0123456789abcdef" style="flex: 1; min-width: 200px; height: 32px; font-family: Consolas, monospace;">
+              <button class="btn-upload" id="btn-upload-kcv-key" style="height: 32px; padding: 0 10px; border-radius: 6px; background: var(--bg-white); color: var(--text-muted); font-size: 11px; border: 1px solid var(--border-input); cursor: pointer; white-space: nowrap;">上传文件</button>
+            </div>
+            <div class="option-group-inline">
+              <span class="option-label-inline">算法</span>
+              <select class="option-select" id="kcv-algo">
+                <option selected>AES</option>
+                <option>DES</option>
+                <option>3DES</option>
+              </select>
+            </div>
+            <button class="btn-action" id="btn-kcv">计算 KCV</button>
+          </div>
+
+          <!-- KCV Output -->
+          <div class="kcv-output" id="kcv-output" style="display:none;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12px; color: var(--text-muted);">KCV:</span>
+              <span class="kcv-value" id="kcv-value"></span>
+            </div>
+            <button class="btn-outline" id="btn-kcv-copy">复制</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    (function () {
+      var keyLength = document.getElementById('key-length');
+      var keyFormat = document.getElementById('key-format');
+      var keyQuantity = document.getElementById('key-quantity');
+      var btnGenerate = document.getElementById('btn-generate');
+      var generatedKeys = document.getElementById('generated-keys');
+      var batchCopyRow = document.getElementById('batch-copy-row');
+      var btnBatchCopy = document.getElementById('btn-batch-copy');
+
+      // All generated keys stored here for batch copy
+      var generatedKeyValues = [];
+
+      // Generate a random hex string of specified byte length
+      function randomHex(byteLen) {
+        var arr = new Uint8Array(byteLen);
+        crypto.getRandomValues(arr);
+        var hex = '';
+        for (var i = 0; i < arr.length; i++) {
+          hex += ('0' + arr[i].toString(16)).slice(-2);
+        }
+        return hex;
+      }
+
+      // Generate a random base64 string of specified byte length
+      function randomBase64(byteLen) {
+        var arr = new Uint8Array(byteLen);
+        crypto.getRandomValues(arr);
+        var binary = '';
+        for (var i = 0; i < arr.length; i++) {
+          binary += String.fromCharCode(arr[i]);
+        }
+        return btoa(binary);
+      }
+
+      function generateKeys() {
+        var len = parseInt(keyLength.value, 10);
+        if (isNaN(len) || len < 1) len = 32;
+        var qty = parseInt(keyQuantity.value, 10);
+        if (isNaN(qty) || qty < 1) qty = 1;
+        if (qty > 100) qty = 100;
+        var fmt = keyFormat.value;
+
+        generatedKeys.innerHTML = '';
+        generatedKeyValues = [];
+
+        for (var i = 0; i < qty; i++) {
+          var key;
+          if (fmt === 'Base64') {
+            key = randomBase64(len);
+          } else {
+            key = randomHex(len);
+          }
+          generatedKeyValues.push(key);
+
+          var card = document.createElement('div');
+          card.className = 'key-card';
+          var infoText = len + ' 字节' + (fmt === 'Hex' ? ' (' + (len * 2) + ' Hex)' : ' (Base64)');
+          card.innerHTML = '<div class="key-card-value">' + key + '</div>' +
+            '<div class="key-card-meta">' +
+            '<span class="key-card-info">' + infoText + '</span>' +
+            '<button class="btn-outline key-copy-btn">复制</button>' +
+            '</div>';
+          generatedKeys.appendChild(card);
+        }
+
+        // Show batch copy row if more than 1 key
+        batchCopyRow.style.display = qty > 1 ? 'flex' : 'none';
+
+        // Bind individual copy buttons
+        var copyBtns = generatedKeys.querySelectorAll('.key-copy-btn');
+        copyBtns.forEach(function (btn, idx) {
+          btn.addEventListener('click', function () {
+            copyWithFeedback(btn, generatedKeyValues[idx]);
+          });
+        });
+      }
+
+      function copyWithFeedback(btn, text) {
+        dtCopy(text).then(function () {
+          var orig = btn.textContent;
+          btn.textContent = '已复制';
+          btn.style.color = '#16a34a';
+          btn.style.borderColor = '#16a34a';
+          setTimeout(function () {
+            btn.textContent = orig;
+            btn.style.color = '';
+            btn.style.borderColor = '';
+          }, 1200);
+        });
+      }
+
+      btnGenerate.addEventListener('click', generateKeys);
+
+      // Batch copy
+      btnBatchCopy.addEventListener('click', function () {
+        if (generatedKeyValues.length === 0) return;
+        var text = generatedKeyValues.join('\n');
+        dtCopy(text).then(function () {
+          var orig = btnBatchCopy.textContent;
+          btnBatchCopy.textContent = '已复制';
+          btnBatchCopy.style.color = '#16a34a';
+          btnBatchCopy.style.borderColor = '#16a34a';
+          setTimeout(function () {
+            btnBatchCopy.textContent = orig;
+            btnBatchCopy.style.color = '';
+            btnBatchCopy.style.borderColor = '';
+          }, 1200);
+        });
+      });
+
+      // ======= KCV Calculation =======
+      var kcvKeyInput = document.getElementById('kcv-key-input');
+      var kcvAlgo = document.getElementById('kcv-algo');
+      var btnKcv = document.getElementById('btn-kcv');
+      var kcvOutput = document.getElementById('kcv-output');
+      var kcvValue = document.getElementById('kcv-value');
+      var btnKcvCopy = document.getElementById('btn-kcv-copy');
+
+      // Simple mock KCV computation:
+      // XOR-fold the key bytes in groups matching the algorithm block size,
+      // then take the first 3 bytes of the result.
+      function computeKCV(hexKey, algo) {
+        // Clean the hex key
+        var clean = hexKey.replace(/\s/g, '').toLowerCase();
+        if (!/^[0-9a-f]+$/.test(clean) || clean.length % 2 !== 0) {
+          return null;
+        }
+
+        var keyBytes = [];
+        for (var i = 0; i < clean.length; i += 2) {
+          keyBytes.push(parseInt(clean.substr(i, 2), 16));
+        }
+
+        // Block size for XOR folding: AES=16, DES=8, 3DES=8
+        var blockSize = (algo === 'AES') ? 16 : 8;
+
+        // If key is shorter than block, pad with zeros
+        while (keyBytes.length < blockSize) {
+          keyBytes.push(0);
+        }
+
+        // XOR fold: encrypt a block of zeros by XOR-folding the key
+        var result = new Array(blockSize).fill(0);
+        for (var i = 0; i < keyBytes.length; i++) {
+          result[i % blockSize] ^= keyBytes[i];
+        }
+
+        // Take first 3 bytes as KCV
+        var kcv = '';
+        for (var i = 0; i < 3; i++) {
+          kcv += ('0' + result[i].toString(16)).slice(-2);
+        }
+        return kcv.toUpperCase();
+      }
+
+      btnKcv.addEventListener('click', function () {
+        var hexKey = kcvKeyInput.value.trim();
+        var algo = kcvAlgo.value;
+
+        if (!hexKey) {
+          kcvValue.textContent = '请输入密钥';
+          kcvOutput.style.display = 'flex';
+          return;
+        }
+
+        var kcv = computeKCV(hexKey, algo);
+        if (kcv === null) {
+          kcvValue.textContent = '无效的十六进制密钥';
+          kcvValue.style.color = '#dc2626';
+        } else {
+          kcvValue.textContent = kcv;
+          kcvValue.style.color = '';
+        }
+        kcvOutput.style.display = 'flex';
+      });
+
+      btnKcvCopy.addEventListener('click', function () {
+        var text = kcvValue.textContent;
+        if (!text || text.indexOf('请输入') !== -1 || text.indexOf('无效') !== -1) return;
+        copyWithFeedback(btnKcvCopy, text);
+      });
+
+      // Generate initial key on load
+      generateKeys();
+
+      // ======= Key Format Dedup (Hex/Base64) =======
+      var lastKeyFormat = keyFormat.value;
+      keyFormat.addEventListener('change', function() {
+        if (keyFormat.value === lastKeyFormat) return; // dedup: ignore re-selecting same format
+        lastKeyFormat = keyFormat.value;
+        // Re-encode existing keys if any
+        if (generatedKeyValues.length > 0) {
+          var len = parseInt(keyLength.value, 10) || 32;
+          var fmt = keyFormat.value;
+          var reEncoded = [];
+          generatedKeyValues.forEach(function(origHex) {
+            // Convert from hex to bytes, then to new format
+            var cleanHex = origHex.replace(/[^0-9a-fA-F]/g, '');
+            if (fmt === 'Base64') {
+              var bytes = [];
+              for (var i = 0; i < cleanHex.length; i += 2) {
+                bytes.push(parseInt(cleanHex.substr(i, 2), 16));
+              }
+              var binary = '';
+              bytes.forEach(function(b) { binary += String.fromCharCode(b); });
+              reEncoded.push(btoa(binary));
+            } else {
+              reEncoded.push(cleanHex);
+            }
+          });
+          generatedKeyValues = reEncoded;
+          // Update card values in DOM
+          var cards = generatedKeys.querySelectorAll('.key-card-value');
+          var infoEls = generatedKeys.querySelectorAll('.key-card-info');
+          reEncoded.forEach(function(val, idx) {
+            if (cards[idx]) cards[idx].textContent = val;
+            if (infoEls[idx]) infoEls[idx].textContent = len + ' 字节' + (fmt === 'Hex' ? ' (' + (len * 2) + ' Hex)' : ' (Base64)');
+          });
+        }
+      });
+
+      // ======= KCV Algorithm Dedup =======
+      var lastKcvAlgo = kcvAlgo.value;
+      kcvAlgo.addEventListener('change', function() {
+        if (kcvAlgo.value === lastKcvAlgo) return; // dedup
+        lastKcvAlgo = kcvAlgo.value;
+      });
+
+      // ======= KCV Key File Upload =======
+      document.getElementById('btn-upload-kcv-key').addEventListener('click', function() {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.txt,.key';
+        input.addEventListener('change', function() {
+          if (!input.files || !input.files[0]) return;
+          var file = input.files[0];
+          if (file.size > 1024 * 1024) {
+            alert('文件过大，最大支持 1MB');
+            return;
+          }
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var text = e.target.result;
+            // Strip all whitespace and newlines, keep only hex chars
+            text = text.replace(/[^0-9a-fA-F]/g, '');
+            kcvKeyInput.value = text;
+          };
+          reader.readAsText(file);
+        });
+        input.click();
+      });
+    })();
+  </script>
+</body>
+</html>

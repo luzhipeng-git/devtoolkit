@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevToolkit v1.0.0</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* Page-specific overrides and additions */
+    .titlebar-window-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: auto;
+    }
+
+    .titlebar-window-controls .win-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: var(--text-placeholder);
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .titlebar-window-controls .win-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-secondary);
+    }
+
+    .win-btn-minimize {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .win-btn-maximize svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .win-btn-close:hover {
+      background: #fee2e2 !important;
+      color: #dc2626 !important;
+    }
+
+    .sidebar {
+      position: relative;
+    }
+
+    .sidebar-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 16px;
+    }
+
+    .sidebar-inner::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-inner::-webkit-scrollbar-thumb {
+      background: var(--text-disabled);
+      border-radius: 2px;
+    }
+
+    .sidebar-inner::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Placeholder content area */
+    .placeholder-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      padding: 60px 40px;
+    }
+
+    .placeholder-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+    }
+
+    .placeholder-icon svg {
+      width: 40px;
+      height: 40px;
+      color: white;
+    }
+
+    .placeholder-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .placeholder-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+      max-width: 400px;
+      margin-bottom: 32px;
+    }
+
+    .shortcut-hints {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .shortcut-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .shortcut-key {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-input);
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: var(--text-primary);
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Feature cards grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 700px;
+      margin-top: 24px;
+    }
+
+    .feature-card {
+      padding: 16px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .feature-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .feature-card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .feature-card-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .feature-card-count {
+      font-size: 11px;
+      color: var(--text-placeholder);
+    }
+
+    .fc-encoding { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .fc-json { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .fc-crypto { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .fc-calc { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .fc-qrcode { background: linear-gradient(135deg, #10b981, #059669); }
+    .fc-http { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    .fc-time { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+    .fc-regex { background: linear-gradient(135deg, #ec4899, #db2777); }
+    .fc-codec { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+
+    /* Search overlay */
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 15vh;
+    }
+
+    .search-overlay.visible {
+      display: flex;
+    }
+
+    .search-modal {
+      width: 560px;
+      max-height: 480px;
+      background: var(--bg-white);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+      gap: 12px;
+    }
+
+    .search-input-wrapper svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-placeholder);
+      flex-shrink: 0;
+    }
+
+    .search-modal-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: var(--text-primary);
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .search-modal-input::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    .search-esc-badge {
+      padding: 2px 8px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border-card);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .search-results {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .search-results::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .search-results::-webkit-scrollbar-thumb {
+      background: var(--text-disabled);
+      border-radius: 2px;
+    }
+
+    .search-group-label {
+      padding: 8px 12px 4px;
+      font-size: 11px;
+      color: var(--text-placeholder);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.1s;
+    }
+
+    .search-result-item:hover,
+    .search-result-item.focused {
+      background: var(--bg-hover);
+    }
+
+    .search-result-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .search-result-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-result-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .search-result-category {
+      font-size: 11px;
+      color: var(--text-placeholder);
+    }
+
+    .search-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border-light);
+      font-size: 11px;
+      color: var(--text-placeholder);
+    }
+
+    .search-footer span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .search-footer .shortcut-key {
+      font-size: 10px;
+      padding: 1px 5px;
+    }
+
+    /* Sidebar item icon dots */
+    .sidebar-item-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Search hint at bottom */
+    .search-hint-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      color: var(--text-placeholder);
+      background: var(--bg-white);
+      border-top: 1px solid var(--border-light);
+      z-index: 5;
+    }
+
+    .search-hint-bar .shortcut-key {
+      font-size: 10px;
+      padding: 1px 5px;
+    }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      margin-left: auto;
+      width: 28px; height: 28px;
+      border: none; background: none; cursor: pointer;
+      color: var(--text-muted);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      margin-right: 8px;
+    }
+    .theme-toggle:hover { background: var(--bg-hover); color: var(--text-primary); }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+    [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <!-- Traffic light dots -->
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+
+      <!-- Logo & Title -->
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+
+      <!-- Theme toggle -->
+      <button class="theme-toggle" id="themeToggle" title="切换主题 (Ctrl+Shift+T)">
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+
+      <!-- Window controls (right side) -->
+      <div class="titlebar-window-controls">
+        <div class="win-btn win-btn-minimize" title="最小化">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <div class="win-btn win-btn-maximize" title="最大化">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        </div>
+        <div class="win-btn win-btn-close" title="关闭">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.2"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+        <div class="sidebar-search">
+          <input type="text" id="sidebarSearchInput" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+        <button id="collapseBtn" style="position:absolute;bottom:0;left:0;right:0;padding:8px;border:none;background:var(--bg-hover);cursor:pointer;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light);" title="收起侧边栏">&lt;</button>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area" id="contentArea">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">字符编码</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Hex 转换</span>
+        </div>
+
+        <!-- Placeholder card -->
+        <div class="tool-card">
+          <div class="placeholder-content">
+            <div class="placeholder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <div class="placeholder-title">选择左侧工具开始使用</div>
+            <div class="placeholder-desc">
+              DevToolkit 提供了丰富的开发者常用工具，包括编码转换、JSON 处理、加密解密、正则调试等，助您提升开发效率。
+            </div>
+
+            <div class="shortcut-hints">
+              <div class="shortcut-item">
+                <span class="shortcut-key">Ctrl</span>
+                <span>+</span>
+                <span class="shortcut-key">K</span>
+                <span>搜索工具</span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-key">Ctrl</span>
+                <span>+</span>
+                <span class="shortcut-key">B</span>
+                <span>收起侧栏</span>
+              </div>
+            </div>
+
+            <div class="feature-grid">
+              <a href="03-encoding.html" class="feature-card">
+                <div class="feature-card-icon fc-encoding">En</div>
+                <div class="feature-card-title">字符编码</div>
+                <div class="feature-card-count">5 个工具</div>
+              </a>
+              <a href="04-json.html" class="feature-card">
+                <div class="feature-card-icon fc-json">Js</div>
+                <div class="feature-card-title">JSON 工具</div>
+                <div class="feature-card-count">8 个工具</div>
+              </a>
+              <a href="05-crypto-aes.html" class="feature-card">
+                <div class="feature-card-icon fc-crypto">Cr</div>
+                <div class="feature-card-title">加密解密</div>
+                <div class="feature-card-count">5 个工具</div>
+              </a>
+              <a href="10-calculator.html" class="feature-card">
+                <div class="feature-card-icon fc-calc">Ca</div>
+                <div class="feature-card-title">数字计算</div>
+                <div class="feature-card-count">3 个工具</div>
+              </a>
+              <a href="11-qrcode.html" class="feature-card">
+                <div class="feature-card-icon fc-qrcode">Qr</div>
+                <div class="feature-card-title">二维码</div>
+                <div class="feature-card-count">2 个工具</div>
+              </a>
+              <a href="12-http-client.html" class="feature-card">
+                <div class="feature-card-icon fc-http">Ht</div>
+                <div class="feature-card-title">HTTP Client</div>
+                <div class="feature-card-count">1 个工具</div>
+              </a>
+              <a href="13-time.html" class="feature-card">
+                <div class="feature-card-icon fc-time">Ti</div>
+                <div class="feature-card-title">时间计算</div>
+                <div class="feature-card-count">2 个工具</div>
+              </a>
+              <a href="15-regex.html" class="feature-card">
+                <div class="feature-card-icon fc-regex">Re</div>
+                <div class="feature-card-title">正则调试</div>
+                <div class="feature-card-count">1 个工具</div>
+              </a>
+              <a href="19-codec.html" class="feature-card">
+                <div class="feature-card-icon fc-codec">Co</div>
+                <div class="feature-card-title">编码解码</div>
+                <div class="feature-card-count">3 个工具</div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search hint -->
+        <div style="text-align:center; margin-top:24px; font-size:12px; color:var(--text-placeholder);">
+          按 <span class="shortcut-key" style="display:inline-flex;padding:1px 5px;background:var(--bg-white);border:1px solid var(--border-input);border-radius:4px;font-size:11px;font-family:'Consolas','Monaco',monospace;color:var(--text-primary);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,0.05);">Ctrl+K</span> 打开搜索
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Overlay Modal -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-modal">
+      <div class="search-input-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" class="search-modal-input" placeholder="搜索工具..." id="searchModalInput" autocomplete="off">
+        <span class="search-esc-badge">ESC</span>
+      </div>
+
+      <div class="search-results" id="searchResults">
+        <div class="search-group-label">字符编码</div>
+        <a href="03-encoding.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">He</div>
+          <div class="search-result-text">
+            <div class="search-result-name">Hex 转换</div>
+            <div class="search-result-category">字符编码</div>
+          </div>
+        </a>
+        <a href="03b-base64.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">B6</div>
+          <div class="search-result-text">
+            <div class="search-result-name">Base64 编解码</div>
+            <div class="search-result-category">字符编码</div>
+          </div>
+        </a>
+        <a href="03c-ascii.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">As</div>
+          <div class="search-result-text">
+            <div class="search-result-name">ASCII 转换</div>
+            <div class="search-result-category">字符编码</div>
+          </div>
+        </a>
+        <a href="03d-url.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">Ur</div>
+          <div class="search-result-text">
+            <div class="search-result-name">URL 编解码</div>
+            <div class="search-result-category">字符编码</div>
+          </div>
+        </a>
+        <a href="03e-unicode.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">Un</div>
+          <div class="search-result-text">
+            <div class="search-result-name">Unicode 编解码</div>
+            <div class="search-result-category">字符编码</div>
+          </div>
+        </a>
+
+        <div class="search-group-label">JSON 工具</div>
+        <a href="04-json.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">Jf</div>
+          <div class="search-result-text">
+            <div class="search-result-name">格式化 & 压缩</div>
+            <div class="search-result-category">JSON 工具</div>
+          </div>
+        </a>
+        <a href="04c-json-deserialize.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">Jd</div>
+          <div class="search-result-text">
+            <div class="search-result-name">反序列化</div>
+            <div class="search-result-category">JSON 工具</div>
+          </div>
+        </a>
+        <a href="04d-json-path.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">Jp</div>
+          <div class="search-result-text">
+            <div class="search-result-name">JSONPath 查询</div>
+            <div class="search-result-category">JSON 工具</div>
+          </div>
+        </a>
+        <a href="04e-json-diff.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">Jd</div>
+          <div class="search-result-text">
+            <div class="search-result-name">JSON Diff</div>
+            <div class="search-result-category">JSON 工具</div>
+          </div>
+        </a>
+
+        <div class="search-group-label">加密解密</div>
+        <a href="05-crypto-aes.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">Ae</div>
+          <div class="search-result-text">
+            <div class="search-result-name">AES 加密/解密</div>
+            <div class="search-result-category">加密解密</div>
+          </div>
+        </a>
+        <a href="07-hash.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">Ha</div>
+          <div class="search-result-text">
+            <div class="search-result-name">哈希摘要</div>
+            <div class="search-result-category">加密解密</div>
+          </div>
+        </a>
+
+        <div class="search-group-label">其他工具</div>
+        <a href="12-http-client.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">Ht</div>
+          <div class="search-result-text">
+            <div class="search-result-name">HTTP 请求</div>
+            <div class="search-result-category">HTTP Client</div>
+          </div>
+        </a>
+        <a href="15-regex.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">Re</div>
+          <div class="search-result-text">
+            <div class="search-result-name">正则调试</div>
+            <div class="search-result-category">正则调试</div>
+          </div>
+        </a>
+        <a href="19-codec.html" class="search-result-item">
+          <div class="search-result-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">Jw</div>
+          <div class="search-result-text">
+            <div class="search-result-name">JWT 编解码</div>
+            <div class="search-result-category">编码解码</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="search-footer">
+        <span><span class="shortcut-key">&uarr;&darr;</span> 导航</span>
+        <span><span class="shortcut-key">Enter</span> 打开</span>
+        <span><span class="shortcut-key">Esc</span> 关闭</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+<script>
+    // Search overlay toggle
+    const searchOverlay = document.getElementById('searchOverlay');
+    const searchModalInput = document.getElementById('searchModalInput');
+    const sidebarSearchInput = document.getElementById('sidebarSearchInput');
+
+    // Keyboard navigation state for search
+    let focusedIndex = -1;
+
+    function openSearch() {
+      searchOverlay.classList.add('visible');
+      focusedIndex = -1;
+      setTimeout(() => searchModalInput.focus(), 50);
+    }
+
+    function closeSearch() {
+      searchOverlay.classList.remove('visible');
+      searchModalInput.value = '';
+      focusedIndex = -1;
+      filterSearchResults('');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+K to open search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (searchOverlay.classList.contains('visible')) {
+          closeSearch();
+        } else {
+          openSearch();
+        }
+      }
+
+      // Ctrl+B to toggle sidebar
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+
+      // ESC to close search
+      if (e.key === 'Escape' && searchOverlay.classList.contains('visible')) {
+        closeSearch();
+      }
+
+      // Arrow keys and Enter inside search overlay
+      if (searchOverlay.classList.contains('visible')) {
+        const visibleItems = getVisibleSearchItems();
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          focusedIndex = Math.min(focusedIndex + 1, visibleItems.length - 1);
+          updateFocusHighlight(visibleItems);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          focusedIndex = Math.max(focusedIndex - 1, 0);
+          updateFocusHighlight(visibleItems);
+        } else if (e.key === 'Enter' && focusedIndex >= 0 && focusedIndex < visibleItems.length) {
+          e.preventDefault();
+          visibleItems[focusedIndex].click();
+        }
+      }
+    });
+
+    function getVisibleSearchItems() {
+      return Array.from(document.querySelectorAll('.search-result-item')).filter(item => item.style.display !== 'none');
+    }
+
+    function updateFocusHighlight(items) {
+      items.forEach((item, i) => {
+        item.classList.toggle('focused', i === focusedIndex);
+      });
+      if (focusedIndex >= 0 && focusedIndex < items.length) {
+        items[focusedIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    // Click backdrop to close search
+    searchOverlay.addEventListener('click', function(e) {
+      if (e.target === searchOverlay) {
+        closeSearch();
+      }
+    });
+
+    // Sidebar search input also opens the search modal
+    sidebarSearchInput.addEventListener('focus', function() {
+      openSearch();
+      this.blur();
+    });
+
+    // Search filtering
+    function filterSearchResults(query) {
+      const results = document.querySelectorAll('.search-result-item');
+      const groups = document.querySelectorAll('.search-group-label');
+      const q = query.toLowerCase().trim();
+
+      if (!q) {
+        results.forEach(r => r.style.display = '');
+        groups.forEach(g => g.style.display = '');
+        focusedIndex = -1;
+        return;
+      }
+
+      const groupVisibility = {};
+
+      results.forEach(item => {
+        const name = item.querySelector('.search-result-name').textContent.toLowerCase();
+        const cat = item.querySelector('.search-result-category').textContent.toLowerCase();
+        const match = name.includes(q) || cat.includes(q);
+        item.style.display = match ? '' : 'none';
+
+        if (match) {
+          // Walk up to find the group label
+          let sibling = item.previousElementSibling;
+          while (sibling) {
+            if (sibling.classList && sibling.classList.contains('search-group-label')) {
+              groupVisibility[sibling.textContent] = true;
+              break;
+            }
+            sibling = sibling.previousElementSibling;
+          }
+        }
+      });
+
+      groups.forEach(g => {
+        g.style.display = groupVisibility[g.textContent] ? '' : 'none';
+      });
+      focusedIndex = -1;
+    }
+
+    searchModalInput.addEventListener('input', function() {
+      filterSearchResults(this.value);
+    });
+
+    // Sidebar collapse/expand
+    const sidebar = document.getElementById('sidebar');
+    const collapseBtn = document.getElementById('collapseBtn');
+    let sidebarCollapsed = false;
+
+    function toggleSidebar() {
+      sidebarCollapsed = !sidebarCollapsed;
+      if (sidebarCollapsed) {
+        sidebar.style.width = 'var(--sidebar-collapsed-width)';
+        collapseBtn.innerHTML = '&gt;';
+        collapseBtn.title = '展开侧边栏';
+      } else {
+        sidebar.style.width = 'var(--sidebar-width)';
+        collapseBtn.innerHTML = '&lt;';
+        collapseBtn.title = '收起侧边栏';
+      }
+    }
+
+    collapseBtn.addEventListener('click', toggleSidebar);
+
+    // Theme toggle
+    var themeToggle = document.getElementById('themeToggle');
+    function applyTheme(dark) {
+      if (dark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    }
+    themeToggle.addEventListener('click', function() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+    });
+    // Initialize from localStorage
+    var savedTheme = localStorage.getItem('dt-theme');
+    if (savedTheme === 'dark') applyTheme(true);
+
+    // Sidebar navigation dedup: clicking active sidebar item = no-op
+    document.querySelectorAll('.sidebar-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        if (item.classList.contains('active')) {
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

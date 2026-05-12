@@ -1,0 +1,232 @@
+/* DevToolkit - Naive UI Component Style Overrides */
+/* These overrides align Naive UI components with our design system. */
+
+/* ===== Button Overrides ===== */
+.n-button--primary-type {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover)) !important;
+  border-color: var(--primary) !important;
+}
+
+.n-button--primary-type:hover {
+  opacity: 0.9;
+}
+
+.n-button--default-type {
+  background: var(--bg-white) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border-input) !important;
+}
+
+.n-button--default-type:hover {
+  color: var(--text-primary) !important;
+  border-color: var(--text-muted) !important;
+}
+
+/* ===== Input Overrides ===== */
+.n-input {
+  --n-border: 1px solid var(--border-input) !important;
+  --n-border-hover: 1px solid var(--primary) !important;
+  --n-border-focus: 1px solid var(--primary) !important;
+  --n-box-shadow-focus: var(--shadow-focus) !important;
+  --n-color: var(--bg-input) !important;
+  --n-text-color: var(--text-primary) !important;
+  --n-placeholder-color: var(--text-placeholder) !important;
+  --n-border-radius: 6px !important;
+  font-size: 13px !important;
+}
+
+.n-input .n-input__textarea-font,
+.n-input .n-input__input {
+  font-family: var(--font-mono) !important;
+}
+
+/* ===== Select Overrides ===== */
+.n-select {
+  --n-border: 1px solid var(--border-input) !important;
+  --n-border-hover: 1px solid var(--primary) !important;
+  --n-border-active: 1px solid var(--primary) !important;
+  --n-border-focus: 1px solid var(--primary) !important;
+  --n-box-shadow-focus: var(--shadow-focus) !important;
+  --n-color: var(--bg-input) !important;
+  --n-text-color: var(--text-primary) !important;
+  --n-placeholder-color: var(--text-placeholder) !important;
+  --n-border-radius: 6px !important;
+}
+
+.n-select-menu {
+  --n-color: var(--bg-card) !important;
+  --n-border: 1px solid var(--border-card) !important;
+  --n-border-radius: 6px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.n-select-menu .n-base-select-option {
+  --n-text-color: var(--text-primary) !important;
+  --n-text-color-active: var(--text-link) !important;
+}
+
+.n-select-menu .n-base-select-option:hover {
+  background: var(--bg-hover) !important;
+}
+
+.n-select-menu .n-base-select-option.n-base-select-option--selected {
+  background: var(--primary-light) !important;
+  color: var(--text-link) !important;
+}
+
+/* ===== Card Overrides ===== */
+.n-card {
+  --n-color: var(--bg-card) !important;
+  --n-border-color: var(--border-card) !important;
+  --n-border-radius: 10px !important;
+  --n-title-text-color: var(--text-primary) !important;
+  --n-text-color: var(--text-secondary) !important;
+}
+
+/* ===== Tag Overrides ===== */
+.n-tag {
+  --n-border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+
+.n-tag--info-type {
+  --n-color: var(--primary-light) !important;
+  --n-text-color: var(--text-link) !important;
+  --n-border-color: transparent !important;
+}
+
+.n-tag--success-type {
+  --n-color: #f0fdf4 !important;
+  --n-text-color: #16a34a !important;
+  --n-border-color: transparent !important;
+}
+
+.n-tag--error-type {
+  --n-color: #fef2f2 !important;
+  --n-text-color: #dc2626 !important;
+  --n-border-color: transparent !important;
+}
+
+.n-tag--warning-type {
+  --n-color: #fffbeb !important;
+  --n-text-color: #d97706 !important;
+  --n-border-color: transparent !important;
+}
+
+.n-tag--default-type {
+  --n-color: #f1f5f9 !important;
+  --n-text-color: #64748b !important;
+  --n-border-color: transparent !important;
+}
+
+/* Dark theme tag overrides */
+[data-theme="dark"] .n-tag--info-type {
+  --n-color: rgba(59, 130, 246, 0.15) !important;
+  --n-text-color: #60a5fa !important;
+}
+
+[data-theme="dark"] .n-tag--success-type {
+  --n-color: rgba(34, 197, 94, 0.15) !important;
+  --n-text-color: #4ade80 !important;
+}
+
+[data-theme="dark"] .n-tag--error-type {
+  --n-color: rgba(239, 68, 68, 0.15) !important;
+  --n-text-color: #f87171 !important;
+}
+
+[data-theme="dark"] .n-tag--warning-type {
+  --n-color: rgba(234, 179, 8, 0.15) !important;
+  --n-text-color: #facc15 !important;
+}
+
+[data-theme="dark"] .n-tag--default-type {
+  --n-color: rgba(100, 116, 139, 0.15) !important;
+  --n-text-color: #94a3b8 !important;
+}
+
+/* ===== Dialog / Modal Overrides ===== */
+.n-dialog {
+  --n-color: var(--bg-card) !important;
+  --n-title-text-color: var(--text-primary) !important;
+  --n-text-color: var(--text-secondary) !important;
+  border-radius: 10px !important;
+}
+
+/* ===== Tooltip Overrides ===== */
+.n-tooltip {
+  --n-color: var(--bg-card) !important;
+  --n-text-color: var(--text-primary) !important;
+  --n-border-radius: 6px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* ===== Tabs Overrides ===== */
+.n-tabs .n-tabs-tab {
+  --n-text-color: var(--text-muted) !important;
+  --n-text-color-active: var(--text-link) !important;
+  --n-text-color-hover: var(--text-primary) !important;
+}
+
+/* ===== Switch Overrides ===== */
+.n-switch {
+  --n-rail-color: var(--text-disabled) !important;
+}
+
+.n-switch.n-switch--active {
+  --n-rail-color: var(--primary) !important;
+}
+
+/* ===== Checkbox Overrides ===== */
+.n-checkbox {
+  --n-text-color: var(--text-primary) !important;
+  --n-color: var(--bg-input) !important;
+  --n-border: 1px solid var(--border-input) !important;
+  --n-border-checked: 1px solid var(--primary) !important;
+  --n-color-checked: var(--primary) !important;
+}
+
+/* ===== Radio Overrides ===== */
+.n-radio {
+  --n-text-color: var(--text-primary) !important;
+  --n-color: var(--bg-input) !important;
+  --n-border: 1px solid var(--border-input) !important;
+  --n-border-active: 1px solid var(--primary) !important;
+  --n-color-active: var(--primary) !important;
+}
+
+/* ===== Divider Overrides ===== */
+.n-divider {
+  --n-color: var(--border-light) !important;
+}
+
+/* ===== Dropdown Overrides ===== */
+.n-dropdown-menu {
+  --n-color: var(--bg-card) !important;
+  --n-border-radius: 6px !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border-card) !important;
+}
+
+.n-dropdown-option:hover {
+  background: var(--bg-hover) !important;
+}
+
+/* ===== Popover Overrides ===== */
+.n-popover {
+  --n-color: var(--bg-card) !important;
+  --n-text-color: var(--text-primary) !important;
+  --n-border-radius: 6px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* ===== Scrollbar for Naive UI components ===== */
+.n-scrollbar-rail {
+  --n-rail-color: transparent !important;
+}
+
+.n-scrollbar-rail .n-scrollbar-rail__scrollbar {
+  background-color: var(--scrollbar-thumb) !important;
+  border-radius: 2px !important;
+}

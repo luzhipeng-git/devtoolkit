@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <linearGradient id="sidebarBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f8fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" rx="8" fill="#ffffff" stroke="#d8dce6" stroke-width="1"/>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="40" rx="8" fill="#ffffff"/>
+  <rect x="0" y="20" width="1200" height="20" fill="#ffffff"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#e8eaef" stroke-width="1"/>
+  <circle cx="20" cy="20" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="20" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="20" r="6" fill="#28c840"/>
+  <rect x="80" y="9" width="22" height="22" rx="5" fill="url(#primaryBtn)"/>
+  <text x="85" y="24" font-size="11" fill="#ffffff" font-weight="bold">DT</text>
+  <text x="112" y="25" font-size="14" fill="#1e293b" font-weight="600">DevToolkit</text>
+  <text x="200" y="25" font-size="11" fill="#94a3b8">v1.0.0</text>
+  <text x="1134" y="25" font-size="14" fill="#94a3b8">-</text>
+  <rect x="1156" y="12" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2" rx="1"/>
+  <text x="1178" y="26" font-size="16" fill="#94a3b8">x</text>
+
+  <!-- 侧边栏 -->
+  <rect x="0" y="40" width="240" height="760" fill="url(#sidebarBg)"/>
+  <line x1="240" y1="40" x2="240" y2="800" stroke="#e8eaef" stroke-width="1"/>
+  <rect x="222" y="48" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="224" y="59" font-size="9" fill="#64748b">&lt;</text>
+
+  <!-- 搜索框 -->
+  <rect x="12" y="52" width="204" height="34" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="26" y="74" font-size="12" fill="#94a3b8">搜索工具...</text>
+
+  <!-- 字符编码 -->
+  <text x="16" y="112" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">字符编码</text>
+  <rect x="8" y="120" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="140" font-size="12" fill="#475569">Hex 转换</text>
+  <rect x="8" y="154" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="174" font-size="12" fill="#475569">Base64 编解码</text>
+  <rect x="8" y="188" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="208" font-size="12" fill="#475569">ASCII 转换</text>
+  <rect x="8" y="222" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="242" font-size="12" fill="#475569">URL 编解码</text>
+  <rect x="8" y="256" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="276" font-size="12" fill="#475569">Unicode 编解码</text>
+
+  <!-- JSON 工具 -->
+  <text x="16" y="312" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">JSON 工具</text>
+  <rect x="8" y="320" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="340" font-size="12" fill="#475569">Pretty 格式化</text>
+  <rect x="8" y="354" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="374" font-size="12" fill="#475569">JSON 压缩</text>
+  <rect x="8" y="388" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="408" font-size="12" fill="#475569">反序列化</text>
+  <rect x="8" y="422" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="442" font-size="12" fill="#475569">JSONPath 查询</text>
+
+  <!-- 加密解密 (密钥工具 选中) -->
+  <text x="16" y="478" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">加密解密</text>
+  <rect x="8" y="486" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="506" font-size="12" fill="#475569">AES 加密/解密</text>
+  <rect x="8" y="522" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="542" font-size="12" fill="#475569">DES / 3DES</text>
+  <rect x="8" y="556" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="576" font-size="12" fill="#475569">RSA 工具</text>
+  <rect x="8" y="590" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="610" font-size="12" fill="#475569">哈希摘要</text>
+  <!-- 密钥工具 选中 -->
+  <rect x="8" y="624" width="224" height="32" rx="6" fill="#eff6ff"/>
+  <rect x="8" y="624" width="3" height="32" rx="1" fill="#3b82f6"/>
+  <text x="24" y="644" font-size="12" fill="#2563eb" font-weight="500">密钥工具</text>
+
+  <!-- 数字计算 -->
+  <text x="16" y="680" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">数字计算</text>
+  <rect x="8" y="688" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="708" font-size="12" fill="#475569">进制转换</text>
+  <rect x="8" y="722" width="224" height="32" rx="6" fill="transparent"/>
+  <text x="24" y="742" font-size="12" fill="#475569">计算器</text>
+
+  <!-- 主内容区 -->
+  <!-- 面包屑 -->
+  <text x="264" y="66" font-size="12" fill="#94a3b8">加密解密</text>
+  <text x="328" y="66" font-size="12" fill="#94a3b8">/</text>
+  <text x="340" y="66" font-size="12" fill="#1e293b" font-weight="500">密钥工具</text>
+
+  <!-- Tab 栏 -->
+  <line x1="264" y1="80" x2="1184" y2="80" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 随机密钥生成 选中 -->
+  <rect x="264" y="80" width="140" height="36" fill="#ffffff"/>
+  <line x1="264" y1="115" x2="404" y2="115" stroke="#3b82f6" stroke-width="2"/>
+  <text x="292" y="103" font-size="13" fill="#2563eb" font-weight="500">随机密钥生成</text>
+  <!-- KCV计算 -->
+  <rect x="404" y="80" width="120" height="36" fill="#ffffff"/>
+  <text x="440" y="103" font-size="13" fill="#475569">KCV 计算</text>
+
+  <!-- 密钥生成 Tab 内容 -->
+  <!-- 密钥长度 -->
+  <text x="264" y="148" font-size="13" fill="#1e293b" font-weight="600">密钥长度</text>
+  <rect x="264" y="160" width="200" height="36" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="280" y="183" font-size="13" fill="#1e293b">16</text>
+  <text x="340" y="183" font-size="12" fill="#94a3b8">字节</text>
+  <!-- 预设按钮 -->
+  <rect x="480" y="160" width="72" height="36" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="498" y="183" font-size="12" fill="#475569">8 字节</text>
+  <rect x="560" y="160" width="80" height="36" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"/>
+  <text x="576" y="183" font-size="12" fill="#2563eb" font-weight="500">16 字节</text>
+  <rect x="648" y="160" width="80" height="36" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="664" y="183" font-size="12" fill="#475569">24 字节</text>
+  <rect x="736" y="160" width="80" height="36" rx="6" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="752" y="183" font-size="12" fill="#475569">32 字节</text>
+
+  <!-- 输出格式 -->
+  <text x="264" y="224" font-size="13" fill="#1e293b" font-weight="600">输出格式</text>
+  <rect x="264" y="236" width="300" height="36" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- HEX 选中 -->
+  <rect x="272" y="242" width="80" height="24" rx="4" fill="#3b82f6"/>
+  <text x="298" y="259" font-size="12" fill="#ffffff" font-weight="500">HEX</text>
+  <!-- Base64 -->
+  <rect x="360" y="242" width="80" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="378" y="259" font-size="12" fill="#475569">Base64</text>
+
+  <!-- 生成按钮 -->
+  <rect x="264" y="300" width="120" height="40" rx="8" fill="url(#primaryBtn)"/>
+  <text x="296" y="325" font-size="14" fill="#ffffff" font-weight="500">生成</text>
+
+  <!-- 结果显示区 -->
+  <rect x="264" y="360" width="920" height="120" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="264" y="360" width="920" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="264" y="388" width="920" height="8" fill="#f8fafc"/>
+  <text x="280" y="384" font-size="12" fill="#1e293b" font-weight="600">生成结果</text>
+  <!-- 紧凑复制 button (blue) -->
+  <rect x="1002" y="370" width="80" height="24" rx="4" fill="#3b82f6" stroke="none"/>
+  <text x="1014" y="386" font-size="11" fill="#ffffff" font-weight="500">紧凑复制</text>
+  <!-- 复制 button (white) -->
+  <rect x="1090" y="370" width="60" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1102" y="386" font-size="11" fill="#475569">复制</text>
+  <!-- 密钥内容 -->
+  <text x="280" y="420" font-size="13" fill="#1e293b" font-family="'Consolas',monospace">4A 7B 2C 9D 1E 3F 5A 6B 8C 0D 2E 4F 1A 3B 5C 7D</text>
+  <!-- 字节信息 -->
+  <text x="280" y="446" font-size="11" fill="#94a3b8">16 字节 / 128 bit | HEX 格式 | 生成时间: 2024-01-15 10:35:22</text>
+  <!-- 导出文件按钮 -->
+  <rect x="280" y="456" width="80" height="20" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="294" y="470" font-size="10" fill="#475569">导出文件</text>
+
+  <!-- 结果区滚动条 -->
+  <rect x="1178" y="360" width="6" height="120" rx="3" fill="#f1f5f9"/>
+  <rect x="1178" y="370" width="6" height="48" rx="3" fill="#cbd5e1"/>
+
+  <!-- 历史记录 -->
+  <rect x="264" y="500" width="920" height="260" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="264" y="500" width="920" height="36" rx="8" fill="#f8fafc"/>
+  <rect x="264" y="528" width="920" height="8" fill="#f8fafc"/>
+  <text x="280" y="524" font-size="12" fill="#1e293b" font-weight="600">生成历史</text>
+  <rect x="1106" y="510" width="60" height="24" rx="4" fill="#ffffff" stroke="#d0d5dd" stroke-width="1"/>
+  <text x="1112" y="526" font-size="11" fill="#475569">清空</text>
+
+  <!-- 表头 -->
+  <line x1="264" y1="536" x2="1184" y2="536" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="556" font-size="11" fill="#94a3b8" font-weight="600">序号</text>
+  <text x="330" y="556" font-size="11" fill="#94a3b8" font-weight="600">密钥值</text>
+  <text x="800" y="556" font-size="11" fill="#94a3b8" font-weight="600">长度</text>
+  <text x="880" y="556" font-size="11" fill="#94a3b8" font-weight="600">格式</text>
+  <text x="960" y="556" font-size="11" fill="#94a3b8" font-weight="600">时间</text>
+  <text x="1120" y="556" font-size="11" fill="#94a3b8" font-weight="600">操作</text>
+
+  <!-- 记录1 -->
+  <line x1="264" y1="566" x2="1184" y2="566" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="280" y="586" font-size="11" fill="#1e293b">1</text>
+  <text x="330" y="586" font-size="11" fill="#1e293b" font-family="'Consolas',monospace">4A7B2C9D1E3F5A6B8C0D2E4F1A3B5C7D</text>
+  <text x="800" y="586" font-size="11" fill="#1e293b">16 字节</text>
+  <text x="880" y="586" font-size="11" fill="#1e293b">HEX</text>
+  <text x="960" y="586" font-size="11" fill="#64748b">10:35:22</text>
+  <text x="1120" y="586" font-size="11" fill="#3b82f6">复制</text>
+
+  <!-- 记录2 -->
+  <line x1="264" y1="596" x2="1184" y2="596" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="280" y="616" font-size="11" fill="#1e293b">2</text>
+  <text x="330" y="616" font-size="11" fill="#1e293b" font-family="'Consolas',monospace">8F2A4B6C0D1E3F5A7B9C0D2E4F6A8B0C</text>
+  <text x="800" y="616" font-size="11" fill="#1e293b">16 字节</text>
+  <text x="880" y="616" font-size="11" fill="#1e293b">HEX</text>
+  <text x="960" y="616" font-size="11" fill="#64748b">10:34:15</text>
+  <text x="1120" y="616" font-size="11" fill="#3b82f6">复制</text>
+
+  <!-- 记录3 -->
+  <line x1="264" y1="636" x2="1184" y2="636" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="280" y="656" font-size="11" fill="#1e293b">3</text>
+  <text x="330" y="656" font-size="11" fill="#1e293b" font-family="'Consolas',monospace">SntCnR4/X1prnA0OLk8aO1xcfQ==</text>
+  <text x="800" y="656" font-size="11" fill="#1e293b">16 字节</text>
+  <text x="880" y="656" font-size="11" fill="#1e293b">Base64</text>
+  <text x="960" y="656" font-size="11" fill="#64748b">10:33:08</text>
+  <text x="1120" y="656" font-size="11" fill="#3b82f6">复制</text>
+
+  <!-- 记录4 -->
+  <line x1="264" y1="676" x2="1184" y2="676" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="280" y="696" font-size="11" fill="#1e293b">4</text>
+  <text x="330" y="696" font-size="11" fill="#1e293b" font-family="'Consolas',monospace">A1B2C3D4E5F60718293A4B5C6D7E8F</text>
+  <text x="800" y="696" font-size="11" fill="#1e293b">24 字节</text>
+  <text x="880" y="696" font-size="11" fill="#1e293b">HEX</text>
+  <text x="960" y="696" font-size="11" fill="#64748b">10:31:45</text>
+  <text x="1120" y="696" font-size="11" fill="#3b82f6">复制</text>
+
+  <!-- 历史记录区滚动条 -->
+  <rect x="1178" y="500" width="6" height="260" rx="3" fill="#f1f5f9"/>
+  <rect x="1178" y="510" width="6" height="104" rx="3" fill="#cbd5e1"/>
+</svg>

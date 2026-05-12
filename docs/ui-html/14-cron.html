@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cron 表达式 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .cron-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .cron-section:last-child {
+      margin-bottom: 0;
+    }
+    .cron-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .cron-input {
+      flex: 1;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--border-input);
+      padding: 0 16px;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      letter-spacing: 2px;
+    }
+    .cron-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .cron-desc {
+      font-size: 14px;
+      color: #16a34a;
+      font-weight: 500;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+    .cron-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-card);
+      margin-bottom: 16px;
+    }
+    .cron-tab {
+      padding: 8px 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .cron-tab:hover {
+      color: var(--text-primary);
+    }
+    .cron-tab.active {
+      color: var(--text-link);
+      font-weight: 500;
+      border-bottom-color: var(--primary);
+    }
+    .cron-options {
+      padding: 12px 0;
+    }
+    .cron-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .cron-radio-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .cron-radio-item input[type="radio"] {
+      accent-color: var(--primary);
+    }
+    .cron-radio-item input[type="radio"]:checked + span {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .cron-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      padding-left: 28px;
+    }
+    .cron-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .cron-checkbox input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 14px;
+      height: 14px;
+    }
+    .cron-checkbox input[type="checkbox"]:checked + span {
+      color: var(--primary);
+      font-weight: 500;
+    }
+    .sync-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #16a34a;
+      margin-bottom: 16px;
+      padding: 6px 12px;
+      background: #f0fdf4;
+      border-radius: 6px;
+      border: 1px solid #bbf7d0;
+    }
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .preview-table th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-card);
+      background: var(--bg-code);
+    }
+    .preview-table td {
+      font-size: 13px;
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-light);
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .preview-table tr:last-child td {
+      border-bottom: none;
+    }
+    .preview-table .td-index {
+      color: var(--text-muted);
+      font-size: 12px;
+      width: 40px;
+    }
+    .preview-table .td-time {
+      color: var(--accent-blue);
+    }
+    .preset-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .preset-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-chip:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .preset-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .preset-expr {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .btn-primary-cron {
+      padding: 8px 18px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary-cron:hover {
+      opacity: 0.9;
+    }
+    .cron-range-inputs, .cron-period-inputs {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding-left: 28px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .cron-range-inputs.visible, .cron-period-inputs.visible {
+      display: flex;
+    }
+    .cron-range-inputs input, .cron-period-inputs input {
+      width: 56px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border-input);
+      padding: 0 8px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      text-align: center;
+    }
+    .cron-range-inputs input:focus, .cron-period-inputs input:focus {
+      border-color: var(--primary);
+    }
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .error-desc {
+      color: #dc2626;
+    }
+    .cron-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn-star {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-white);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      color: var(--text-muted);
+    }
+    .btn-star:hover {
+      border-color: #eab308;
+      color: #eab308;
+    }
+    .btn-star.starred {
+      color: #eab308;
+      border-color: #eab308;
+      background: #fefce8;
+    }
+    .btn-copy-cron {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-white);
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-copy-cron:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .field-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: var(--bg-code);
+      border-radius: 8px;
+      border: 1px solid var(--border-card);
+    }
+    .field-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-light);
+    }
+    .field-chip-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .field-chip-value {
+      color: var(--primary);
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-weight: 600;
+    }
+    .exec-count-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .exec-count-btn {
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-white);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .exec-count-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .exec-count-btn:hover:not(.active) {
+      border-color: var(--primary);
+    }
+    .favorites-section {
+      margin-top: 16px;
+    }
+    .fav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .fav-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .fav-list::-webkit-scrollbar-thumb {
+      background: var(--border-card);
+      border-radius: 2px;
+    }
+    .fav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fav-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .fav-expr {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .fav-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .fav-delete {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;
+      color: var(--text-disabled);
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .fav-delete:hover {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    .fav-empty {
+      font-size: 12px;
+      color: var(--text-placeholder);
+      padding: 12px 0;
+      text-align: center;
+    }
+    .cron-special-inputs {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding-left: 28px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .cron-special-inputs.visible {
+      display: flex;
+    }
+    .cron-special-inputs input {
+      width: 56px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border-input);
+      padding: 0 8px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-white);
+      outline: none;
+      text-align: center;
+    }
+    .cron-special-inputs input:focus {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Title Bar -->
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div>
+        <div class="dot dot-minimize"></div>
+        <div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">DT</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+            <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="搜索工具...">
+        </div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item active" href="14-cron.html">Cron 表达式</a>
+
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">Cron</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Cron 表达式</span>
+        </div>
+
+        <!-- Cron Expression Input -->
+        <div class="cron-section">
+          <div class="cron-input-row">
+            <input type="text" id="cronInput" class="cron-input" value="0 0/30 * * * ?">
+            <div class="cron-actions">
+              <button class="btn-copy-cron" id="btnCopyExpr" title="复制表达式">复制</button>
+              <button class="btn-star" id="btnStar" title="收藏此表达式">&#9734;</button>
+              <button class="btn-primary-cron" id="parseBtn">解析</button>
+            </div>
+          </div>
+          <div class="cron-desc" id="cronDesc">每30分钟执行一次</div>
+
+          <!-- Field Breakdown -->
+          <div class="field-breakdown" id="fieldBreakdown"></div>
+
+          <!-- Visual Config Tabs -->
+          <div class="cron-tabs" id="cronTabs">
+            <div class="cron-tab" data-tab="second">秒</div>
+            <div class="cron-tab active" data-tab="minute">分</div>
+            <div class="cron-tab" data-tab="hour">时</div>
+            <div class="cron-tab" data-tab="day">日</div>
+            <div class="cron-tab" data-tab="month">月</div>
+            <div class="cron-tab" data-tab="week">周</div>
+            <div class="cron-tab" data-tab="year">年</div>
+          </div>
+
+          <!-- Tab Panels -->
+          <div class="tab-panel" id="panel-second"></div>
+          <div class="tab-panel active" id="panel-minute"></div>
+          <div class="tab-panel" id="panel-hour"></div>
+          <div class="tab-panel" id="panel-day"></div>
+          <div class="tab-panel" id="panel-month"></div>
+          <div class="tab-panel" id="panel-week"></div>
+          <div class="tab-panel" id="panel-year"></div>
+
+          <!-- Sync Indicator -->
+          <div class="sync-indicator">
+            &#10003; 双向同步
+          </div>
+        </div>
+
+        <!-- Execution Preview -->
+        <div class="cron-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div class="section-label" style="margin-bottom:0;">最近执行时间</div>
+            <div class="exec-count-toggle">
+              <span>显示</span>
+              <button class="exec-count-btn active" data-count="5">5次</button>
+              <button class="exec-count-btn" data-count="10">10次</button>
+            </div>
+          </div>
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>执行时间</th>
+              </tr>
+            </thead>
+            <tbody id="previewBody">
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Preset Templates -->
+        <div class="cron-section">
+          <div class="section-label">常用预设</div>
+          <div class="preset-grid">
+            <div class="preset-chip" data-expr="*/5 * * * * ?">
+              <div>
+                <div class="preset-name">每5分钟</div>
+                <div class="preset-expr">*/5 * * * * ?</div>
+              </div>
+            </div>
+            <div class="preset-chip" data-expr="0 * * * * ?">
+              <div>
+                <div class="preset-name">每小时</div>
+                <div class="preset-expr">0 * * * * ?</div>
+              </div>
+            </div>
+            <div class="preset-chip" data-expr="0 0 0 * * ?">
+              <div>
+                <div class="preset-name">每天0点</div>
+                <div class="preset-expr">0 0 0 * * ?</div>
+              </div>
+            </div>
+            <div class="preset-chip" data-expr="0 0 9 ? * MON">
+              <div>
+                <div class="preset-name">每周一9点</div>
+                <div class="preset-expr">0 0 9 ? * MON</div>
+              </div>
+            </div>
+            <div class="preset-chip" data-expr="0 0 0 1 * ?">
+              <div>
+                <div class="preset-name">每月1号</div>
+                <div class="preset-expr">0 0 0 1 * ?</div>
+              </div>
+            </div>
+            <div class="preset-chip" data-expr="0 0 9 ? * MON-FRI">
+              <div>
+                <div class="preset-name">工作日9点</div>
+                <div class="preset-expr">0 0 9 ? * MON-FRI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Favorites -->
+        <div class="cron-section favorites-section">
+          <div class="section-label">收藏夹</div>
+          <div class="fav-list" id="favList">
+            <div class="fav-empty" id="favEmpty">暂无收藏，点击表达式旁的星标按钮添加</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="common.js"></script>
+<script>
+(function() {
+  // ---- Field config for each tab ----
+  var FIELD_CONFIG = {
+    second: { index: 0, label: '秒', min: 0, max: 59, everyLabel: '每秒' },
+    minute: { index: 1, label: '分', min: 0, max: 59, everyLabel: '每分钟' },
+    hour:   { index: 2, label: '时', min: 0, max: 23, everyLabel: '每小时' },
+    day:    { index: 3, label: '日', min: 1, max: 31, everyLabel: '每天',
+              modes: ['every','unspecify','period','range','nearest_workday','last_day','specify'] },
+    month:  { index: 4, label: '月', min: 1, max: 12, everyLabel: '每月' },
+    week:   { index: 5, label: '周', min: 1, max: 7,  everyLabel: '不指定',
+              special: true, names: ['SUN','MON','TUE','WED','THU','FRI','SAT'],
+              modes: ['unspecify','period','range','specify','nth_week'] },
+    year:   { index: 6, label: '年', min: 2024, max: 2099, everyLabel: '不指定',
+              modes: ['unspecify','period','range','specify'], noGrid: false }
+  };
+
+  var TAB_KEYS = ['second','minute','hour','day','month','week','year'];
+
+  var cronInput = document.getElementById('cronInput');
+  var cronDesc = document.getElementById('cronDesc');
+  var parseBtn = document.getElementById('parseBtn');
+  var previewBody = document.getElementById('previewBody');
+  var cronTabs = document.getElementById('cronTabs');
+  var fieldBreakdown = document.getElementById('fieldBreakdown');
+
+  // State
+  var activeTab = 'minute';
+  var execCount = 5;
+  var FAV_KEY = 'cron_favorites';
+  var FAV_MAX = 20;
+
+  // Track active radio per field for dedup
+  var activeRadios = {};
+
+  // ---- Build tab panels ----
+  function buildPanel(key) {
+    var cfg = FIELD_CONFIG[key];
+    var panel = document.getElementById('panel-' + key);
+    var radioName = 'radio-' + key;
+
+    var html = '<div class="cron-options"><div class="cron-radio-group">';
+
+    if (key === 'second' || key === 'minute') {
+      // 每, 步长, 范围, 指定
+      html += radioHtml(radioName, 'every', cfg.everyLabel);
+      html += radioHtml(radioName, 'period', '周期');
+      html += periodInputsHtml(key, cfg, '从', '开始，每', '执行一次');
+      html += radioHtml(radioName, 'range', '范围');
+      html += rangeInputsHtml(key, cfg);
+      html += radioHtml(radioName, 'specify', '指定');
+      html += checkboxGridHtml(key, cfg);
+    } else if (key === 'hour') {
+      // 每, 步长, 范围, 指定
+      html += radioHtml(radioName, 'every', cfg.everyLabel);
+      html += radioHtml(radioName, 'period', '周期');
+      html += periodInputsHtml(key, cfg, '从', '开始，每', '小时执行一次');
+      html += radioHtml(radioName, 'range', '范围');
+      html += rangeInputsHtml(key, cfg);
+      html += radioHtml(radioName, 'specify', '指定');
+      html += checkboxGridHtml(key, cfg);
+    } else if (key === 'day') {
+      // 每天, 不指定(?), 步长, 范围, 最近工作日(XW), 最后一天(L), 指定
+      html += radioHtml(radioName, 'every', cfg.everyLabel);
+      html += radioHtml(radioName, 'unspecify', '不指定');
+      html += radioHtml(radioName, 'period', '周期');
+      html += periodInputsHtml(key, cfg, '从', '开始，每', '日执行一次');
+      html += radioHtml(radioName, 'range', '范围');
+      html += rangeInputsHtml(key, cfg);
+      html += radioHtml(radioName, 'nearest_workday', '最近工作日');
+      html += '<div class="cron-special-inputs" id="special-nearestworkday-' + key + '">' +
+        '<span>每月</span> <input type="number" min="1" max="31" value="1" class="special-input" data-special="nearest_workday"> ' +
+        '<span>日之后最近的那个工作日</span></div>';
+      html += radioHtml(radioName, 'last_day', '最后一天');
+      html += radioHtml(radioName, 'specify', '指定');
+      html += checkboxGridHtml(key, cfg);
+    } else if (key === 'month') {
+      // 每月, 步长, 范围, 指定
+      html += radioHtml(radioName, 'every', cfg.everyLabel);
+      html += radioHtml(radioName, 'period', '周期');
+      html += periodInputsHtml(key, cfg, '从', '开始，每', '月执行一次');
+      html += radioHtml(radioName, 'range', '范围');
+      html += rangeInputsHtml(key, cfg);
+      html += radioHtml(radioName, 'specify', '指定');
+      html += checkboxGridHtml(key, cfg);
+    } else if (key === 'week') {
+      // 不指定(?), 步长, 范围, 指定, 第N周星期M
+      html += radioHtml(radioName, 'unspecify', '不指定');
+      html += radioHtml(radioName, 'period', '周期');
+      html += periodInputsHtml(key, cfg, '从第', '周开始，每', '周执行一次');
+      html += radioHtml(radioName, 'range', '范围');
+      html += rangeInputsHtml(key, cfg);
+      html += radioHtml(radioName, 'specify', '指定');
+      html += checkboxGridHtml(key, cfg);
+      html += radioHtml(radioName, 'nth_week', '第N周的星期M');
+      html += '<div class="cron-special-inputs" id="special-nthweek-' + key + '">' +
+        '<span>第</span> <input type="number" min="1" max="5" value="1" class="special-nth"> ' +
+        '<span>周的星期</span> ' +
+        '<select class="special-day-select" data-special="nth_week" style="height:28px;border-radius:4px;border:1px solid var(--border-input);font-size:13px;">' +
+        '<option value="1">SUN</option><option value="2">MON</option><option value="3">TUE</option>' +
+        '<option value="4">WED</option><option value="5">THU</option><option value="6">FRI</option><option value="7">SAT</option>' +
+        '</select></div>';
+    } else if (key === 'year') {
+      // 不指定, 步长, 范围, 指定
+      html += radioHtml(radioName, 'unspecify', '不指定');
+      html += radioHtml(radioName, 'period', '周期');
+      html += periodInputsHtml(key, cfg, '从', '年开始，每', '年执行一次');
+      html += radioHtml(radioName, 'range', '范围');
+      html += rangeInputsHtml(key, cfg);
+      html += radioHtml(radioName, 'specify', '指定');
+      html += checkboxGridHtml(key, cfg);
+    }
+
+    html += '</div></div>';
+    panel.innerHTML = html;
+  }
+
+  function radioHtml(name, value, label) {
+    return '<label class="cron-radio-item">' +
+      '<input type="radio" name="' + name + '" value="' + value + '">' +
+      '<span>' + label + '</span></label>';
+  }
+
+  function periodInputsHtml(key, cfg, prefix, middle, suffix) {
+    return '<div class="cron-period-inputs" id="period-' + key + '">' +
+      '<span>' + prefix + '</span> <input type="number" min="' + cfg.min + '" max="' + cfg.max + '" value="' + cfg.min + '" class="period-start"> ' +
+      '<span>' + middle + '</span> <input type="number" min="1" max="' + (cfg.max - cfg.min + 1) + '" value="1" class="period-step"> ' +
+      '<span>' + suffix + '</span>' +
+      '</div>';
+  }
+
+  function rangeInputsHtml(key, cfg) {
+    return '<div class="cron-range-inputs" id="range-' + key + '">' +
+      '<span>从</span> <input type="number" min="' + cfg.min + '" max="' + cfg.max + '" value="' + cfg.min + '" class="range-start"> ' +
+      '<span>到</span> <input type="number" min="' + cfg.min + '" max="' + cfg.max + '" value="' + cfg.max + '" class="range-end"> ' +
+      '</div>';
+  }
+
+  function checkboxGridHtml(key, cfg) {
+    if (cfg.noGrid && key === 'year') {
+      // Year: show range of years
+      var curYear = new Date().getFullYear();
+      var html = '<div class="cron-checkboxes" id="grid-' + key + '" style="display:none;">';
+      for (var v = curYear; v <= curYear + 10; v++) {
+        html += '<label class="cron-checkbox">' +
+          '<input type="checkbox" data-val="' + v + '">' +
+          '<span>' + v + '</span></label>';
+      }
+      html += '</div>';
+      return html;
+    }
+    var html2 = '<div class="cron-checkboxes" id="grid-' + key + '" style="display:none;">';
+    if (cfg.special) {
+      for (var i = 0; i < cfg.names.length; i++) {
+        html2 += '<label class="cron-checkbox">' +
+          '<input type="checkbox" data-val="' + (i + 1) + '">' +
+          '<span>' + cfg.names[i] + '</span></label>';
+      }
+    } else {
+      for (var v2 = cfg.min; v2 <= cfg.max; v2++) {
+        html2 += '<label class="cron-checkbox">' +
+          '<input type="checkbox" data-val="' + v2 + '">' +
+          '<span>' + v2 + '</span></label>';
+      }
+    }
+    html2 += '</div>';
+    return html2;
+  }
+
+  // Build all panels
+  for (var t = 0; t < TAB_KEYS.length; t++) {
+    buildPanel(TAB_KEYS[t]);
+  }
+
+  // ---- Tab switching (with dedup) ----
+  cronTabs.addEventListener('click', function(e) {
+    var tab = e.target.closest('.cron-tab');
+    if (!tab) return;
+    var key = tab.getAttribute('data-tab');
+    if (!key) return;
+    // Dedup: ignore if already active
+    if (key === activeTab) return;
+    activeTab = key;
+    var allTabs = cronTabs.querySelectorAll('.cron-tab');
+    for (var i = 0; i < allTabs.length; i++) {
+      allTabs[i].classList.toggle('active', allTabs[i].getAttribute('data-tab') === key);
+    }
+    for (var j = 0; j < TAB_KEYS.length; j++) {
+      var panel = document.getElementById('panel-' + TAB_KEYS[j]);
+      panel.classList.toggle('active', TAB_KEYS[j] === key);
+    }
+  });
+
+  // ---- Parse expression into fields state ----
+  function getFields() {
+    var parts = cronInput.value.trim().split(/\s+/);
+    while (parts.length < 7) parts.push('*');
+    return parts.slice(0, 7);
+  }
+
+  function setFields(fields) {
+    var copy = fields.slice();
+    while (copy.length > 6 && copy[copy.length - 1] === '*') {
+      copy.pop();
+    }
+    if (copy.length < 6) {
+      while (copy.length < 6) copy.push('*');
+    }
+    cronInput.value = copy.join(' ');
+  }
+
+  // ---- Sync panels FROM expression ----
+  function syncPanelsFromExpression() {
+    var fields = getFields();
+    for (var t = 0; t < TAB_KEYS.length; t++) {
+      var key = TAB_KEYS[t];
+      var cfg = FIELD_CONFIG[key];
+      var fieldVal = fields[cfg.index] || '*';
+      var radioName = 'radio-' + key;
+      var radios = document.querySelectorAll('input[name="' + radioName + '"]');
+      var grid = document.getElementById('grid-' + key);
+      var rangeDiv = document.getElementById('range-' + key);
+      var periodDiv = document.getElementById('period-' + key);
+      var specialNearest = document.getElementById('special-nearestworkday-' + key);
+      var specialNth = document.getElementById('special-nthweek-' + key);
+
+      // Reset all
+      for (var r = 0; r < radios.length; r++) radios[r].checked = false;
+      if (grid) grid.style.display = 'none';
+      if (rangeDiv) rangeDiv.classList.remove('visible');
+      if (periodDiv) periodDiv.classList.remove('visible');
+      if (specialNearest) specialNearest.classList.remove('visible');
+      if (specialNth) specialNth.classList.remove('visible');
+
+      activeRadios[key] = null;
+
+      if (fieldVal === '*') {
+        checkRadio(radios, 'every');
+        activeRadios[key] = 'every';
+      } else if (fieldVal === '?') {
+        checkRadio(radios, 'unspecify');
+        activeRadios[key] = 'unspecify';
+      } else if (fieldVal === 'L') {
+        checkRadio(radios, 'last_day');
+        activeRadios[key] = 'last_day';
+      } else if (/^\d+W$/.test(fieldVal)) {
+        checkRadio(radios, 'nearest_workday');
+        activeRadios[key] = 'nearest_workday';
+        if (specialNearest) {
+          specialNearest.querySelector('.special-input').value = fieldVal.replace('W', '');
+          specialNearest.classList.add('visible');
+        }
+      } else if (fieldVal.indexOf('#') !== -1) {
+        // Nth weekday: N#M
+        checkRadio(radios, 'nth_week');
+        activeRadios[key] = 'nth_week';
+        if (specialNth) {
+          var np = fieldVal.split('#');
+          specialNth.querySelector('.special-nth').value = np[0];
+          var daySelect = specialNth.querySelector('.special-day-select');
+          if (daySelect) daySelect.value = np[1] || '1';
+          specialNth.classList.add('visible');
+        }
+      } else if (fieldVal.indexOf('/') !== -1) {
+        checkRadio(radios, 'period');
+        activeRadios[key] = 'period';
+        var pp = fieldVal.split('/');
+        if (periodDiv) {
+          periodDiv.querySelector('.period-start').value = pp[0] === '*' ? cfg.min : pp[0];
+          periodDiv.querySelector('.period-step').value = pp[1] || 1;
+          periodDiv.classList.add('visible');
+        }
+      } else if (fieldVal.indexOf('-') !== -1) {
+        checkRadio(radios, 'range');
+        activeRadios[key] = 'range';
+        var rr = fieldVal.split('-');
+        if (rangeDiv) {
+          rangeDiv.querySelector('.range-start').value = rr[0];
+          rangeDiv.querySelector('.range-end').value = rr[1];
+          rangeDiv.classList.add('visible');
+        }
+      } else {
+        // Specify: comma-separated values or single value
+        checkRadio(radios, 'specify');
+        activeRadios[key] = 'specify';
+        if (grid) {
+          grid.style.display = 'flex';
+          var vals = fieldVal.split(',');
+          var checkboxes = grid.querySelectorAll('input[type="checkbox"]');
+          for (var c = 0; c < checkboxes.length; c++) {
+            var cv = checkboxes[c].getAttribute('data-val');
+            if (cfg.special) {
+              checkboxes[c].checked = vals.indexOf(cfg.names[parseInt(cv) - 1]) !== -1;
+            } else {
+              checkboxes[c].checked = vals.indexOf(cv) !== -1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function checkRadio(radios, value) {
+    for (var i = 0; i < radios.length; i++) {
+      if (radios[i].value === value) {
+        radios[i].checked = true;
+        return;
+      }
+    }
+  }
+
+  // ---- Sync expression FROM panels ----
+  function syncExpressionFromPanels() {
+    var fields = getFields();
+    for (var t = 0; t < TAB_KEYS.length; t++) {
+      var key = TAB_KEYS[t];
+      var cfg = FIELD_CONFIG[key];
+      var radioName = 'radio-' + key;
+      var radios = document.querySelectorAll('input[name="' + radioName + '"]');
+      var grid = document.getElementById('grid-' + key);
+      var rangeDiv = document.getElementById('range-' + key);
+      var periodDiv = document.getElementById('period-' + key);
+      var specialNearest = document.getElementById('special-nearestworkday-' + key);
+      var specialNth = document.getElementById('special-nthweek-' + key);
+
+      var checked = null;
+      for (var r = 0; r < radios.length; r++) {
+        if (radios[r].checked) { checked = radios[r].value; break; }
+      }
+
+      if (checked === 'every') {
+        fields[cfg.index] = '*';
+      } else if (checked === 'unspecify') {
+        fields[cfg.index] = '?';
+      } else if (checked === 'specify') {
+        if (grid) {
+          var selected = [];
+          var checkboxes = grid.querySelectorAll('input[type="checkbox"]');
+          for (var c = 0; c < checkboxes.length; c++) {
+            if (checkboxes[c].checked) {
+              var dv = checkboxes[c].getAttribute('data-val');
+              if (cfg.special) {
+                selected.push(cfg.names[parseInt(dv) - 1]);
+              } else {
+                selected.push(dv);
+              }
+            }
+          }
+          if (selected.length === 0) {
+            fields[cfg.index] = '*';
+          } else if (cfg.special && selected.length === 7) {
+            fields[cfg.index] = '*';
+          } else {
+            fields[cfg.index] = selected.join(',');
+          }
+        } else {
+          fields[cfg.index] = '*';
+        }
+      } else if (checked === 'range') {
+        if (rangeDiv) {
+          var rs = rangeDiv.querySelector('.range-start').value || cfg.min;
+          var re = rangeDiv.querySelector('.range-end').value || cfg.max;
+          fields[cfg.index] = rs + '-' + re;
+        }
+      } else if (checked === 'period') {
+        if (periodDiv) {
+          var ps = periodDiv.querySelector('.period-start').value || cfg.min;
+          var pstep = periodDiv.querySelector('.period-step').value || 1;
+          fields[cfg.index] = ps + '/' + pstep;
+        }
+      } else if (checked === 'last_day') {
+        fields[cfg.index] = 'L';
+      } else if (checked === 'nearest_workday') {
+        if (specialNearest) {
+          var nwVal = specialNearest.querySelector('.special-input').value || '1';
+          fields[cfg.index] = nwVal + 'W';
+        }
+      } else if (checked === 'nth_week') {
+        if (specialNth) {
+          var nthVal = specialNth.querySelector('.special-nth').value || '1';
+          var dayVal = specialNth.querySelector('.special-day-select');
+          var dayV = dayVal ? dayVal.value : '1';
+          fields[cfg.index] = nthVal + '#' + dayV;
+        }
+      }
+    }
+
+    // Handle day/week mutual exclusion
+    var dayVal = fields[3];
+    var weekVal = fields[5];
+    var daySpecific = dayVal !== '*' && dayVal !== '?' && dayVal !== 'L' && !/^\d+W$/.test(dayVal);
+    var weekSpecific = weekVal !== '*' && weekVal !== '?';
+    if (daySpecific) {
+      fields[5] = '?';
+    } else if (weekSpecific) {
+      fields[3] = '?';
+    }
+
+    setFields(fields);
+  }
+
+  // ---- Field Breakdown Display ----
+  var FIELD_LABELS = ['秒', '分', '时', '日', '月', '周', '年'];
+
+  function updateFieldBreakdown() {
+    var fields = getFields();
+    var html = '';
+    for (var i = 0; i < 7; i++) {
+      var val = fields[i] || '*';
+      html += '<div class="field-chip">' +
+        '<span class="field-chip-label">' + FIELD_LABELS[i] + ':</span>' +
+        '<span class="field-chip-value">' + escapeHtml(val) + '</span>' +
+        '</div>';
+    }
+    fieldBreakdown.innerHTML = html;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ---- Chinese description ----
+  function describeCron() {
+    var fields = getFields();
+    var desc = buildDescription(fields);
+    cronDesc.textContent = desc;
+    cronDesc.className = 'cron-desc' + (desc.indexOf('无法解析') !== -1 ? ' error-desc' : '');
+  }
+
+  function buildDescription(f) {
+    var parts = [];
+    if (f[0] === '0') {
+      // default
+    } else if (f[0] !== '*') {
+      parts.push(describeField(f[0], '秒'));
+    }
+    if (f[1] !== '*') {
+      parts.push(describeField(f[1], '分'));
+    }
+    if (f[2] !== '*') {
+      parts.push(describeField(f[2], '时'));
+    }
+    if (f[3] !== '*' && f[3] !== '?') {
+      if (f[3] === 'L') parts.push('每月最后一天');
+      else if (/^\d+W$/.test(f[3])) parts.push('每月' + f[3].replace('W','') + '日最近工作日');
+      else parts.push(describeField(f[3], '日'));
+    }
+    if (f[4] !== '*') {
+      parts.push(describeField(f[4], '月'));
+    }
+    if (f[5] !== '*' && f[5] !== '?') {
+      var weekMap = { 'SUN':'周日','MON':'周一','TUE':'周二','WED':'周三','THU':'周四','FRI':'周五','SAT':'周六',
+                      '1':'周日','2':'周一','3':'周二','4':'周三','5':'周四','6':'周五','7':'周六' };
+      if (f[5].indexOf('#') !== -1) {
+        var np = f[5].split('#');
+        parts.push('第' + np[0] + '周的' + (weekMap[np[1]] || np[1]));
+      } else {
+        var wn = describeWeekField(f[5], weekMap);
+        parts.push(wn);
+      }
+    }
+    if (f.length > 6 && f[6] !== '*' && f[6] !== '?') {
+      parts.push(describeField(f[6], '年'));
+    }
+
+    if (parts.length === 0) return '每秒执行一次';
+    return '每' + parts.join('的') + '执行一次';
+  }
+
+  function describeField(val, unit) {
+    if (val.indexOf('/') !== -1) {
+      var pp = val.split('/');
+      return (pp[0] === '*' ? '' : pp[0] + unit + '开始，') + '每隔' + pp[1] + unit;
+    }
+    if (val.indexOf('-') !== -1) {
+      return val.replace('-', unit + '到') + unit;
+    }
+    if (val.indexOf(',') !== -1) {
+      var items = val.split(',');
+      if (items.length > 3) {
+        return '第' + items.slice(0, 3).join(',') + '...等' + items.length + '个' + unit;
+      }
+      return '第' + val + unit;
+    }
+    return val + unit;
+  }
+
+  function describeWeekField(val, weekMap) {
+    if (val.indexOf('-') !== -1) {
+      var rr = val.split('-');
+      var s = weekMap[rr[0]] || rr[0];
+      var e = weekMap[rr[1]] || rr[1];
+      return s + '到' + e;
+    }
+    if (val.indexOf(',') !== -1) {
+      var items = val.split(',');
+      var names = [];
+      for (var i = 0; i < items.length; i++) {
+        names.push(weekMap[items[i]] || items[i]);
+      }
+      return names.join('、');
+    }
+    return weekMap[val] || val;
+  }
+
+  // ---- Next N execution times ----
+  function computeNextNtimes() {
+    var fields = getFields();
+    var times = computeNextN(fields, execCount, new Date());
+    var html = '';
+    for (var i = 0; i < execCount; i++) {
+      html += '<tr><td class="td-index">' + (i + 1) + '</td>';
+      if (i < times.length) {
+        html += '<td class="td-time">' + formatDateTime(times[i]) + '</td>';
+      } else {
+        html += '<td class="td-time">-</td>';
+      }
+      html += '</tr>';
+    }
+    previewBody.innerHTML = html;
+  }
+
+  function formatDateTime(d) {
+    var y = d.getFullYear();
+    var mo = pad2(d.getMonth() + 1);
+    var dd = pad2(d.getDate());
+    var h = pad2(d.getHours());
+    var mi = pad2(d.getMinutes());
+    var s = pad2(d.getSeconds());
+    return y + '-' + mo + '-' + dd + ' ' + h + ':' + mi + ':' + s;
+  }
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function expandField(field, min, max) {
+    if (field === '*') {
+      var arr = [];
+      for (var i = min; i <= max; i++) arr.push(i);
+      return arr;
+    }
+    if (field === 'L') {
+      // For simplicity, expand L as all days (we can't compute last day per month here)
+      return null;
+    }
+    if (/^\d+W$/.test(field)) {
+      return null;
+    }
+    if (field.indexOf('/') !== -1) {
+      var pp = field.split('/');
+      var start = pp[0] === '*' ? min : parseInt(pp[0]);
+      var step = parseInt(pp[1]);
+      var arr2 = [];
+      for (var j = start; j <= max; j += step) arr2.push(j);
+      return arr2;
+    }
+    if (field.indexOf('-') !== -1) {
+      var rr = field.split('-');
+      var lo = parseInt(rr[0]);
+      var hi = parseInt(rr[1]);
+      var arr3 = [];
+      for (var k = lo; k <= hi; k++) arr3.push(k);
+      return arr3;
+    }
+    if (field.indexOf(',') !== -1) {
+      return field.split(',').map(function(v) { return parseInt(v); });
+    }
+    if (field === '?') return null;
+    if (field.indexOf('#') !== -1) return null;
+    return [parseInt(field)];
+  }
+
+  function expandWeekField(field) {
+    var nameToNum = { 'SUN':1,'MON':2,'TUE':3,'WED':4,'THU':5,'FRI':6,'SAT':7,
+                      '1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7 };
+    if (field === '*' || field === '?') return null;
+    if (field.indexOf('#') !== -1) return null;
+    if (field.indexOf('/') !== -1) return null;
+    if (field.indexOf('-') !== -1) {
+      var rr = field.split('-');
+      var lo = nameToNum[rr[0]] || parseInt(rr[0]);
+      var hi = nameToNum[rr[1]] || parseInt(rr[1]);
+      var arr = [];
+      for (var k = lo; k <= hi; k++) arr.push(k % 7);
+      return arr;
+    }
+    if (field.indexOf(',') !== -1) {
+      return field.split(',').map(function(v) {
+        return nameToNum[v] || parseInt(v);
+      });
+    }
+    return [(nameToNum[field] || parseInt(field))];
+  }
+
+  function computeNextN(fields, n, from) {
+    var results = [];
+    var seconds = expandField(fields[0], 0, 59);
+    var minutes = expandField(fields[1], 0, 59);
+    var hours   = expandField(fields[2], 0, 23);
+    var days    = (fields[3] === '?' || fields[3] === '*' || fields[3] === 'L' || /^\d+W$/.test(fields[3])) ? null : expandField(fields[3], 1, 31);
+    var months  = expandField(fields[4], 1, 12);
+    var weekdays = expandWeekField(fields[5]);
+
+    if (!seconds || !minutes || !hours || !months) return results;
+
+    seconds.sort(function(a,b){return a-b;});
+    minutes.sort(function(a,b){return a-b;});
+    hours.sort(function(a,b){return a-b;});
+    months.sort(function(a,b){return a-b;});
+
+    var d = new Date(from.getTime());
+    d.setSeconds(d.getSeconds() + 1);
+    d.setMilliseconds(0);
+
+    var maxIterations = 100000;
+    var iter = 0;
+
+    while (results.length < n && iter < maxIterations) {
+      iter++;
+      if (binarySearch(months, d.getMonth() + 1) === -1) { nextMonth(d, months); continue; }
+      var dayMatch = true;
+      if (days !== null) { if (binarySearch(days, d.getDate()) === -1) dayMatch = false; }
+      if (weekdays !== null) {
+        var jsDay = d.getDay();
+        if (binarySearch(weekdays, jsDay === 0 ? 1 : jsDay + 1) === -1) dayMatch = false;
+      }
+      if (!dayMatch) { d.setDate(d.getDate() + 1); d.setHours(0, 0, 0, 0); continue; }
+      if (binarySearch(hours, d.getHours()) === -1) { nextHour(d, hours); continue; }
+      if (binarySearch(minutes, d.getMinutes()) === -1) { nextMinute(d, minutes); continue; }
+      if (binarySearch(seconds, d.getSeconds()) === -1) { nextSecond(d, seconds); continue; }
+      results.push(new Date(d.getTime()));
+      d.setSeconds(d.getSeconds() + 1);
+    }
+    return results;
+  }
+
+  function binarySearch(arr, val) {
+    var lo = 0, hi = arr.length - 1;
+    while (lo <= hi) { var mid = (lo + hi) >> 1; if (arr[mid] === val) return mid; if (arr[mid] < val) lo = mid + 1; else hi = mid - 1; }
+    return -1;
+  }
+
+  function nextSecond(d, seconds) {
+    var cur = d.getSeconds();
+    for (var i = 0; i < seconds.length; i++) { if (seconds[i] > cur) { d.setSeconds(seconds[i]); return; } }
+    d.setSeconds(seconds[0]); d.setMinutes(d.getMinutes() + 1);
+  }
+
+  function nextMinute(d, minutes) {
+    var cur = d.getMinutes();
+    for (var i = 0; i < minutes.length; i++) { if (minutes[i] > cur) { d.setMinutes(minutes[i]); d.setSeconds(0, 0); return; } }
+    d.setMinutes(minutes[0]); d.setSeconds(0, 0); d.setHours(d.getHours() + 1);
+  }
+
+  function nextHour(d, hours) {
+    var cur = d.getHours();
+    for (var i = 0; i < hours.length; i++) { if (hours[i] > cur) { d.setHours(hours[i]); d.setMinutes(0, 0, 0); return; } }
+    d.setHours(hours[0]); d.setMinutes(0, 0, 0); d.setDate(d.getDate() + 1);
+  }
+
+  function nextMonth(d, months) {
+    var cur = d.getMonth() + 1;
+    for (var i = 0; i < months.length; i++) { if (months[i] > cur) { d.setMonth(months[i] - 1, 1); d.setHours(0, 0, 0, 0); return; } }
+    d.setMonth(months[0] - 1, 1); d.setHours(0, 0, 0, 0); d.setFullYear(d.getFullYear() + 1);
+  }
+
+  // ---- Global update function ----
+  function updateAll() {
+    describeCron();
+    computeNextNtimes();
+    updateFieldBreakdown();
+    updateStarButton();
+  }
+
+  // ---- Event: radio changes within panels (with dedup) ----
+  for (var t = 0; t < TAB_KEYS.length; t++) {
+    (function(key) {
+      var cfg = FIELD_CONFIG[key];
+      var radioName = 'radio-' + key;
+      var panel = document.getElementById('panel-' + key);
+      var grid = document.getElementById('grid-' + key);
+      var rangeDiv = document.getElementById('range-' + key);
+      var periodDiv = document.getElementById('period-' + key);
+      var specialNearest = document.getElementById('special-nearestworkday-' + key);
+      var specialNth = document.getElementById('special-nthweek-' + key);
+
+      panel.addEventListener('change', function(e) {
+        var target = e.target;
+        if (target.type === 'radio' && target.name === radioName) {
+          // Dedup: ignore if same radio already active
+          if (activeRadios[key] === target.value) return;
+          activeRadios[key] = target.value;
+          if (grid) grid.style.display = target.value === 'specify' ? 'flex' : 'none';
+          if (rangeDiv) rangeDiv.classList.toggle('visible', target.value === 'range');
+          if (periodDiv) periodDiv.classList.toggle('visible', target.value === 'period');
+          if (specialNearest) specialNearest.classList.toggle('visible', target.value === 'nearest_workday');
+          if (specialNth) specialNth.classList.toggle('visible', target.value === 'nth_week');
+          syncExpressionFromPanels();
+          updateAll();
+        }
+        if (target.type === 'checkbox') {
+          syncExpressionFromPanels();
+          updateAll();
+        }
+        if (target.tagName === 'INPUT' && target.type === 'number') {
+          syncExpressionFromPanels();
+          updateAll();
+        }
+        if (target.tagName === 'SELECT') {
+          syncExpressionFromPanels();
+          updateAll();
+        }
+      });
+    })(TAB_KEYS[t]);
+  }
+
+  // ---- Event: manual cron input editing ----
+  cronInput.addEventListener('input', function() {
+    syncPanelsFromExpression();
+    updateAll();
+  });
+
+  // ---- Event: parse button ----
+  parseBtn.addEventListener('click', function() {
+    syncPanelsFromExpression();
+    updateAll();
+  });
+
+  // ---- Event: preset chips ----
+  var chips = document.querySelectorAll('.preset-chip');
+  for (var c = 0; c < chips.length; c++) {
+    chips[c].addEventListener('click', function() {
+      var expr = this.getAttribute('data-expr');
+      cronInput.value = expr;
+      syncPanelsFromExpression();
+      updateAll();
+    });
+  }
+
+  // ---- Execution count toggle (5/10) ----
+  var execCountBtns = document.querySelectorAll('.exec-count-btn');
+  execCountBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var count = parseInt(btn.getAttribute('data-count'));
+      // Dedup: ignore if already active
+      if (count === execCount) return;
+      execCount = count;
+      execCountBtns.forEach(function(b) { b.classList.toggle('active', parseInt(b.getAttribute('data-count')) === count); });
+      computeNextNtimes();
+    });
+  });
+
+  // ---- Copy Expression ----
+  document.getElementById('btnCopyExpr').addEventListener('click', function() {
+    var expr = cronInput.value.trim();
+    if (expr) {
+      dtCopy(expr);
+    }
+    var btn = document.getElementById('btnCopyExpr');
+    var orig = btn.textContent;
+    btn.textContent = '已复制';
+    btn.style.color = '#16a34a';
+    btn.style.borderColor = '#16a34a';
+    setTimeout(function() { btn.textContent = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1200);
+  });
+
+  // ---- Favorites (localStorage, max 20) ----
+  function getFavorites() {
+    try {
+      var data = localStorage.getItem(FAV_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch(e) { return []; }
+  }
+
+  function saveFavorites(favs) {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch(e) {}
+  }
+
+  function updateStarButton() {
+    var expr = cronInput.value.trim();
+    var favs = getFavorites();
+    var isStarred = favs.some(function(f) { return f.expr === expr; });
+    var btn = document.getElementById('btnStar');
+    btn.innerHTML = isStarred ? '&#9733;' : '&#9734;';
+    btn.className = 'btn-star' + (isStarred ? ' starred' : '');
+  }
+
+  document.getElementById('btnStar').addEventListener('click', function() {
+    var expr = cronInput.value.trim();
+    if (!expr) return;
+    var favs = getFavorites();
+    var idx = -1;
+    for (var i = 0; i < favs.length; i++) {
+      if (favs[i].expr === expr) { idx = i; break; }
+    }
+    if (idx !== -1) {
+      // Already starred -> unstar
+      favs.splice(idx, 1);
+    } else {
+      // Add new
+      favs.unshift({ expr: expr, desc: cronDesc.textContent, time: Date.now() });
+      if (favs.length > FAV_MAX) favs = favs.slice(0, FAV_MAX);
+    }
+    saveFavorites(favs);
+    updateStarButton();
+    renderFavorites();
+  });
+
+  function renderFavorites() {
+    var favs = getFavorites();
+    var list = document.getElementById('favList');
+    var emptyEl = document.getElementById('favEmpty');
+    if (favs.length === 0) {
+      list.innerHTML = '<div class="fav-empty" id="favEmpty">暂无收藏，点击表达式旁的星标按钮添加</div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < favs.length; i++) {
+      html += '<div class="fav-item" data-fav-idx="' + i + '">' +
+        '<span class="fav-expr">' + escapeHtml(favs[i].expr) + '</span>' +
+        '<span class="fav-desc">' + escapeHtml(favs[i].desc) + '</span>' +
+        '<button class="fav-delete" data-del-idx="' + i + '" title="删除">&times;</button>' +
+        '</div>';
+    }
+    list.innerHTML = html;
+
+    // Bind click to load
+    list.querySelectorAll('.fav-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        if (e.target.closest('.fav-delete')) return;
+        var idx = parseInt(item.getAttribute('data-fav-idx'));
+        var fav = favs[idx];
+        if (fav) {
+          cronInput.value = fav.expr;
+          syncPanelsFromExpression();
+          updateAll();
+        }
+      });
+    });
+
+    // Bind delete
+    list.querySelectorAll('.fav-delete').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var idx = parseInt(btn.getAttribute('data-del-idx'));
+        favs.splice(idx, 1);
+        saveFavorites(favs);
+        renderFavorites();
+        updateStarButton();
+      });
+    });
+  }
+
+  // ---- Initialize ----
+  syncPanelsFromExpression();
+  updateAll();
+  renderFavorites();
+})();
+</script>
+</body>
+</html>

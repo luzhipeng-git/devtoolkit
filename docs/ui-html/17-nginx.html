@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nginx 工具 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* Tab bar */
+    .tool-header { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+    .tool-tab {
+      padding: 6px 18px; border-radius: 6px; font-size: 13px; cursor: pointer;
+      border: none; transition: all 0.15s ease; user-select: none;
+    }
+    .tool-tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white; font-weight: 500;
+    }
+    .tool-tab:not(.active) {
+      background: var(--bg-hover); color: var(--text-muted); border: 1px solid var(--border-card);
+    }
+    .tool-tab:not(.active):hover { color: var(--text-primary); border-color: var(--border-input); }
+
+    /* Dual editor */
+    .dual-editor-container { display: flex; gap: 12px; align-items: stretch; }
+    .editor-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .editor-col .editor-header { flex-shrink: 0; }
+    .editor-col .editor-body { flex: 1; min-height: 200px; }
+    .format-btn-col {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 8px; padding: 0 4px; flex-shrink: 0;
+    }
+    .btn-action {
+      padding: 9px 20px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white; font-size: 13px; font-weight: 500; border: none; cursor: pointer;
+      transition: opacity 0.15s; white-space: nowrap;
+    }
+    .btn-action:hover { opacity: 0.9; }
+    .btn-action:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-action .spinner {
+      display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite;
+      vertical-align: middle; margin-right: 4px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .copy-btn {
+      padding: 3px 10px; border-radius: 4px; background: var(--bg-white);
+      color: var(--text-muted); font-size: 11px; border: 1px solid var(--border-input);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .copy-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .copy-btn.copied { color: #16a34a; border-color: #16a34a; }
+
+    /* Output panel */
+    .panel-body {
+      border: 1px solid var(--border-card); border-radius: 0 0 8px 8px;
+      background: var(--bg-code-alt); padding: 10px 12px; min-height: 200px;
+      overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px; line-height: 1.7; white-space: pre-wrap;
+    }
+    .panel-body.empty { color: var(--text-placeholder); font-style: italic; }
+
+    /* Nginx syntax highlight */
+    .ngx-directive { color: #2563eb; font-weight: 500; }
+    .ngx-string { color: #16a34a; }
+    .ngx-comment { color: #94a3b8; font-style: italic; }
+    .ngx-brace { font-weight: 700; color: #475569; }
+    .ngx-variable { color: #7c3aed; }
+
+    /* Syntax check results */
+    .check-result { margin-top: 12px; padding: 10px 16px; border-radius: 8px; font-size: 13px; display: none; }
+    .check-result.pass { display: block; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+    .check-result.fail { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .error-item { padding: 4px 0; font-size: 12px; font-family: 'Consolas', monospace; }
+    .error-line { font-weight: 600; }
+
+    /* Diff */
+    .diff-stats {
+      display: flex; gap: 16px; padding: 8px 16px; background: var(--bg-code);
+      border: 1px solid var(--border-card); border-radius: 8px 8px 0 0;
+      font-size: 12px; color: var(--text-secondary);
+    }
+    .diff-stats .stat-add { color: #16a34a; font-weight: 600; }
+    .diff-stats .stat-del { color: #dc2626; font-weight: 600; }
+    .diff-stats .stat-mod { color: #d97706; font-weight: 600; }
+    .diff-body {
+      border: 1px solid var(--border-card); border-top: none; border-radius: 0 0 8px 8px;
+      background: var(--bg-code-alt); padding: 10px 12px; max-height: 400px;
+      overflow: auto; font-family: 'Consolas', monospace; font-size: 12px; line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .diff-line { padding: 1px 4px; border-radius: 2px; }
+    .diff-line-add { background: #dcfce7; color: #166534; }
+    .diff-line-del { background: #fee2e2; color: #991b1b; }
+    .diff-line-mod { background: #fef3c7; color: #92400e; }
+    .diff-line-num { display: inline-block; width: 36px; color: var(--text-disabled); user-select: none; }
+
+    /* Templates grid */
+    .templates-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin-top: 12px;
+    }
+    .template-card {
+      padding: 16px 18px; border: 1px solid var(--border-card); border-radius: 8px;
+      background: var(--bg-white); cursor: pointer; transition: all 0.15s ease;
+    }
+    .template-card:hover {
+      border-color: var(--primary); background: var(--primary-light);
+      box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+    }
+    .template-card-icon { font-size: 22px; margin-bottom: 8px; }
+    .template-card-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .template-card-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+    .template-card-tag {
+      display: inline-block; margin-top: 6px; font-size: 10px; padding: 1px 6px;
+      border-radius: 3px; background: var(--bg-hover); color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div><div class="dot dot-minimize"></div><div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">D</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+    <div class="main-layout">
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item active" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+      <div class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">Nginx</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Nginx 工具</span>
+        </div>
+        <div class="tool-card">
+          <!-- Tab Bar -->
+          <div class="tool-header">
+            <button class="tool-tab active" data-tab="format">格式化</button>
+            <button class="tool-tab" data-tab="check">语法检查</button>
+            <button class="tool-tab" data-tab="diff">Diff 对比</button>
+            <button class="tool-tab" data-tab="templates">模板</button>
+          </div>
+
+          <!-- Tab: 格式化 -->
+          <div id="tab-format" class="tab-content">
+            <div class="dual-editor-container">
+              <div class="editor-col">
+                <div class="editor-header">
+                  <span class="editor-title">输入（Nginx 配置）</span>
+                  <div class="editor-actions">
+                    <button class="copy-btn" id="fmtPaste">粘贴</button>
+                    <button class="copy-btn" id="fmtClear">清空</button>
+                  </div>
+                </div>
+                <div class="editor-body">
+                  <div class="line-numbers" id="fmtLineNum">1</div>
+                  <textarea class="editor-textarea" id="fmtInput" spellcheck="false"
+                    placeholder="请输入 Nginx 配置..."></textarea>
+                </div>
+              </div>
+              <div class="format-btn-col">
+                <button class="btn-action" id="btnFormat" disabled>格式化</button>
+              </div>
+              <div class="editor-col">
+                <div class="editor-header">
+                  <span class="editor-title">输出（格式化）</span>
+                  <div class="editor-actions">
+                    <button class="copy-btn" id="fmtCopy">复制</button>
+                  </div>
+                </div>
+                <div class="editor-body output">
+                  <div class="line-numbers" id="fmtOutLineNum"></div>
+                  <div class="editor-output" id="fmtOutput" style="color:var(--text-placeholder);font-style:italic;">格式化后的配置将显示在这里</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: 语法检查 -->
+          <div id="tab-check" class="tab-content" style="display:none;">
+            <div class="dual-editor-container">
+              <div class="editor-col" style="flex:1;">
+                <div class="editor-header">
+                  <span class="editor-title">输入（Nginx 配置）</span>
+                  <div class="editor-actions">
+                    <button class="copy-btn" id="chkPaste">粘贴</button>
+                    <button class="copy-btn" id="chkClear">清空</button>
+                  </div>
+                </div>
+                <div class="editor-body">
+                  <div class="line-numbers" id="chkLineNum">1</div>
+                  <textarea class="editor-textarea" id="chkInput" spellcheck="false"
+                    placeholder="请输入 Nginx 配置进行语法检查..."></textarea>
+                </div>
+              </div>
+              <div class="format-btn-col">
+                <button class="btn-action" id="btnCheck" disabled>检查</button>
+              </div>
+              <div class="editor-col" style="flex:1;">
+                <div class="editor-header">
+                  <span class="editor-title">检查结果</span>
+                  <div class="editor-actions"></div>
+                </div>
+                <div class="panel-body empty" id="chkOutput">输入配置后点击「检查」查看结果</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Diff 对比 -->
+          <div id="tab-diff" class="tab-content" style="display:none;">
+            <div class="dual-editor-container">
+              <div class="editor-col">
+                <div class="editor-header">
+                  <span class="editor-title">旧配置</span>
+                  <div class="editor-actions">
+                    <button class="copy-btn" id="diffPasteOld">粘贴</button>
+                  </div>
+                </div>
+                <div class="editor-body">
+                  <div class="line-numbers" id="diffOldLineNum">1</div>
+                  <textarea class="editor-textarea" id="diffOldInput" spellcheck="false"
+                    placeholder="请输入旧版 Nginx 配置..."></textarea>
+                </div>
+              </div>
+              <div class="format-btn-col">
+                <button class="btn-action" id="btnDiff" disabled>对比</button>
+              </div>
+              <div class="editor-col">
+                <div class="editor-header">
+                  <span class="editor-title">新配置</span>
+                  <div class="editor-actions">
+                    <button class="copy-btn" id="diffPasteNew">粘贴</button>
+                  </div>
+                </div>
+                <div class="editor-body">
+                  <div class="line-numbers" id="diffNewLineNum">1</div>
+                  <textarea class="editor-textarea" id="diffNewInput" spellcheck="false"
+                    placeholder="请输入新版 Nginx 配置..."></textarea>
+                </div>
+              </div>
+            </div>
+            <!-- Diff Results -->
+            <div id="diffResults" style="display:none; margin-top:16px;">
+              <div class="diff-stats" id="diffStats"></div>
+              <div class="diff-body" id="diffBody"></div>
+            </div>
+          </div>
+
+          <!-- Tab: 模板 -->
+          <div id="tab-templates" class="tab-content" style="display:none;">
+            <div class="templates-grid" id="templateGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="common.js"></script>
+<script>
+(function() {
+  // ===== State =====
+  let activeTab = 'format';
+  let fmtResult = '';
+
+  // ===== Templates =====
+  const templates = [
+    { icon: '⇄', name: '反向代理', desc: '将请求转发到后端服务器', tag: 'proxy',
+      config: '# Reverse Proxy\nserver {\n    listen 80;\n    server_name example.com;\n\n    location / {\n        proxy_pass http://backend:8080;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}' },
+    { icon: '⚖', name: '负载均衡', desc: '多后端服务器负载分发', tag: 'upstream',
+      config: '# Load Balancer\nupstream backend {\n    ip_hash;\n    server 192.168.1.10:8080 weight=3;\n    server 192.168.1.11:8080 weight=2;\n    server 192.168.1.12:8080 backup;\n}\n\nserver {\n    listen 80;\n    server_name example.com;\n\n    location / {\n        proxy_pass http://backend;\n    }\n}' },
+    { icon: '🔒', name: 'SSL/HTTPS', desc: 'SSL/TLS 证书配置模板', tag: 'ssl',
+      config: '# HTTPS Configuration\nserver {\n    listen 443 ssl http2;\n    server_name example.com;\n\n    ssl_certificate /etc/nginx/ssl/example.crt;\n    ssl_certificate_key /etc/nginx/ssl/example.key;\n    ssl_protocols TLSv1.2 TLSv1.3;\n    ssl_ciphers HIGH:!aNULL:!MD5;\n    ssl_prefer_server_ciphers on;\n    ssl_session_cache shared:SSL:10m;\n    ssl_session_timeout 10m;\n\n    location / {\n        proxy_pass http://backend:8080;\n    }\n}\n\nserver {\n    listen 80;\n    server_name example.com;\n    return 301 https://$host$request_uri;\n}' },
+    { icon: '📁', name: '静态文件', desc: '前端 SPA 静态资源部署', tag: 'static',
+      config: '# Static Files\nserver {\n    listen 80;\n    server_name example.com;\n    root /var/www/html;\n    index index.html;\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n\n    location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {\n        expires 30d;\n        add_header Cache-Control "public, immutable";\n    }\n\n    location ~* \\.(html)$ {\n        add_header Cache-Control "no-cache";\n    }\n}' },
+    { icon: '⚡', name: '缓存策略', desc: '代理缓存配置模板', tag: 'cache',
+      config: '# Proxy Cache\nproxy_cache_path /var/cache/nginx levels=1:2\n    keys_zone=api_cache:10m max_size=1g inactive=60m;\n\nserver {\n    listen 80;\n    server_name example.com;\n\n    location /api/ {\n        proxy_pass http://backend:8080;\n        proxy_cache api_cache;\n        proxy_cache_valid 200 10m;\n        proxy_cache_valid 404 1m;\n        proxy_cache_key $scheme$host$request_uri;\n        add_header X-Cache-Status $upstream_cache_status;\n    }\n}' },
+    { icon: '→', name: '重定向', desc: '域名和路径重定向配置', tag: 'redirect',
+      config: '# Redirect\nserver {\n    listen 80;\n    server_name old-example.com;\n    return 301 https://example.com$request_uri;\n}\n\nserver {\n    listen 80;\n    server_name example.com;\n\n    location /old-path {\n        return 301 /new-path;\n    }\n\n    location /new-path {\n        proxy_pass http://backend:8080;\n    }\n}' },
+    { icon: '🔌', name: 'WebSocket', desc: 'WebSocket 连接代理配置', tag: 'websocket',
+      config: '# WebSocket Proxy\nserver {\n    listen 80;\n    server_name example.com;\n\n    location /ws/ {\n        proxy_pass http://backend:8080;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection "upgrade";\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_read_timeout 86400;\n    }\n}' },
+    { icon: '🛡', name: '安全头部', desc: '常用安全响应头配置', tag: 'security',
+      config: '# Security Headers\nserver {\n    listen 80;\n    server_name example.com;\n\n    add_header X-Frame-Options "SAMEORIGIN" always;\n    add_header X-Content-Type-Options "nosniff" always;\n    add_header X-XSS-Protection "1; mode=block" always;\n    add_header Referrer-Policy "strict-origin-when-cross-origin" always;\n    add_header Content-Security-Policy "default-src \'self\'; script-src \'self\' \'unsafe-inline\';" always;\n    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;\n\n    location / {\n        proxy_pass http://backend:8080;\n    }\n}' },
+    { icon: '📊', name: '日志配置', desc: '自定义访问和错误日志', tag: 'log',
+      config: '# Log Configuration\nlog_format main \'$remote_addr - $remote_user [$time_local] "\'\n                   \'"$request" $status $body_bytes_sent "\'\n                   \'"$http_referer" "$http_user_agent"\';\n\nserver {\n    listen 80;\n    server_name example.com;\n\n    access_log /var/log/nginx/example_access.log main;\n    error_log /var/log/nginx/example_error.log warn;\n\n    location / {\n        proxy_pass http://backend:8080;\n    }\n}' }
+  ];
+
+  // ===== DOM refs =====
+  const $tabs = document.querySelectorAll('.tool-tab');
+  const $tabContents = document.querySelectorAll('.tab-content');
+  const $fmtInput = document.getElementById('fmtInput');
+  const $fmtLineNum = document.getElementById('fmtLineNum');
+  const $fmtOutput = document.getElementById('fmtOutput');
+  const $fmtOutLineNum = document.getElementById('fmtOutLineNum');
+  const $btnFormat = document.getElementById('btnFormat');
+  const $chkInput = document.getElementById('chkInput');
+  const $chkLineNum = document.getElementById('chkLineNum');
+  const $chkOutput = document.getElementById('chkOutput');
+  const $btnCheck = document.getElementById('btnCheck');
+  const $diffOldInput = document.getElementById('diffOldInput');
+  const $diffNewInput = document.getElementById('diffNewInput');
+  const $diffOldLineNum = document.getElementById('diffOldLineNum');
+  const $diffNewLineNum = document.getElementById('diffNewLineNum');
+  const $btnDiff = document.getElementById('btnDiff');
+  const $diffResults = document.getElementById('diffResults');
+  const $diffStats = document.getElementById('diffStats');
+  const $diffBody = document.getElementById('diffBody');
+  const $templateGrid = document.getElementById('templateGrid');
+
+  // ===== Helpers =====
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function updateLineNumbers(textarea, lineNumEl) {
+    var lines = textarea.value.split('\n').length;
+    lineNumEl.innerHTML = Array.from({length: lines}, function(_, i) { return i + 1; }).join('\n');
+  }
+
+  function copyText(text, btn) {
+    if (!text) return;
+    dtCopy(text).then(function() {
+      btn.textContent = '已复制';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1200);
+    });
+  }
+
+  function setLoading(btn, loading) {
+    if (loading) {
+      btn.disabled = true;
+      btn.dataset.origText = btn.textContent;
+      btn.innerHTML = '<span class="spinner"></span>处理中';
+    } else {
+      btn.innerHTML = btn.dataset.origText || btn.textContent;
+      btn.disabled = false;
+    }
+  }
+
+  // ===== Tab Switching (with dedup) =====
+  $tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.dataset.tab;
+      if (target === activeTab) return; // dedup: clicking active tab ignored
+      activeTab = target;
+      $tabs.forEach(function(t) { t.classList.toggle('active', t.dataset.tab === target); });
+      $tabContents.forEach(function(tc) {
+        var id = tc.id.replace('tab-', '');
+        tc.style.display = id === target ? '' : 'none';
+      });
+    });
+  });
+
+  // ===== Line number sync =====
+  function bindLineSync(textarea, lineNum) {
+    textarea.addEventListener('input', function() { updateLineNumbers(textarea, lineNum); });
+    textarea.addEventListener('scroll', function() { lineNum.scrollTop = textarea.scrollTop; });
+  }
+  bindLineSync($fmtInput, $fmtLineNum);
+  bindLineSync($chkInput, $chkLineNum);
+  bindLineSync($diffOldInput, $diffOldLineNum);
+  bindLineSync($diffNewInput, $diffNewLineNum);
+
+  // ===== Button enable/disable based on input =====
+  $fmtInput.addEventListener('input', function() {
+    $btnFormat.disabled = !$fmtInput.value.trim();
+  });
+  $chkInput.addEventListener('input', function() {
+    $btnCheck.disabled = !$chkInput.value.trim();
+  });
+  function updateDiffBtn() {
+    $btnDiff.disabled = !($diffOldInput.value.trim() && $diffNewInput.value.trim());
+  }
+  $diffOldInput.addEventListener('input', updateDiffBtn);
+  $diffNewInput.addEventListener('input', updateDiffBtn);
+
+  // ===== Nginx Syntax Highlight =====
+  var NGX_DIRECTIVES = [
+    'server','location','upstream','listen','server_name','root','index',
+    'proxy_pass','proxy_set_header','proxy_read_timeout','proxy_connect_timeout',
+    'proxy_cache','proxy_cache_valid','proxy_cache_path','proxy_cache_key',
+    'proxy_http_version','return','rewrite','if','else','map','geo',
+    'limit_req','limit_conn','access_log','error_log','log_format',
+    'include','default_server','try_files','add_header','ssl_certificate',
+    'ssl_certificate_key','ssl_protocols','ssl_ciphers','ssl_prefer_server_ciphers',
+    'ssl_session_cache','ssl_session_timeout','sendfile','tcp_nopush',
+    'tcp_nodelay','keepalive_timeout','gzip','gzip_types','gzip_min_length',
+    'worker_processes','events','http','stream','mail','types','charset',
+    'client_max_body_size','resolver','split_clients','perl','lua_shared_dict',
+    'content_by_lua','access_by_lua','rewrite_by_lua','init_by_lua','set_by_lua',
+    'fastcgi_pass','fastcgi_param','uwsgi_pass','scgi_pass'
+  ];
+
+  function highlightNginx(code) {
+    var html = escapeHtml(code);
+    // Comments
+    html = html.replace(/(#[^\n]*)/g, '<span class="ngx-comment">$1</span>');
+    // Strings in quotes
+    html = html.replace(/(&quot;[^&]*?&quot;|"[^"]*?"|\'[^\']*?\')/g, '<span class="ngx-string">$1</span>');
+    // Variables $...
+    html = html.replace(/(\$[a-zA-Z_][a-zA-Z0-9_]*)/g, '<span class="ngx-variable">$1</span>');
+    // Directives (word at start of line or after whitespace, before space/{/;)
+    var dirRegex = new RegExp('\\b(' + NGX_DIRECTIVES.join('|') + ')\\b', 'g');
+    html = html.replace(dirRegex, '<span class="ngx-directive">$1</span>');
+    // Braces
+    html = html.replace(/([{}])/g, '<span class="ngx-brace">$1</span>');
+    return html;
+  }
+
+  // ===== Nginx Formatter =====
+  function formatNginx(input) {
+    var lines = input.split('\n');
+    var formatted = [];
+    var indent = 0;
+    var inBlock = false;
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) { formatted.push(''); continue; }
+
+      // Remove comment from processing but preserve it
+      var comment = '';
+      var commentIdx = line.indexOf('#');
+      if (commentIdx === 0) {
+        // pure comment line
+        formatted.push(spaces(indent) + line);
+        continue;
+      }
+
+      // Handle closing brace
+      if (line.startsWith('}')) {
+        indent = Math.max(0, indent - 4);
+        formatted.push(spaces(indent) + '}');
+        if (line.length > 1) {
+          // e.g. "} # comment"
+          formatted[formatted.length - 1] = spaces(indent) + line;
+        }
+        continue;
+      }
+
+      // Handle lines with { and }
+      if (line.includes('{') && line.includes('}')) {
+        formatted.push(spaces(indent) + line);
+        continue;
+      }
+
+      // Opening brace line
+      if (line.endsWith('{')) {
+        var before = line.slice(0, -1).trim();
+        // Check if we need blank line before block directives
+        var blockDirectives = ['server','location','upstream','events','http','stream','types','map','geo','if','limit_req_zone'];
+        var isBlockDir = blockDirectives.some(function(d) { return before === d || before.startsWith(d + ' '); });
+        if (isBlockDir && formatted.length > 0) {
+          var lastNonEmpty = formatted.length - 1;
+          while (lastNonEmpty >= 0 && formatted[lastNonEmpty] === '') lastNonEmpty--;
+          if (lastNonEmpty >= 0 && formatted[formatted.length - 1] !== '') {
+            formatted.push('');
+          }
+        }
+        formatted.push(spaces(indent) + line);
+        indent += 4;
+        continue;
+      }
+
+      // Directive line
+      // Ensure semicolon for simple directives
+      if (!line.endsWith(';') && !line.endsWith('{') && !line.endsWith('}') && !line.startsWith('#')) {
+        // might be a multi-line or block start without { on same line
+        // For formatting purposes, if it's a simple directive without semicolon, leave as-is
+      }
+
+      formatted.push(spaces(indent) + line);
+    }
+
+    return formatted.join('\n');
+  }
+
+  function spaces(n) {
+    var s = '';
+    for (var i = 0; i < n; i++) s += ' ';
+    return s;
+  }
+
+  // ===== Format Action =====
+  document.getElementById('btnFormat').addEventListener('click', function() {
+    var input = $fmtInput.value.trim();
+    if (!input) return;
+
+    setLoading(this, true);
+    var btn = this;
+    setTimeout(function() {
+      fmtResult = formatNginx(input);
+      $fmtOutput.innerHTML = highlightNginx(fmtResult);
+      $fmtOutput.style.color = '';
+      $fmtOutput.style.fontStyle = '';
+      // Update output line numbers
+      var outLines = fmtResult.split('\n');
+      $fmtOutLineNum.innerHTML = Array.from({length: outLines.length}, function(_, i) { return i + 1; }).join('\n');
+      setLoading(btn, false);
+      // Re-disable if input is empty
+      btn.disabled = !$fmtInput.value.trim();
+    }, 300);
+  });
+
+  // ===== Syntax Check Action =====
+  document.getElementById('btnCheck').addEventListener('click', function() {
+    var input = $chkInput.value.trim();
+    if (!input) return;
+
+    setLoading(this, true);
+    var btn = this;
+    setTimeout(function() {
+      var errors = checkNginxSyntax(input);
+      if (errors.length === 0) {
+        $chkOutput.className = 'panel-body';
+        $chkOutput.innerHTML = '<div style="color:#16a34a;font-weight:500;">&#10003; 语法检查通过</div>' +
+          '<div style="margin-top:8px;">' + highlightNginx(input) + '</div>';
+      } else {
+        var html = '<div style="color:#dc2626;font-weight:500;margin-bottom:8px;">&#10007; 发现 ' + errors.length + ' 个错误</div>';
+        errors.forEach(function(err) {
+          html += '<div class="error-item"><span class="error-line">第 ' + err.line + ' 行：</span>' + escapeHtml(err.msg) + '</div>';
+        });
+        html += '<div style="margin-top:12px;border-top:1px solid #fecaca;padding-top:12px;">' +
+          highlightNginxWithErrors(input, errors) + '</div>';
+        $chkOutput.className = 'panel-body';
+        $chkOutput.innerHTML = html;
+      }
+      setLoading(btn, false);
+      btn.disabled = !$chkInput.value.trim();
+    }, 300);
+  });
+
+  function checkNginxSyntax(input) {
+    var errors = [];
+    var lines = input.split('\n');
+    var braceDepth = 0;
+    var directivesInBlock = {};
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line || line.startsWith('#')) continue;
+
+      var lineNum = i + 1;
+
+      // Count braces
+      for (var c = 0; c < line.length; c++) {
+        if (line[c] === '{') braceDepth++;
+        if (line[c] === '}') braceDepth--;
+      }
+
+      // Check for missing semicolon (simple directive lines)
+      if (!line.endsWith('{') && !line.endsWith('}') && !line.endsWith(';') && !line.startsWith('#')) {
+        // Skip if it's a multi-word line that could be a valid continuation
+        var words = line.split(/\s+/);
+        if (words.length >= 1 && !NGX_DIRECTIVES.includes(words[0]) === false) {
+          // Might be fine (e.g. pure value lines)
+        }
+        if (words.length >= 1) {
+          errors.push({ line: lineNum, msg: '缺少分号' });
+        }
+      }
+
+      // Check for unclosed braces
+      if (braceDepth < 0) {
+        errors.push({ line: lineNum, msg: '多余的花括号闭合' });
+        braceDepth = 0;
+      }
+    }
+
+    if (braceDepth > 0) {
+      errors.push({ line: lines.length, msg: '未闭合的花括号（缺少 ' + braceDepth + ' 个 }）' });
+    }
+
+    // Check for duplicate directives in same block (simplified)
+    var seenDirectives = {};
+    for (var j = 0; j < lines.length; j++) {
+      var l = lines[j].trim();
+      if (!l || l.startsWith('#') || l.endsWith('{') || l.endsWith('}')) continue;
+      var firstWord = l.split(/\s+/)[0];
+      if (NGX_DIRECTIVES.includes(firstWord) && firstWord !== 'location' && firstWord !== 'server') {
+        if (seenDirectives[firstWord]) {
+          // Simplified: just note it
+        }
+        seenDirectives[firstWord] = (seenDirectives[firstWord] || 0) + 1;
+      }
+    }
+
+    return errors.slice(0, 20); // Limit errors shown
+  }
+
+  function highlightNginxWithErrors(code, errors) {
+    var lines = code.split('\n');
+    var errorLines = {};
+    errors.forEach(function(e) { errorLines[e.line] = e; });
+    var result = '';
+    lines.forEach(function(line, idx) {
+      var ln = idx + 1;
+      var highlighted = highlightNginx(line);
+      if (errorLines[ln]) {
+        result += '<div style="background:#fee2e2;border-radius:3px;padding:1px 4px;"><span style="color:#dc2626;font-weight:600;">' + ln + '</span> ' + highlighted + '</div>';
+      } else {
+        result += '<div>' + highlighted + '</div>';
+      }
+    });
+    return result;
+  }
+
+  // ===== Diff Action =====
+  document.getElementById('btnDiff').addEventListener('click', function() {
+    var oldText = $diffOldInput.value.trim();
+    var newText = $diffNewInput.value.trim();
+    if (!oldText || !newText) return;
+
+    setLoading(this, true);
+    var btn = this;
+    setTimeout(function() {
+      var oldLines = oldText.split('\n');
+      var newLines = newText.split('\n');
+      var result = computeDiff(oldLines, newLines);
+
+      // Stats
+      var addCount = 0, delCount = 0, modCount = 0;
+      result.forEach(function(r) {
+        if (r.type === 'add') addCount++;
+        if (r.type === 'del') delCount++;
+        if (r.type === 'mod') modCount++;
+      });
+      $diffStats.innerHTML =
+        '<span class="stat-add">+ 新增 ' + addCount + ' 行</span>' +
+        '<span class="stat-del">- 删除 ' + delCount + ' 行</span>' +
+        '<span class="stat-mod">~ 修改 ' + modCount + ' 行</span>' +
+        '<span style="color:var(--text-muted);">共 ' + result.length + ' 行</span>';
+
+      // Body
+      var html = '';
+      result.forEach(function(r) {
+        var cls = r.type === 'add' ? 'diff-line-add' : r.type === 'del' ? 'diff-line-del' : r.type === 'mod' ? 'diff-line-mod' : '';
+        var prefix = r.type === 'add' ? '+' : r.type === 'del' ? '-' : r.type === 'mod' ? '~' : ' ';
+        html += '<div class="diff-line ' + cls + '">' +
+          '<span class="diff-line-num">' + (r.oldLine || '') + '</span>' +
+          '<span class="diff-line-num">' + (r.newLine || '') + '</span> ' +
+          prefix + ' ' + escapeHtml(r.text) + '</div>';
+      });
+      $diffBody.innerHTML = html;
+      $diffResults.style.display = '';
+
+      setLoading(btn, false);
+      btn.disabled = !($diffOldInput.value.trim() && $diffNewInput.value.trim());
+    }, 400);
+  });
+
+  function computeDiff(oldLines, newLines) {
+    var result = [];
+    var maxLen = Math.max(oldLines.length, newLines.length);
+    var oldTrimmed = oldLines.map(function(l) { return l.replace(/\s+$/, ''); });
+    var newTrimmed = newLines.map(function(l) { return l.replace(/\s+$/, ''); });
+
+    // Simple LCS-based diff
+    var m = oldLines.length;
+    var n = newLines.length;
+    var dp = [];
+    for (var i = 0; i <= m; i++) {
+      dp[i] = [];
+      dp[i][0] = 0;
+    }
+    for (var j = 0; j <= n; j++) dp[0][j] = 0;
+    for (var i2 = 1; i2 <= m; i2++) {
+      for (var j2 = 1; j2 <= n; j2++) {
+        if (oldTrimmed[i2-1] === newTrimmed[j2-1]) {
+          dp[i2][j2] = dp[i2-1][j2-1] + 1;
+        } else {
+          dp[i2][j2] = Math.max(dp[i2-1][j2], dp[i2][j2-1]);
+        }
+      }
+    }
+
+    // Backtrack
+    var ops = [];
+    var ci = m, cj = n;
+    while (ci > 0 || cj > 0) {
+      if (ci > 0 && cj > 0 && oldTrimmed[ci-1] === newTrimmed[cj-1]) {
+        ops.unshift({ type: 'eq', oldLine: ci, newLine: cj, text: oldLines[ci-1] });
+        ci--; cj--;
+      } else if (cj > 0 && (ci === 0 || dp[ci][cj-1] >= dp[ci-1][cj])) {
+        ops.unshift({ type: 'add', newLine: cj, text: newLines[cj-1] });
+        cj--;
+      } else {
+        ops.unshift({ type: 'del', oldLine: ci, text: oldLines[ci-1] });
+        ci--;
+      }
+    }
+
+    // Merge adjacent del+add into mod
+    var merged = [];
+    var idx = 0;
+    while (idx < ops.length) {
+      if (ops[idx].type === 'del' && idx + 1 < ops.length && ops[idx+1].type === 'add') {
+        merged.push({ type: 'mod', oldLine: ops[idx].oldLine, newLine: ops[idx+1].newLine,
+          text: ops[idx].text + ' → ' + ops[idx+1].text });
+        idx += 2;
+      } else {
+        merged.push(ops[idx]);
+        idx++;
+      }
+    }
+    return merged;
+  }
+
+  // ===== Templates =====
+  function renderTemplates() {
+    $templateGrid.innerHTML = templates.map(function(t, i) {
+      return '<div class="template-card" data-idx="' + i + '">' +
+        '<div class="template-card-icon">' + t.icon + '</div>' +
+        '<div class="template-card-name">' + escapeHtml(t.name) + '</div>' +
+        '<div class="template-card-desc">' + escapeHtml(t.desc) + '</div>' +
+        '<div class="template-card-tag">' + escapeHtml(t.tag) + '</div>' +
+        '</div>';
+    }).join('');
+
+    $templateGrid.querySelectorAll('.template-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var idx = parseInt(this.dataset.idx);
+        var tpl = templates[idx];
+        // Fill input in format tab
+        $fmtInput.value = tpl.config;
+        updateLineNumbers($fmtInput, $fmtLineNum);
+        $btnFormat.disabled = false;
+        // Switch to format tab
+        activeTab = 'format';
+        $tabs.forEach(function(t) { t.classList.toggle('active', t.dataset.tab === 'format'); });
+        $tabContents.forEach(function(tc) {
+          var id = tc.id.replace('tab-', '');
+          tc.style.display = id === 'format' ? '' : 'none';
+        });
+        // Auto-format
+        fmtResult = formatNginx(tpl.config);
+        $fmtOutput.innerHTML = highlightNginx(fmtResult);
+        $fmtOutput.style.color = '';
+        $fmtOutput.style.fontStyle = '';
+        var outLines = fmtResult.split('\n');
+        $fmtOutLineNum.innerHTML = Array.from({length: outLines.length}, function(_, i) { return i + 1; }).join('\n');
+      });
+    });
+  }
+  renderTemplates();
+
+  // ===== Paste & Clear Buttons =====
+  function pasteTo(textarea, lineNum) {
+    // paste requires user gesture on file://
+    var _ta = document.createElement('textarea'); document.body.appendChild(_ta); _ta.focus(); document.execCommand('paste'); var _t = _ta.value; document.body.removeChild(_ta); if(_t) { textarea.value = _t; updateLineNumbers(textarea, lineNum); textarea.dispatchEvent(new Event('input')); }
+  }
+  function clearArea(textarea, lineNum) {
+    textarea.value = '';
+    updateLineNumbers(textarea, lineNum);
+    textarea.dispatchEvent(new Event('input'));
+  }
+
+  document.getElementById('fmtPaste').addEventListener('click', function() { pasteTo($fmtInput, $fmtLineNum); });
+  document.getElementById('fmtClear').addEventListener('click', function() {
+    clearArea($fmtInput, $fmtLineNum);
+    $fmtOutput.innerHTML = '格式化后的配置将显示在这里';
+    $fmtOutput.style.color = 'var(--text-placeholder)';
+    $fmtOutput.style.fontStyle = 'italic';
+    $fmtOutLineNum.innerHTML = '';
+    fmtResult = '';
+  });
+  document.getElementById('fmtCopy').addEventListener('click', function() { copyText(fmtResult, this); });
+  document.getElementById('chkPaste').addEventListener('click', function() { pasteTo($chkInput, $chkLineNum); });
+  document.getElementById('chkClear').addEventListener('click', function() {
+    clearArea($chkInput, $chkLineNum);
+    $chkOutput.className = 'panel-body empty';
+    $chkOutput.textContent = '输入配置后点击「检查」查看结果';
+  });
+  document.getElementById('diffPasteOld').addEventListener('click', function() { pasteTo($diffOldInput, $diffOldLineNum); });
+  document.getElementById('diffPasteNew').addEventListener('click', function() { pasteTo($diffNewInput, $diffNewLineNum); });
+
+  // ===== Sidebar Search =====
+  document.querySelector('.sidebar-search input').addEventListener('input', function() {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('.sidebar-item').forEach(function(item) {
+      var text = item.textContent.toLowerCase();
+      item.style.display = !q || text.includes(q) ? '' : 'none';
+    });
+  });
+})();
+</script>
+</body>
+</html>

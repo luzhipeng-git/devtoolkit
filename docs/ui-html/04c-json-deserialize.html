@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON 反序列化 - DevToolkit</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .action-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+    .btn-action {
+      padding: 7px 20px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white; font-size: 13px; font-weight: 500; border: none; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-action:hover { opacity: 0.9; }
+    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+    .copy-btn {
+      padding: 3px 10px; border-radius: 4px; background: var(--bg-white);
+      color: var(--text-muted); font-size: 11px; border: 1px solid var(--border-input);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .copy-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .copy-btn.copied { color: #16a34a; border-color: #16a34a; }
+    .error-msg {
+      padding: 8px 12px; background: #fef2f2; color: #dc2626; border-radius: 6px;
+      font-size: 12px; margin-bottom: 8px; display: none;
+    }
+    .error-msg.show { display: block; }
+    /* Language config */
+    .lang-bar {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .lang-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .lang-select {
+      height: 28px; border-radius: 4px; border: 1px solid var(--border-input);
+      padding: 0 10px; font-size: 12px; color: var(--text-primary); background: var(--bg-white);
+      outline: none; min-width: 140px;
+    }
+    .lang-select:focus { border-color: var(--primary); }
+    /* Output area */
+    .output-panel {
+      border: 1px solid var(--border-card); border-radius: 0 0 8px 8px;
+      background: var(--bg-code-alt); min-height: 200px; padding: 14px 16px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 13px;
+      line-height: 1.7; overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+    }
+    .output-panel.empty { color: var(--text-placeholder); font-style: italic; }
+    /* Code syntax colors */
+    .code-keyword { color: #7c3aed; font-weight: 500; }
+    .code-type { color: #2563eb; }
+    .code-string { color: #16a34a; }
+    .code-comment { color: #64748b; font-style: italic; }
+    .code-annotation { color: #d97706; }
+    .code-number { color: #7c3aed; }
+    .code-bracket { color: #475569; }
+    /* Type Legend */
+    .type-legend {
+      display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+      background: var(--bg-code); border: 1px solid var(--border-card); border-radius: 8px;
+      margin-top: 12px; flex-wrap: wrap;
+    }
+    .type-legend-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-right: 4px; }
+    .type-badge {
+      display: inline-flex; align-items: center; padding: 1px 7px;
+      border-radius: 3px; font-size: 10px; font-weight: 500;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .badge-string { background: #dcfce7; color: #16a34a; }
+    .badge-number { background: #dbeafe; color: #2563eb; }
+    .badge-boolean { background: #fef9c3; color: #a16207; }
+    .badge-object { background: #f1f5f9; color: #475569; }
+    .badge-array { background: #f3e8ff; color: #7c3aed; }
+    .badge-null { background: #fee2e2; color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="titlebar">
+      <div class="titlebar-controls">
+        <div class="dot dot-close"></div><div class="dot dot-minimize"></div><div class="dot dot-maximize"></div>
+      </div>
+      <div class="titlebar-logo">D</div>
+      <div class="titlebar-title">DevToolkit</div>
+      <div class="titlebar-version">v1.0.0</div>
+    </div>
+    <div class="main-layout">
+      <div class="sidebar">
+        <div class="sidebar-search"><input type="text" placeholder="搜索工具..."></div>
+        <a class="sidebar-item" href="02-home.html">首页</a>
+        <div class="sidebar-group-title">字符编码</div>
+        <a class="sidebar-item" href="03-encoding.html">Hex 转换</a>
+        <a class="sidebar-item" href="03b-base64.html">Base64 编解码</a>
+        <a class="sidebar-item" href="03c-ascii.html">ASCII 转换</a>
+        <a class="sidebar-item" href="03d-url.html">URL 编解码</a>
+        <a class="sidebar-item" href="03e-unicode.html">Unicode 编解码</a>
+        <div class="sidebar-group-title">JSON 工具</div>
+        <a class="sidebar-item" href="04-json.html">格式化 & 压缩</a>
+        <a class="sidebar-item active" href="04c-json-deserialize.html">反序列化</a>
+        <a class="sidebar-item" href="04d-json-path.html">JSONPath 查询</a>
+        <a class="sidebar-item" href="04e-json-diff.html">JSON Diff</a>
+        <div class="sidebar-group-title">加密解密</div>
+        <a class="sidebar-item" href="05-crypto-aes.html">AES 加密/解密</a>
+        <a class="sidebar-item" href="05b-crypto-des.html">DES/3DES</a>
+        <a class="sidebar-item" href="06-crypto-rsa.html">RSA 工具</a>
+        <a class="sidebar-item" href="07-hash.html">哈希摘要</a>
+        <a class="sidebar-item" href="08-keygen.html">密钥工具</a>
+        <a class="sidebar-item" href="09-openssl.html">OpenSSL 工具</a>
+        <div class="sidebar-group-title">数字计算</div>
+        <a class="sidebar-item" href="10-calculator.html">进制转换</a>
+        <div class="sidebar-group-title">二维码</div>
+        <a class="sidebar-item" href="11-qrcode.html">二维码生成</a>
+        <a class="sidebar-item" href="11b-qrcode-parse.html">二维码解析</a>
+        <div class="sidebar-group-title">HTTP Client</div>
+        <a class="sidebar-item" href="12-http-client.html">HTTP 请求</a>
+        <div class="sidebar-group-title">时间计算</div>
+        <a class="sidebar-item" href="13-time.html">时间戳转换</a>
+        <div class="sidebar-group-title">Cron</div>
+        <a class="sidebar-item" href="14-cron.html">Cron 表达式</a>
+        <div class="sidebar-group-title">正则调试</div>
+        <a class="sidebar-item" href="15-regex.html">正则调试</a>
+        <div class="sidebar-group-title">Grok</div>
+        <a class="sidebar-item" href="16-grok.html">Grok 调试</a>
+        <div class="sidebar-group-title">Nginx</div>
+        <a class="sidebar-item" href="17-nginx.html">Nginx 工具</a>
+        <div class="sidebar-group-title">配置转换</div>
+        <a class="sidebar-item" href="18-config-converter.html">配置文件转换</a>
+        <div class="sidebar-group-title">编码解码</div>
+        <a class="sidebar-item" href="19-codec.html">JWT 编解码</a>
+      </div>
+      <div class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-category">JSON 工具</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">反序列化</span>
+        </div>
+        <div class="tool-card">
+          <!-- Error message area -->
+          <div class="error-msg" id="errorMsg"></div>
+          <!-- Input Editor -->
+          <div class="editor-header">
+            <span class="editor-title">输入（JSON）</span>
+            <div class="editor-actions">
+              <button class="copy-btn" id="btnPaste">粘贴</button>
+              <button class="copy-btn" id="btnClear">清空</button>
+            </div>
+          </div>
+          <div class="editor-body">
+            <div class="line-numbers" id="inputLineNumbers">1</div>
+            <textarea class="editor-textarea" id="jsonInput" spellcheck="false"
+              placeholder='粘贴 JSON，如 {"name":"张三","age":25,"address":{"city":"北京"}}'></textarea>
+          </div>
+          <!-- Language select + Action Row -->
+          <div class="action-row">
+            <div class="lang-bar">
+              <span class="lang-label">目标语言</span>
+              <select class="lang-select" id="langSelect">
+                <option value="java">Java</option>
+                <option value="python">Python</option>
+                <option value="go">Go</option>
+                <option value="typescript">TypeScript</option>
+                <option value="csharp">C#</option>
+                <option value="rust">Rust</option>
+              </select>
+            </div>
+            <button class="btn-action" id="btnGenerate" disabled>生成</button>
+            <button class="btn-outline" id="btnReset" style="padding:7px 16px;font-size:13px;">重置</button>
+          </div>
+          <!-- Output Header -->
+          <div class="editor-header">
+            <span class="editor-title">生成代码</span>
+            <div class="editor-actions">
+              <button class="copy-btn" id="btnCopyOutput">复制</button>
+            </div>
+          </div>
+          <!-- Output Panel -->
+          <div class="output-panel empty" id="outputPanel">输入 JSON 后点击「生成」查看代码</div>
+          <!-- Type Legend -->
+          <div class="type-legend">
+            <span class="type-legend-label">类型映射:</span>
+            <div class="type-legend-item"><span class="type-badge badge-string">String</span></div>
+            <div class="type-legend-item"><span class="type-badge badge-number">Number</span></div>
+            <div class="type-legend-item"><span class="type-badge badge-boolean">Boolean</span></div>
+            <div class="type-legend-item"><span class="type-badge badge-object">Object</span></div>
+            <div class="type-legend-item"><span class="type-badge badge-array">Array</span></div>
+            <div class="type-legend-item"><span class="type-badge badge-null">Null</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="common.js"></script>
+<script>
+(function() {
+  // --- State ---
+  let generatedCode = '';
+  let currentLang = 'java';
+
+  // --- DOM refs ---
+  const $input = document.getElementById('jsonInput');
+  const $inputLines = document.getElementById('inputLineNumbers');
+  const $outputPanel = document.getElementById('outputPanel');
+  const $errorMsg = document.getElementById('errorMsg');
+  const $btnGenerate = document.getElementById('btnGenerate');
+  const $langSelect = document.getElementById('langSelect');
+
+  // --- Dedup protection for language select ---
+  $langSelect.addEventListener('change', function() {
+    if (this.value === currentLang) return;
+    currentLang = this.value;
+  });
+
+  // --- Line numbers sync ---
+  function updateLineNumbers() {
+    const lines = $input.value.split('\n').length;
+    $inputLines.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('\n');
+  }
+  $input.addEventListener('input', function() {
+    updateLineNumbers();
+    $btnGenerate.disabled = !$input.value.trim();
+  });
+  $input.addEventListener('scroll', () => { $inputLines.scrollTop = $input.value ? $input.scrollTop : 0; });
+
+  // --- Escape HTML ---
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // --- Type inference ---
+  function inferType(value) {
+    if (value === null) return 'null';
+    if (Array.isArray(value)) return 'array';
+    return typeof value; // string, number, boolean, object
+  }
+
+  // --- Code generators ---
+  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function toPascalCase(s) { return s.split(/[_\-\s]+/).map(capitalize).join(''); }
+  function toCamelCase(s) { const p = toPascalCase(s); return p.charAt(0).toLowerCase() + p.slice(1); }
+  function toSnakeCase(s) { return s.replace(/([A-Z])/g, '_$1').toLowerCase(); }
+
+  function generateJava(obj, className) {
+    className = className || 'RootClass';
+    let code = '';
+    const subClasses = [];
+    code += '<span class="code-keyword">public class</span> <span class="code-type">' + className + '</span> <span class="code-bracket">{</span>\n';
+    const entries = Object.entries(obj);
+    entries.forEach(function(entry, idx) {
+      var key = entry[0], val = entry[1];
+      var type = mapJavaType(key, val, className, subClasses);
+      var fieldName = toCamelCase(key);
+      code += '    <span class="code-keyword">private</span> <span class="code-type">' + type + '</span> ' + fieldName + ';\n';
+    });
+    code += '\n';
+    entries.forEach(function(entry) {
+      var key = entry[0], val = entry[1];
+      var type = mapJavaType(key, val, className, subClasses);
+      var fieldName = toCamelCase(key);
+      var getterName = (type === 'boolean' ? 'is' : 'get') + toPascalCase(key);
+      code += '    <span class="code-keyword">public</span> <span class="code-type">' + type + '</span> ' + getterName + '() <span class="code-bracket">{</span> <span class="code-keyword">return</span> ' + fieldName + '; <span class="code-bracket">}</span>\n';
+      code += '    <span class="code-keyword">public void</span> set' + toPascalCase(key) + '(<span class="code-type">' + type + '</span> ' + fieldName + ') <span class="code-bracket">{</span> <span class="code-keyword">this</span>.' + fieldName + ' = ' + fieldName + '; <span class="code-bracket">}</span>\n';
+    });
+    code += '<span class="code-bracket">}</span>\n';
+    subClasses.forEach(function(sc) { code += '\n' + sc.code + '\n'; });
+    return code;
+  }
+
+  function mapJavaType(key, val, parentClass, subClasses) {
+    var t = inferType(val);
+    if (t === 'string') return 'String';
+    if (t === 'number') return (val % 1 !== 0) ? 'Double' : 'Integer';
+    if (t === 'boolean') return 'Boolean';
+    if (t === 'null') return 'Object';
+    if (t === 'array') {
+      var itemType = 'Object';
+      if (val.length > 0) {
+        var itemT = inferType(val[0]);
+        if (itemT === 'object') {
+          var subName = toPascalCase(key) + 'Item';
+          subClasses.push({ name: subName, code: generateJava(val[0], subName) });
+          itemType = subName;
+        } else if (itemT === 'string') itemType = 'String';
+        else if (itemT === 'number') itemType = (val[0] % 1 !== 0) ? 'Double' : 'Integer';
+        else if (itemT === 'boolean') itemType = 'Boolean';
+      }
+      return 'List&lt;' + itemType + '&gt;';
+    }
+    if (t === 'object') {
+      var subName = toPascalCase(key);
+      subClasses.push({ name: subName, code: generateJava(val, subName) });
+      return subName;
+    }
+    return 'Object';
+  }
+
+  function generatePython(obj, className) {
+    className = className || 'RootClass';
+    var subClasses = [];
+    var code = '<span class="code-keyword">from</span> dataclasses <span class="code-keyword">import</span> dataclass\n';
+    code += '<span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List, Optional, Any\n\n';
+    code += '<span class="code-annotation">@dataclass</span>\n';
+    code += '<span class="code-keyword">class</span> <span class="code-type">' + className + '</span>:\n';
+    Object.entries(obj).forEach(function(entry) {
+      var key = entry[0], val = entry[1];
+      var type = mapPythonType(key, val, className, subClasses);
+      code += '    ' + key + ': ' + type + '\n';
+    });
+    subClasses.forEach(function(sc) { code += '\n' + sc.code + '\n'; });
+    return code;
+  }
+
+  function mapPythonType(key, val, parentClass, subClasses) {
+    var t = inferType(val);
+    if (t === 'string') return 'str';
+    if (t === 'number') return 'float' + ((val % 1 !== 0) ? '' : ' | int');
+    if (t === 'boolean') return 'bool';
+    if (t === 'null') return 'Any';
+    if (t === 'array') {
+      var itemType = 'Any';
+      if (val.length > 0) {
+        var itemT = inferType(val[0]);
+        if (itemT === 'object') {
+          var subName = toPascalCase(key) + 'Item';
+          subClasses.push({ name: subName, code: generatePython(val[0], subName) });
+          itemType = subName;
+        } else if (itemT === 'string') itemType = 'str';
+        else if (itemT === 'number') itemType = 'float | int';
+        else if (itemT === 'boolean') itemType = 'bool';
+      }
+      return 'List[' + itemType + ']';
+    }
+    if (t === 'object') {
+      var subName = toPascalCase(key);
+      subClasses.push({ name: subName, code: generatePython(val, subName) });
+      return subName;
+    }
+    return 'Any';
+  }
+
+  function generateGo(obj, structName) {
+    structName = structName || 'RootStruct';
+    var subStructs = [];
+    var code = '<span class="code-keyword">package</span> main\n\n';
+    code += '<span class="code-keyword">type</span> <span class="code-type">' + structName + '</span> <span class="code-keyword">struct</span> <span class="code-bracket">{</span>\n';
+    Object.entries(obj).forEach(function(entry) {
+      var key = entry[0], val = entry[1];
+      var type = mapGoType(key, val, structName, subStructs);
+      code += '\t' + toPascalCase(key) + '  ' + type + '  <span class="code-string">`json:"' + key + '"`</span>\n';
+    });
+    code += '<span class="code-bracket">}</span>\n';
+    subStructs.forEach(function(sc) { code += '\n' + sc.code + '\n'; });
+    return code;
+  }
+
+  function mapGoType(key, val, parentName, subStructs) {
+    var t = inferType(val);
+    if (t === 'string') return 'string';
+    if (t === 'number') return (val % 1 !== 0) ? 'float64' : 'int';
+    if (t === 'boolean') return 'bool';
+    if (t === 'null') return 'interface{}';
+    if (t === 'array') {
+      var itemType = 'interface{}';
+      if (val.length > 0) {
+        var itemT = inferType(val[0]);
+        if (itemT === 'object') {
+          var subName = toPascalCase(key) + 'Item';
+          subStructs.push({ name: subName, code: generateGo(val[0], subName) });
+          itemType = subName;
+        } else if (itemT === 'string') itemType = 'string';
+        else if (itemT === 'number') itemType = (val[0] % 1 !== 0) ? 'float64' : 'int';
+        else if (itemT === 'boolean') itemType = 'bool';
+      }
+      return '[]' + itemType;
+    }
+    if (t === 'object') {
+      var subName = toPascalCase(key);
+      subStructs.push({ name: subName, code: generateGo(val, subName) });
+      return subName;
+    }
+    return 'interface{}';
+  }
+
+  function generateTypeScript(obj, ifaceName) {
+    ifaceName = ifaceName || 'RootInterface';
+    var subIfaces = [];
+    var code = '<span class="code-keyword">export interface</span> <span class="code-type">' + ifaceName + '</span> <span class="code-bracket">{</span>\n';
+    Object.entries(obj).forEach(function(entry) {
+      var key = entry[0], val = entry[1];
+      var type = mapTsType(key, val, ifaceName, subIfaces);
+      code += '  ' + key + ': ' + type + ';\n';
+    });
+    code += '<span class="code-bracket">}</span>\n';
+    subIfaces.forEach(function(sc) { code += '\n' + sc.code + '\n'; });
+    return code;
+  }
+
+  function mapTsType(key, val, parentName, subIfaces) {
+    var t = inferType(val);
+    if (t === 'string') return 'string';
+    if (t === 'number') return 'number';
+    if (t === 'boolean') return 'boolean';
+    if (t === 'null') return 'null';
+    if (t === 'array') {
+      var itemType = 'any';
+      if (val.length > 0) {
+        var itemT = inferType(val[0]);
+        if (itemT === 'object') {
+          var subName = toPascalCase(key) + 'Item';
+          subIfaces.push({ name: subName, code: generateTypeScript(val[0], subName) });
+          itemType = subName;
+        } else if (itemT === 'string') itemType = 'string';
+        else if (itemT === 'number') itemType = 'number';
+        else if (itemT === 'boolean') itemType = 'boolean';
+      }
+      return itemType + '[]';
+    }
+    if (t === 'object') {
+      var subName = toPascalCase(key);
+      subIfaces.push({ name: subName, code: generateTypeScript(val, subName) });
+      return subName;
+    }
+    return 'any';
+  }
+
+  function generateCSharp(obj, className) {
+    className = className || 'RootClass';
+    var subClasses = [];
+    var code = '<span class="code-keyword">public class</span> <span class="code-type">' + className + '</span>\n<span class="code-bracket">{</span>\n';
+    Object.entries(obj).forEach(function(entry) {
+      var key = entry[0], val = entry[1];
+      var type = mapCSharpType(key, val, className, subClasses);
+      var propName = toPascalCase(key);
+      code += '    <span class="code-bracket">[</span><span class="code-annotation">JsonPropertyName</span>(<span class="code-string">"' + key + '"</span>)<span class="code-bracket">]</span>\n';
+      code += '    <span class="code-keyword">public</span> <span class="code-type">' + type + '</span> ' + propName + ' <span class="code-bracket">{</span> <span class="code-keyword">get</span>; <span class="code-keyword">set</span>; <span class="code-bracket">}</span>\n\n';
+    });
+    code += '<span class="code-bracket">}</span>\n';
+    subClasses.forEach(function(sc) { code += '\n' + sc.code + '\n'; });
+    return code;
+  }
+
+  function mapCSharpType(key, val, parentClass, subClasses) {
+    var t = inferType(val);
+    if (t === 'string') return 'string';
+    if (t === 'number') return (val % 1 !== 0) ? 'double' : 'int';
+    if (t === 'boolean') return 'bool';
+    if (t === 'null') return 'object';
+    if (t === 'array') {
+      var itemType = 'object';
+      if (val.length > 0) {
+        var itemT = inferType(val[0]);
+        if (itemT === 'object') {
+          var subName = toPascalCase(key) + 'Item';
+          subClasses.push({ name: subName, code: generateCSharp(val[0], subName) });
+          itemType = subName;
+        } else if (itemT === 'string') itemType = 'string';
+        else if (itemT === 'number') itemType = (val[0] % 1 !== 0) ? 'double' : 'int';
+        else if (itemT === 'boolean') itemType = 'bool';
+      }
+      return 'List&lt;' + itemType + '&gt;';
+    }
+    if (t === 'object') {
+      var subName = toPascalCase(key);
+      subClasses.push({ name: subName, code: generateCSharp(val, subName) });
+      return subName;
+    }
+    return 'object';
+  }
+
+  function generateRust(obj, structName) {
+    structName = structName || 'RootStruct';
+    var subStructs = [];
+    var code = '<span class="code-keyword">use</span> serde::{Deserialize, Serialize};\n\n';
+    code += '<span class="code-annotation">#[derive(Debug, Serialize, Deserialize)]</span>\n';
+    code += '<span class="code-keyword">pub struct</span> <span class="code-type">' + structName + '</span> <span class="code-bracket">{</span>\n';
+    Object.entries(obj).forEach(function(entry) {
+      var key = entry[0], val = entry[1];
+      var type = mapRustType(key, val, structName, subStructs);
+      code += '    <span class="code-annotation">#[serde(rename = "' + key + '")]</span>\n';
+      code += '    pub ' + toSnakeCase(key) + ': ' + type + ',\n';
+    });
+    code += '<span class="code-bracket">}</span>\n';
+    subStructs.forEach(function(sc) { code += '\n' + sc.code + '\n'; });
+    return code;
+  }
+
+  function mapRustType(key, val, parentName, subStructs) {
+    var t = inferType(val);
+    if (t === 'string') return 'String';
+    if (t === 'number') return (val % 1 !== 0) ? 'f64' : 'i64';
+    if (t === 'boolean') return 'bool';
+    if (t === 'null') return 'Option&lt;serde_json::Value&gt;';
+    if (t === 'array') {
+      var itemType = 'serde_json::Value';
+      if (val.length > 0) {
+        var itemT = inferType(val[0]);
+        if (itemT === 'object') {
+          var subName = toPascalCase(key) + 'Item';
+          subStructs.push({ name: subName, code: generateRust(val[0], subName) });
+          itemType = subName;
+        } else if (itemT === 'string') itemType = 'String';
+        else if (itemT === 'number') itemType = (val[0] % 1 !== 0) ? 'f64' : 'i64';
+        else if (itemT === 'boolean') itemType = 'bool';
+      }
+      return 'Vec&lt;' + itemType + '&gt;';
+    }
+    if (t === 'object') {
+      var subName = toPascalCase(key);
+      subStructs.push({ name: subName, code: generateRust(val, subName) });
+      return subName;
+    }
+    return 'serde_json::Value';
+  }
+
+  // --- Main generate function ---
+  function generateCode() {
+    var input = $input.value.trim();
+    $errorMsg.classList.remove('show');
+    $errorMsg.textContent = '';
+
+    if (!input) {
+      $outputPanel.innerHTML = '输入 JSON 后点击「生成」查看代码';
+      $outputPanel.className = 'output-panel empty';
+      generatedCode = '';
+      return;
+    }
+
+    var parsed;
+    try {
+      parsed = JSON.parse(input);
+    } catch (e) {
+      var match = e.message.match(/position\s+(\d+)/);
+      var hint = e.message;
+      if (match) {
+        var pos = parseInt(match[1]);
+        var before = input.substring(0, pos);
+        var line = (before.match(/\n/g) || []).length + 1;
+        var col = pos - before.lastIndexOf('\n');
+        hint = '第 ' + line + ' 行第 ' + col + ' 列: ' + e.message;
+      }
+      $errorMsg.textContent = hint;
+      $errorMsg.classList.add('show');
+      $outputPanel.innerHTML = '';
+      $outputPanel.className = 'output-panel empty';
+      generatedCode = '';
+      return;
+    }
+
+    var lang = $langSelect.value;
+    var html = '';
+    switch (lang) {
+      case 'java':       html = generateJava(parsed); break;
+      case 'python':     html = generatePython(parsed); break;
+      case 'go':         html = generateGo(parsed); break;
+      case 'typescript': html = generateTypeScript(parsed); break;
+      case 'csharp':     html = generateCSharp(parsed); break;
+      case 'rust':       html = generateRust(parsed); break;
+      default:           html = generateJava(parsed); break;
+    }
+
+    $outputPanel.innerHTML = html;
+    $outputPanel.className = 'output-panel';
+
+    // Extract plain text for copy
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    generatedCode = tempDiv.textContent || tempDiv.innerText || '';
+  }
+
+  // --- Copy with feedback ---
+  function copyText(text, btn) {
+    if (!text) return;
+    dtCopy(text).then(function() {
+      btn.textContent = '已复制';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1200);
+    });
+  }
+
+  // --- Button events ---
+  $btnGenerate.addEventListener('click', generateCode);
+  document.getElementById('btnReset').addEventListener('click', function() {
+    $input.value = '';
+    updateLineNumbers();
+    $outputPanel.innerHTML = '输入 JSON 后点击「生成」查看代码';
+    $outputPanel.className = 'output-panel empty';
+    generatedCode = '';
+    $errorMsg.classList.remove('show');
+    $btnGenerate.disabled = true;
+  });
+  document.getElementById('btnClear').addEventListener('click', function() {
+    $input.value = '';
+    updateLineNumbers();
+    $btnGenerate.disabled = true;
+  });
+  document.getElementById('btnPaste').addEventListener('click', function() {
+    // paste requires user gesture on file://
+    var _ta = document.createElement('textarea'); document.body.appendChild(_ta); _ta.focus(); document.execCommand('paste'); var _t = _ta.value; document.body.removeChild(_ta); if(_t) { $input.value = _t; updateLineNumbers(); $btnGenerate.disabled = !$input.value.trim(); }
+  });
+  document.getElementById('btnCopyOutput').addEventListener('click', function() { copyText(generatedCode, this); });
+
+  // --- Keyboard shortcut: Ctrl+Enter ---
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (!$btnGenerate.disabled) generateCode();
+    }
+  });
+
+  // --- Sidebar search filter ---
+  document.querySelector('.sidebar-search input').addEventListener('input', function() {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('.sidebar-item').forEach(function(item) {
+      var text = item.textContent.toLowerCase();
+      item.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+    });
+  });
+
+  // Init
+  updateLineNumbers();
+})();
+</script>
+</body>
+</html>

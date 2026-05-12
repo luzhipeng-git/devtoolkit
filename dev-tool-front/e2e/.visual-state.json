@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:1421",
+      "localStorage": [
+        {
+          "name": "dev-backend",
+          "value": "http"
+        }
+      ]
+    }
+  ]
+}
