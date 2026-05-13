@@ -5,24 +5,6 @@
   "permissions": [
     "core:default",
     "http:default",
-    "updater:default",
-    "app:allow-crypto-aes-encrypt",
-    "app:allow-crypto-aes-decrypt",
-    "app:allow-crypto-des-encrypt",
-    "app:allow-crypto-des-decrypt",
-    "app:allow-crypto-3des-encrypt",
-    "app:allow-crypto-3des-decrypt",
-    "app:allow-crypto-rsa-keygen",
-    "app:allow-crypto-rsa-encrypt",
-    "app:allow-crypto-rsa-decrypt",
-    "app:allow-crypto-rsa-sign",
-    "app:allow-crypto-rsa-verify",
-    "app:allow-crypto-kcv",
-    "app:allow-crypto-pbe-derive",
-    "app:allow-crypto-multi-length-key",
-    "app:allow-openssl-parse-cert",
-    "app:allow-openssl-generate-csr",
-    "app:allow-openssl-convert-format",
-    "app:allow-http-send-request"
+    "updater:default"
   ]
 }
