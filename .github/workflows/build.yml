@@ -45,6 +45,13 @@ jobs:
         with:
           workspaces: './dev-tool-front/src-tauri -> target'
 
+      - name: Clean stale server binary from cache
+        working-directory: ./dev-tool-front/src-tauri
+        shell: bash
+        run: |
+          rm -f target/release/devtoolkit-server || true
+          rm -f target/release/devtoolkit-server.exe || true
+
       - name: Install frontend dependencies
         working-directory: ./dev-tool-front
         run: pnpm install

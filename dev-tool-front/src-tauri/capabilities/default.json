@@ -4,6 +4,25 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "http:default"
+    "http:default",
+    "updater:default",
+    "app:allow-crypto_aes_encrypt",
+    "app:allow-crypto_aes_decrypt",
+    "app:allow-crypto_des_encrypt",
+    "app:allow-crypto_des_decrypt",
+    "app:allow-crypto_3des_encrypt",
+    "app:allow-crypto_3des_decrypt",
+    "app:allow-crypto_rsa_keygen",
+    "app:allow-crypto_rsa_encrypt",
+    "app:allow-crypto_rsa_decrypt",
+    "app:allow-crypto_rsa_sign",
+    "app:allow-crypto_rsa_verify",
+    "app:allow-crypto_kcv",
+    "app:allow-crypto_pbe_derive",
+    "app:allow-crypto_multi_length_key",
+    "app:allow-openssl_parse_cert",
+    "app:allow-openssl_generate_csr",
+    "app:allow-openssl_convert_format",
+    "app:allow-http_send_request"
   ]
 }
