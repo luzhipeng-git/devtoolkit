@@ -34,7 +34,7 @@ pnpm install
 pnpm dev
 
 # 启动 Rust HTTP 后端（开发模式）
-cd src-tauri && cargo run --bin devtoolkit-server
+cd src-tauri && cargo run -p devtoolkit-server
 
 # 构建
 pnpm build

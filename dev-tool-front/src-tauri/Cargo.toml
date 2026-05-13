@@ -16,11 +16,6 @@ name = "devtoolkit"
 path = "src/main.rs"
 required-features = ["tauri-mode"]
 
-[[bin]]
-name = "devtoolkit-server"
-path = "src/bin/server.rs"
-required-features = ["server-mode"]
-
 [build-dependencies]
 tauri-build = { version = "2", optional = true }
 
@@ -44,4 +39,6 @@ tower-http = { version = "0.6", features = ["cors"] }
 [features]
 default = []
 tauri-mode = ["dep:tauri", "dep:tauri-plugin-http", "dep:tauri-plugin-updater", "dep:tauri-build"]
-server-mode = []
+
+[workspace]
+members = ["server"]

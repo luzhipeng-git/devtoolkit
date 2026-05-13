@@ -739,6 +739,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "devtoolkit-server"
+version = "1.0.0"
+dependencies = [
+ "axum",
+ "dev-toolkit",
+ "tokio",
+ "tower-http",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"

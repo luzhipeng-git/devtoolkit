@@ -125,13 +125,13 @@ The app uses a **dual-service architecture**:
 1. **Vite dev server** (`localhost:1420`) — serves the Vue frontend
 2. **Rust HTTP server** (`localhost:3030`) — provides crypto/openssl/http API endpoints
 
-The Rust server binary is `devtoolkit-server` (defined in `src-tauri/src/bin/server.rs`), using **axum** with CORS enabled for `localhost:1420`.
+The Rust server binary is `devtoolkit-server` (defined in `src-tauri/server/src/main.rs`, a workspace member crate), using **axum** with CORS enabled for `localhost:1420`.
 
 **E2E tests MUST start both services** or crypto/openssl/http features will fail silently. The frontend service locator (`src/services/index.ts`) detects Tauri vs HTTP mode and calls `http://localhost:3030/api/*` endpoints in web mode.
 
 ### Starting the Rust Backend for Tests
 ```bash
-cd src-tauri && cargo run --bin devtoolkit-server
+cd src-tauri && cargo run -p devtoolkit-server
 # Server starts on 0.0.0.0:3030
 # API: /api/crypto/*, /api/openssl/*, /api/http/*
 ```
