@@ -2,6 +2,12 @@
 
 一款面向开发者的桌面工具箱，集成编码转换、加解密、JSON 处理、HTTP 调试等常用开发工具。
 
+## 用户手册
+
+[DevToolkit 用户使用手册](docs/user-manual/README.md) — 包含所有功能模块的详细操作指引和截图说明。
+
+也可下载 [CHM 电子书](docs/user-manual/chm-output/devtoolkit.chm) 离线浏览。
+
 ## 技术栈
 
 - **桌面框架**：Tauri v2
