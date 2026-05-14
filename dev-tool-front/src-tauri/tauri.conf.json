@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nickel-org/json-schema-store/main/tauri.schema.json",
   "productName": "DevToolkit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identifier": "com.devtoolkit.app",
   "build": {
     "beforeDevCommand": "pnpm dev",
