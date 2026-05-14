@@ -25,6 +25,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Setting version to $VERSION"
+          cd dev-tool-front/src-tauri
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" tauri.conf.json
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" server/Cargo.toml
+          echo "Verified versions:"
+          grep '"version"' tauri.conf.json
+          grep '^version' Cargo.toml
+          grep '^version' server/Cargo.toml
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
