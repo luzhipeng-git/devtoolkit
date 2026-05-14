@@ -23,7 +23,10 @@ const { copy } = useClipboard()
 const tabs = [
   { key: 'encode', label: '编码' },
   { key: 'decode', label: '解码' },
+  { key: 'case', label: '大小写转换' },
 ]
+
+const caseTarget = ref('upper')
 
 const optionItems = [
   { key: 'separator', label: '分隔符', type: 'select' as const, modelValue: separator.value, options: [{ value: 'space', label: '空格' }, { value: 'comma', label: '逗号' }, { value: 'none', label: '无' }] },
@@ -35,6 +38,14 @@ function updateOption(key: string, value: any) {
   if (key === 'separator') separator.value = value
   else if (key === 'prefix') prefix.value = value
   else if (key === 'caseStyle') caseStyle.value = value
+}
+
+const caseOptionItems = [
+  { key: 'caseTarget', label: '目标格式', type: 'select' as const, modelValue: caseTarget.value, options: [{ value: 'upper', label: '大写 (0x4F)' }, { value: 'lower', label: '小写 (0x4f)' }] },
+]
+
+function updateCaseOption(key: string, value: any) {
+  if (key === 'caseTarget') caseTarget.value = value
 }
 
 function textToHex(text: string): string {
@@ -63,20 +74,32 @@ function process() {
   try {
     if (mode.value === 'encode') {
       output.value = textToHex(input.value)
-    } else {
+    } else if (mode.value === 'decode') {
       output.value = hexToText(input.value)
+    } else if (mode.value === 'case') {
+      const cleaned = input.value.replace(/[^0-9a-fA-F]/g, '')
+      if (!cleaned) throw new Error('请输入有效的 Hex 字符串')
+      output.value = caseTarget.value === 'upper' ? cleaned.toUpperCase() : cleaned.toLowerCase()
     }
   } catch (e: any) {
     error.value = e.message || '转换失败'
   }
 }
 
-watch([input, separator, prefix, caseStyle], process)
+watch([input, separator, prefix, caseStyle, caseTarget], process)
 
 const inputLabel = ref('输入（字符串）')
 const outputLabel = ref('输出（Hex）')
 
 watch(mode, (m) => {
+  if (m === 'case') {
+    inputLabel.value = '输入（Hex）'
+    outputLabel.value = '输出（Hex）'
+    input.value = ''
+    output.value = ''
+    process()
+    return
+  }
   if (isSwapping.value) {
     if (m === 'encode') {
       inputLabel.value = '输入（字符串）'
@@ -106,6 +129,7 @@ watch(mode, (m) => {
   <ToolContainer>
     <ToolTabs :tabs="tabs" v-model:active-tab="mode" />
     <OptionsPanel v-if="mode === 'encode'" :options="optionItems" @update:option="updateOption" />
+    <OptionsPanel v-if="mode === 'case'" :options="caseOptionItems" @update:option="updateCaseOption" />
     <ErrorBanner v-if="error" :message="error" @dismiss="error = null" />
 
     <div class="editor-header">

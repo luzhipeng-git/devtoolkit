@@ -1,0 +1,11 @@
+# CHM 中间编译物（保留 devtoolkit.chm）
+chm-output/html/
+chm-output/devtoolkit.hhp
+chm-output/devtoolkit.hhc
+chm-output/devtoolkit.hhk
+
+# Python 缓存
+__pycache__/
+
+# Nginx vendor（CDN 下载的第三方依赖，可通过 build-nginx.sh 重新下载）
+dist/vendor/
