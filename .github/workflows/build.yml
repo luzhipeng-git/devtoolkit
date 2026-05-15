@@ -26,6 +26,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set version from tag
+        shell: bash
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           echo "Setting version to $VERSION"
