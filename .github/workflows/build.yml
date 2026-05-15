@@ -31,9 +31,10 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           echo "Setting version to $VERSION"
           cd dev-tool-front/src-tauri
-          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" tauri.conf.json
-          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
-          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" server/Cargo.toml
+          sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" tauri.conf.json
+          sed -i.bak "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+          sed -i.bak "s/^version = \".*\"/version = \"$VERSION\"/" server/Cargo.toml
+          rm -f tauri.conf.json.bak Cargo.toml.bak server/Cargo.toml.bak
           echo "Verified versions:"
           grep '"version"' tauri.conf.json
           grep '^version' Cargo.toml
