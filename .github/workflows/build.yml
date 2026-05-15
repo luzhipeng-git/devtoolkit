@@ -84,6 +84,6 @@ jobs:
             - **macOS (Intel)**: `DevToolkit_x64.dmg`
 
             > First time on Windows? If WebView2 is not installed, the installer will prompt you to download it automatically.
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }} --features tauri-mode
